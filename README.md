@@ -97,16 +97,16 @@ dotnet run
 
 ## 📖 Documentação Completa (GitHub Wiki)
 
-Para uma explicação exaustiva e detalhada de cada linha de código, fórmulas matemáticas, transformações afins e links para as documentações oficiais da Microsoft, acesse a **[Wiki do Projeto](wiki/Home.md)**:
+Para uma explicação exaustiva e detalhada de cada linha de código, fórmulas matemáticas, transformações afins e links para as documentações oficiais da Microsoft, acesse a **[Wiki Oficial no GitHub](https://github.com/Gabriel-Freitas-S/PI_T1/wiki)**:
 
-- 📑 **[Home / Índice Geral](wiki/Home.md)**
-- 🏛️ **[Arquitetura e Princípios de Transformação Afim](wiki/Arquitetura-e-Visao-Geral.md)**
-- 🎨 **[Modelagem Visual e Geometria XAML](wiki/Modelagem-Visual-MainWindow-XAML.md)**
-- ⚙️ **[Template da Roda e Parametrização Gráfica](wiki/ControlTemplate-e-Rodas.md)**
-- 📐 **[Cinemática Analítica do Mecanismo Biela-Manivela](wiki/Cinematica-Analitica-e-Bielas.md)**
-- 💨 **[Animações Declarativas e Efeito de Vapor](wiki/Animacoes-Storyboard-e-Particulas.md)**
-- 🛡️ **[Padrões de Qualidade, SonarQube e EditorConfig](wiki/Qualidade-SonarQube-e-EditorConfig.md)**
-- 📚 **[Referências Oficiais do Microsoft Learn](wiki/Referencias-Oficiais-Microsoft-Learn.md)**
+- 📑 **[Home / Índice Geral](https://github.com/Gabriel-Freitas-S/PI_T1/wiki)**
+- 🏛️ **[1. Arquitetura e Princípios de Transformação Afim](https://github.com/Gabriel-Freitas-S/PI_T1/wiki/Arquitetura-e-Visao-Geral)**
+- 🎨 **[2. Modelagem Visual e Geometria XAML](https://github.com/Gabriel-Freitas-S/PI_T1/wiki/Modelagem-Visual-MainWindow-XAML)**
+- ⚙️ **[3. Template da Roda e Parametrização Gráfica](https://github.com/Gabriel-Freitas-S/PI_T1/wiki/ControlTemplate-e-Rodas)**
+- 📐 **[4. Cinemática Analítica do Mecanismo Biela-Manivela](https://github.com/Gabriel-Freitas-S/PI_T1/wiki/Cinematica-Analitica-e-Bielas)**
+- 💨 **[5. Animações Declarativas e Efeito de Vapor](https://github.com/Gabriel-Freitas-S/PI_T1/wiki/Animacoes-Storyboard-e-Particulas)**
+- 🛡️ **[6. Padrões de Qualidade, SonarQube e EditorConfig](https://github.com/Gabriel-Freitas-S/PI_T1/wiki/Qualidade-SonarQube-e-EditorConfig)**
+- 📚 **[7. Referências Oficiais do Microsoft Learn](https://github.com/Gabriel-Freitas-S/PI_T1/wiki/Referencias-Oficiais-Microsoft-Learn)**
 
 ---
 

@@ -1,6 +1,6 @@
 # ⚙️ ControlTemplate e Parametrização de Rodas
 
-Neste capítulo, detalha-se a arquitetura e a geometria do `ControlTemplate` utilizado para modelar as rodas da locomotiva, atendendo ao requisito normativo do **[Trabalho C1.md](../Trabalho/Trabalho%20C1.md#L36)** e reproduzindo o padrão de projeto ensinado em sala de aula (**[Slide 2D.md:258-299](../Slide/2D.md#L258-L299)**).
+Neste capítulo, detalha-se a arquitetura e a geometria do `ControlTemplate` utilizado para modelar as rodas da locomotiva, atendendo ao requisito normativo do **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md#L36)** e reproduzindo o padrão de projeto ensinado em sala de aula (**[Slide 2D:258-299](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Slide/2D.md#L258-L299)**).
 
 ---
 

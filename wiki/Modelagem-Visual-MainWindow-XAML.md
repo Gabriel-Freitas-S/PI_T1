@@ -1,6 +1,6 @@
 # 🎨 Modelagem Visual e Geometria XAML
 
-Este capítulo detalha a construção geométrica de todas as partes da locomotiva a vapor em [`MainWindow.xaml`](../MainWindow.xaml), demonstrando como cada componente foi modelado a partir de primitivas vetoriais na origem canônica $(0,0)$ e transformado via `RenderTransform`.
+Este capítulo detalha a construção geométrica de todas as partes da locomotiva a vapor em [`MainWindow.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml), demonstrando como cada componente foi modelado a partir de primitivas vetoriais na origem canônica $(0,0)$ e transformado via `RenderTransform`.
 
 ---
 

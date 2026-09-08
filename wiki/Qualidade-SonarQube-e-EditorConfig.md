@@ -44,7 +44,7 @@ A auditoria executada retornou **apvação total (PASSED)** em todas as métrica
 
 ## 2. Padronização com `.editorconfig`
 
-Para assegurar consistência tipográfica em diferentes ambientes de desenvolvimento (Visual Studio, VS Code, Rider, CLI), foi estabelecido o arquivo [`.editorconfig`](../.editorconfig) na raiz do projeto:
+Para assegurar consistência tipográfica em diferentes ambientes de desenvolvimento (Visual Studio, VS Code, Rider, CLI), foi estabelecido o arquivo [`.editorconfig`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/.editorconfig) na raiz do projeto:
 
 ```ini
 root = true
@@ -73,7 +73,7 @@ indent_size = 2
 
 ## 3. Padrão Semântico: Better Comments Next
 
-Todos os comentários nos arquivos C# ([`MainWindow.xaml.cs`](../MainWindow.xaml.cs)) e XAML ([`MainWindow.xaml`](../MainWindow.xaml)) foram padronizados de acordo com a extensão **Better Comments Next**, configurada no arquivo [`.vscode/settings.json`](../.vscode/settings.json).
+Todos os comentários nos arquivos C# ([`MainWindow.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml.cs)) e XAML ([`MainWindow.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml)) foram padronizados de acordo com a extensão **Better Comments Next**, configurada no arquivo [`.vscode/settings.json`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/.vscode/settings.json).
 
 ### Paleta Semântica e Convenção de Prefíxos:
 

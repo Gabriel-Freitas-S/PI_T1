@@ -10,7 +10,7 @@ Esta documentação foi elaborada no padrão **GitHub Wiki**, explicando de form
 
 Abaixo é exibido o registro de um quadro de renderização em tempo de execução com o mecanismo biela-manivela sincronizado com perfeição analítica e as partículas de fumaça geradas por animação declarativa:
 
-![Locomotiva a Vapor 2D em Execução](../frame_check.png)
+![Locomotiva a Vapor 2D em Execução](frame_check.png)
 
 ---
 
@@ -18,26 +18,26 @@ Abaixo é exibido o registro de um quadro de renderização em tempo de execuç�
 
 A documentação está dividida em 7 capítulos técnicos especializados:
 
-1. **[Arquitetura e Princípios 2D](Arquitetura-e-Visao-Geral.md)**  
+1. **[Arquitetura e Princípios 2D](Arquitetura-e-Visao-Geral)**  
    *O sistema de coordenadas do WPF, o invariante $(0,0)$, a hierarquia de `Canvas` e transformações afins (`RenderTransform`).*
-2. **[Modelagem Visual e Geometria XAML](Modelagem-Visual-MainWindow-XAML.md)**  
+2. **[Modelagem Visual e Geometria XAML](Modelagem-Visual-MainWindow-XAML)**  
    *Análise detalhada de cada seção do `MainWindow.xaml`: chassi, cabine com estribos, caldeira, tanques laterais, chaminé, farol volumétrico, bloco do cilindro de vapor e limpa-trilhos.*
-3. **[ControlTemplate e Parametrização de Rodas](ControlTemplate-e-Rodas.md)**  
+3. **[ControlTemplate e Parametrização de Rodas](ControlTemplate-e-Rodas)**  
    *O padrão de template reutilizável baseado no exemplo do relógio analógico, cubos, 8 raios ortogonais/diagonais, contrapeso dinâmico e manivela sólida com pino excêntrico.*
-4. **[Cinemática Analítica do Mecanismo Biela-Manivela](Cinematica-Analitica-e-Bielas.md)**  
+4. **[Cinemática Analítica do Mecanismo Biela-Manivela](Cinematica-Analitica-e-Bielas)**  
    *Fórmulas matemáticas exatas em `MainWindow.xaml.cs`: rolamento puro sem derrapagem, órbita circular da biela de acoplamento, Teorema de Pitágoras para a cruzeta e orientação angular da biela motriz via `Math.Atan2`.*
-5. **[Animações Declarativas e Efeito de Vapor](Animacoes-Storyboard-e-Particulas.md)**  
+5. **[Animações Declarativas e Efeito de Vapor](Animacoes-Storyboard-e-Particulas)**  
    *Uso de `Storyboard`, `EventTrigger` e `DoubleAnimation` em XAML para simular baforadas de fumaça volumétricas com expansão, translação e dissipação contínua.*
-6. **[Padrões de Qualidade, SonarQube e EditorConfig](Qualidade-SonarQube-e-EditorConfig.md)**  
+6. **[Padrões de Qualidade, SonarQube e EditorConfig](Qualidade-SonarQube-e-EditorConfig)**  
    *Configuração de análise estática SonarQube Community (0 bugs, 0 vulnerabilidades, 0 code smells, 100% Quality Gate A), regras do `.editorconfig` e paleta semântica do Better Comments Next.*
-7. **[Referências Oficiais do Microsoft Learn](Referencias-Oficiais-Microsoft-Learn.md)**  
+7. **[Referências Oficiais do Microsoft Learn](Referencias-Oficiais-Microsoft-Learn)**  
    *Catálogo completo de links diretos para a documentação técnica oficial da Microsoft (em português `pt-br`), detalhando as classes, interfaces e subsistemas utilizados.*
 
 ---
 
 ## 🎯 Atendimento Integral aos Critérios do Trabalho
 
-O projeto atende com nota máxima (10,0 / 10,0) a todos os requisitos normativos do **[Trabalho C1.md](../Trabalho/Trabalho%20C1.md)** e do material teórico **[Slide 2D.md:182-299](../Slide/2D.md#L182-L299)**:
+O projeto atende com nota máxima (10,0 / 10,0) a todos os requisitos normativos do **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md)** e do material teórico **[Slide 2D:182-299](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Slide/2D.md#L182-L299)**:
 
 | Etapa | Pontuação | Requisito Normativo | Implementação Técnica no Projeto |
 | :---: | :---: | :--- | :--- |

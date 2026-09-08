@@ -1,6 +1,6 @@
 # 📐 Cinemática Analítica do Mecanismo Biela-Manivela
 
-Neste capítulo, explora-se a modelagem matemática exata implementada no arquivo [`MainWindow.xaml.cs`](../MainWindow.xaml.cs), que atende aos requisitos de sincronismo mecânico do **[Trabalho C1.md](../Trabalho/Trabalho%20C1.md#L48)** (Etapa 3 - 8,0 pontos e Etapa 4 - 10,0 pontos).
+Neste capítulo, explora-se a modelagem matemática exata implementada no arquivo [`MainWindow.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml.cs), que atende aos requisitos de sincronismo mecânico do **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md#L48)** (Etapa 3 - 8,0 pontos e Etapa 4 - 10,0 pontos).
 
 ---
 

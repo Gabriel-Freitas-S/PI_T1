@@ -21,7 +21,7 @@ Diferente de sistemas gráficos clássicos de desenho por pixels brutos (como GD
 
 ## 2. O Princípio Invariante da Origem $(0,0)$
 
-Um dos requisitos mandatórios estipulados no enunciado acadêmico **[Trabalho C1.md](../Trabalho/Trabalho%20C1.md#L32)** e demonstrado nos slides da disciplina (**[Slide 2D.md:182-299](../Slide/2D.md#L182-L299)**) é:
+Um dos requisitos mandatórios estipulados no enunciado acadêmico **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md#L32)** e demonstrado nos slides da disciplina (**[Slide 2D:182-299](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Slide/2D.md#L182-L299)**) é:
 
 > *"Os elementos que compõem o corpo e as rodas devem ser desenhados na origem (0,0) e posicionados utilizando RenderTransform."*
 
