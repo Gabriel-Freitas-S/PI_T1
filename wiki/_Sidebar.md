@@ -24,6 +24,7 @@
 - [`App.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/App.xaml)
 - [`App.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/App.xaml.cs)
 - [`PI_T1.csproj`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/PI_T1.csproj)
+- [`generate_gif.ps1`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/generate_gif.ps1)
 - [`.editorconfig`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/.editorconfig)
 - [`sonar-project.properties`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/sonar-project.properties)
 

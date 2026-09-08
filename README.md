@@ -11,9 +11,9 @@ Aplicação gráfica interativa desenvolvida em **C# / .NET 10** utilizando o su
 
 ## 🚂 Demonstração Visual
 
-Abaixo está o registro da execução com o mecanismo biela-manivela e o conjunto de rodas e cilindro operando com sincronismo analítico exato:
+Abaixo está o registro animado em tempo de execução com o mecanismo biela-manivela, cilindro com oclusão mecânica da haste do pistão e travessia contínua em loop operando com sincronismo analítico exato:
 
-![Locomotiva a Vapor 2D em WPF](frame_check.png)
+![Locomotiva a Vapor 2D em WPF (Loop Contínuo)](locomotiva.gif)
 
 ---
 
@@ -69,20 +69,22 @@ PI_T1/
 ├── .vscode/
 │   └── settings.json          # Configuração do Better Comments Next e SonarLint
 ├── App.xaml                   # Definição do aplicativo WPF e MergedDictionaries
-├── App.xaml.cs                # Code-behind do ciclo de vida da aplicação
+├── App.xaml.cs                # Code-behind do ciclo de vida e comandos CLI (--record-frames, --screenshot)
 ├── Controls/                  # Controles Visuais Autônomos e Reutilizáveis
 │   ├── LocomotivaControl.xaml # UserControl com a modelagem vetorial e fumaça da locomotiva
-│   └── LocomotivaControl.xaml.cs # Code-behind com o método AtualizarEstado(estado)
-├── MainWindow.xaml            # Janela principal enxuta (~70 linhas), cenário Edge-to-Edge e trilhos
-├── MainWindow.xaml.cs         # View orquestradora minimalista (~45 linhas, CompositionTarget.Rendering)
+│   └── LocomotivaControl.xaml.cs # Code-behind com o método AtualizarEstado(estado) e AtualizarFumaca(t)
+├── MainWindow.xaml            # Janela principal enxuta (~68 linhas), cabeçalho minimalista e trilhos
+├── MainWindow.xaml.cs         # View orquestradora ultra-minimalista (~40 linhas, CompositionTarget.Rendering)
 ├── Models/                    # Camada de Modelo e Cinemática Analítica Pura
 │   ├── LocomotivaFrameState.cs # DTO/Record imutável com as coordenadas e rotações do quadro
-│   └── LocomotivaKinematics.cs # Motor analítico de física, trigonometria e cálculo mecânico
+│   └── LocomotivaKinematics.cs # Motor analítico de física, rolamento monotônico e circuito contínuo
 ├── Resources/                 # Dicionários de Recursos e Templates XAML
 │   └── LocomotivaResources.xaml # ResourceDictionary com RodaTemplate, MancalBielaTemplate e Brushes
 ├── PI_T1.csproj               # Arquivo de projeto SDK .NET 10 (net10.0-windows, UseWPF=true)
 ├── sonar-project.properties   # Configuração de análise estática SonarQube
-├── frame_check.png            # Captura de tela da validação mecânica
+├── generate_gif.ps1           # Script PowerShell para geração automática do GIF animado com FFmpeg
+├── locomotiva.gif             # Demonstração animada da locomotiva em circuito contínuo
+├── frame_check.png            # Captura estática de validação mecânica
 ├── Slide/                     # Material de aula (Transformações 2D e padrão do relógio)
 ├── Trabalho/                  # Enunciado acadêmico e critérios avaliativos da disciplina
 └── wiki/                      # Documentação completa padrão GitHub Wiki
@@ -95,7 +97,8 @@ PI_T1/
     ├── Qualidade-SonarQube-e-EditorConfig.md
     ├── Referencias-Oficiais-Microsoft-Learn.md
     ├── _Sidebar.md            # Barra lateral de navegação da Wiki
-    └── _Footer.md             # Rodapé da Wiki
+    ├── _Footer.md             # Rodapé da Wiki
+    └── locomotiva.gif         # GIF animado para exibição na Wiki
 ```
 
 ---
@@ -104,17 +107,21 @@ PI_T1/
 
 ### Pré-requisitos
 - **[.NET 10 SDK](https://dotnet.microsoft.com/download)** (ou superior) instalado no Windows.
+- **[FFmpeg](https://ffmpeg.org/)** (opcional, para geração automatizada do GIF animado).
 
 ### Compilação e Execução
 
 Clone ou acesse a pasta raiz do projeto no terminal e execute:
 
 ```powershell
-# Restaurar dependências e compilar a aplicação
+# 1. Restaurar dependências e compilar a aplicação
 dotnet build
 
-# Executar a aplicação interativa
+# 2. Executar a aplicação interativa
 dotnet run
+
+# 3. Gerar automaticamente o GIF animado da locomotiva (requer FFmpeg)
+.\generate_gif.ps1
 ```
 
 ---

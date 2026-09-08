@@ -8,9 +8,9 @@ Esta documentação foi elaborada no padrão **GitHub Wiki**, explicando de form
 
 ## 📸 Demonstração do Projeto
 
-Abaixo é exibido o registro de um quadro de renderização em tempo de execução com o mecanismo biela-manivela sincronizado com perfeição analítica e as partículas de fumaça geradas por animação declarativa:
+Abaixo é exibido o registro animado em tempo de execução com o mecanismo biela-manivela sincronizado com perfeição analítica, oclusão dinâmica do cilindro de vapor e travessia contínua em loop:
 
-![Locomotiva a Vapor 2D em Execução](frame_check.png)
+![Locomotiva a Vapor 2D em Execução](locomotiva.gif)
 
 ---
 
