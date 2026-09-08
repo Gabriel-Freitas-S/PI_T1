@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:PI_T1"
              StartupUri="MainWindow.xaml">
-    <!-- # ===================================================================== -->
-    <!-- # DEFINIÇÃO DA APLICAÇÃO WPF                                            -->
-    <!-- # ===================================================================== -->
-    <!-- * StartupUri inicializa a janela principal da locomotiva 2D             -->
+    <!--# ===================================================================== -->
+    <!--# DEFINIÇÃO DA APLICAÇÃO WPF                                            -->
+    <!--# ===================================================================== -->
+    <!--* StartupUri inicializa a janela principal da locomotiva 2D             -->
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

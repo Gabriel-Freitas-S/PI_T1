@@ -8,16 +8,16 @@
         WindowStartupLocation="CenterScreen"
         Background="#1B2631">
 
-    <!-- # ========================================================================= -->
-    <!-- # FONTES NORMATIVAS E ESPECIFICAÇÕES DO TRABALHO                            -->
-    <!-- # ========================================================================= -->
-    <!-- * Trabalho C1.md:32 — Corpo e rodas desenhados em (0,0) com RenderTransform -->
-    <!-- * Trabalho C1.md:40 — Agrupamento completo em Canvas com RotateTransform e TranslateTransform -->
-    <!-- * Trabalho C1.md:48 — Mecanismo de bielas acopladas com combinação de transformações afins -->
-    <!-- * Trabalho C1.md:54 — Movimento horizontal vai-e-volta contínuo nos limites da janela -->
-    <!-- * Slide 2D.md:225-299 — Padrão do relógio analógico: Canvas e ControlTemplate em Resources -->
-    <!-- * Microsoft Learn: https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview -->
-    <!-- ! INVARIANTE: Todas as primitivas gráficas partem de (0,0) e usam transformações afins! -->
+    <!--# ========================================================================= -->
+    <!--# FONTES NORMATIVAS E ESPECIFICAÇÕES DO TRABALHO                            -->
+    <!--# ========================================================================= -->
+    <!--* Trabalho C1.md:32 — Corpo e rodas desenhados em (0,0) com RenderTransform -->
+    <!--* Trabalho C1.md:40 — Agrupamento completo em Canvas com RotateTransform e TranslateTransform -->
+    <!--* Trabalho C1.md:48 — Mecanismo de bielas acopladas com combinação de transformações afins -->
+    <!--* Trabalho C1.md:54 — Movimento horizontal vai-e-volta contínuo nos limites da janela -->
+    <!--* Slide 2D.md:225-299 — Padrão do relógio analógico: Canvas e ControlTemplate em Resources -->
+    <!--* Microsoft Learn: https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview -->
+    <!--! INVARIANTE: Todas as primitivas gráficas partem de (0,0) e usam transformações afins! -->
 
     <Grid>
         <Grid.RowDefinitions>
@@ -26,7 +26,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- # PAINEL SUPERIOR INFORMATIVO -->
+        <!--# PAINEL SUPERIOR INFORMATIVO -->
         <Border Grid.Row="0" Height="48" Background="#17202A" BorderBrush="#2C3E50" BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,20,0">
                 <TextBlock Text="PROCESSO DE IMAGENS — TRABALHO C1: LOCOMOTIVA A VAPOR 2D" Foreground="#ECF0F1" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"/>
@@ -34,7 +34,7 @@
             </StackPanel>
         </Border>
 
-        <!-- # CANVAS PRINCIPAL DO CENÁRIO (Edge-to-Edge sem bordas laterais ou verticais) -->
+        <!--# CANVAS PRINCIPAL DO CENÁRIO (Edge-to-Edge sem bordas laterais ou verticais) -->
         <Canvas x:Name="CenarioCanvas" Grid.Row="1" ClipToBounds="True">
             <Canvas.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -45,28 +45,28 @@
                 </LinearGradientBrush>
             </Canvas.Background>
 
-            <!-- # ===================================================================== -->
-            <!-- # CENÁRIO: TRILHOS DE AÇO E LASTRO DE BRITA ESTENDIDOS (Edge-to-Edge)   -->
-            <!-- # ===================================================================== -->
+            <!--# ===================================================================== -->
+            <!--# CENÁRIO: TRILHOS DE AÇO E LASTRO DE BRITA ESTENDIDOS (Edge-to-Edge)   -->
+            <!--# ===================================================================== -->
             <Canvas>
                 <Canvas.RenderTransform>
                     <TranslateTransform X="-700" Y="405"/>
                 </Canvas.RenderTransform>
-                <!-- Solo inferior preenchendo solidamente até o rodapé sem vazamentos -->
+                <!--* Solo inferior preenchendo solidamente até o rodapé sem vazamentos -->
                 <Rectangle Width="4000" Height="250" Fill="#17202A"/>
-                <!-- Lastro de brita -->
+                <!--* Lastro de brita -->
                 <Rectangle Width="4000" Height="30" Fill="#283747">
                     <Rectangle.RenderTransform>
                         <TranslateTransform X="0" Y="6"/>
                     </Rectangle.RenderTransform>
                 </Rectangle>
-                <!-- Base do Trilho -->
+                <!--* Base do Trilho -->
                 <Rectangle Width="4000" Height="10" Fill="#11171E">
                     <Rectangle.RenderTransform>
                         <TranslateTransform X="0" Y="6"/>
                     </Rectangle.RenderTransform>
                 </Rectangle>
-                <!-- Trilho Superior de Aço Cromado (tangente exata à roda em Y=405) -->
+                <!--* Trilho Superior de Aço Cromado (tangente exata à roda em Y=405) -->
                 <Rectangle Width="4000" Height="6" Fill="#BDC3C7" Stroke="#7F8C8D" StrokeThickness="1">
                     <Rectangle.RenderTransform>
                         <TranslateTransform X="0" Y="0"/>
@@ -74,14 +74,14 @@
                 </Rectangle>
             </Canvas>
 
-            <!-- # ===================================================================== -->
-            <!-- # CONTROLE AUTÔNOMO DA LOCOMOTIVA A VAPOR 2D (Controls/LocomotivaControl) -->
-            <!-- # ===================================================================== -->
+            <!--# ===================================================================== -->
+            <!--# CONTROLE AUTÔNOMO DA LOCOMOTIVA A VAPOR 2D (Controls/LocomotivaControl) -->
+            <!--# ===================================================================== -->
             <controls:LocomotivaControl x:Name="Locomotiva"/>
 
         </Canvas>
 
-        <!-- # BARRA INFERIOR DE STATUS -->
+        <!--# BARRA INFERIOR DE STATUS -->
         <Border Grid.Row="2" Height="36" Background="#11171E" BorderBrush="#2C3E50" BorderThickness="0,1,0,0">
             <Grid Margin="20,0,20,0">
                 <TextBlock Text="Trajetória contínua em loop: entra pela esquerda, cruza o cenário e sai pela direita em circuito infinito." Foreground="#BDC3C7" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left"/>
