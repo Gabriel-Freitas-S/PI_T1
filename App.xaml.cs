@@ -7,10 +7,10 @@ namespace PI_T1;
 /// </summary>
 public partial class App : Application
 {
-    // # =======================================================================
-    // # PONTO DE ENTRADA DO APLICATIVO
-    // # =======================================================================
-    // * Gerenciado pelo ciclo de vida padrão do Application do WPF (.NET 10)
+    //# =======================================================================
+    //# PONTO DE ENTRADA DO APLICATIVO
+    //# =======================================================================
+    //* Gerenciado pelo ciclo de vida padrão do Application do WPF (.NET 10)
 
     protected override void OnStartup(StartupEventArgs e)
     {

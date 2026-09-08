@@ -22,15 +22,15 @@ public partial class LocomotivaControl : UserControl
     /// <param name="estado">Estado imutável contendo coordenadas e rotações do quadro atual.</param>
     public void AtualizarEstado(in LocomotivaFrameState estado)
     {
-        // 1. Rotação das rodas sob o chassi
+        //* 1. Rotação das rodas sob o chassi
         RotacaoRoda1.Angle = estado.AnguloRodas;
         RotacaoRoda2.Angle = estado.AnguloRodas;
 
-        // 2. Translação da biela de acoplamento horizontal (side rod)
+        //* 2. Translação da biela de acoplamento horizontal (side rod)
         TranslacaoBielaAcoplamento.X = estado.BielaAcoplamentoX;
         TranslacaoBielaAcoplamento.Y = estado.BielaAcoplamentoY;
 
-        // 3. Cruzeta deslizante e componentes do pistão
+        //* 3. Cruzeta deslizante e componentes do pistão
         TranslacaoCruzeta.X = estado.CruzetaX;
         TranslacaoCruzeta.Y = estado.CruzetaY;
 
@@ -40,12 +40,12 @@ public partial class LocomotivaControl : UserControl
         TranslacaoHastePistao.X = estado.HastePistaoX;
         TranslacaoHastePistao.Y = estado.HastePistaoY;
 
-        // 4. Biela motriz articulada (translação + rotação analítica)
+        //* 4. Biela motriz articulada (translação + rotação analítica)
         TranslacaoBielaMotriz.X = estado.BielaMotrizX;
         TranslacaoBielaMotriz.Y = estado.BielaMotrizY;
         RotacaoBielaMotriz.Angle = estado.BielaMotrizAngulo;
 
-        // 5. Translação global do Canvas da locomotiva através da tela
+        //* 5. Translação global do Canvas da locomotiva através da tela
         TranslacaoLocomotiva.X = estado.LocomotivaX;
     }
 
@@ -55,7 +55,7 @@ public partial class LocomotivaControl : UserControl
     /// <param name="tempo">Tempo decorrido em segundos.</param>
     public void AtualizarFumaca(double tempo)
     {
-        // Baforada 1 (período 1.5s)
+        //* Baforada 1 (período 1.5s)
         double p1 = (tempo % 1.5) / 1.5;
         TranslacaoFumaca1.Y = 40.0 - 80.0 * p1;
         TranslacaoFumaca1.X = 395.0 - 75.0 * p1;
@@ -64,7 +64,7 @@ public partial class LocomotivaControl : UserControl
         EscalaFumaca1.ScaleY = s1;
         Fumaca1.Opacity = 0.8 * (1.0 - p1);
 
-        // Baforada 2 (período 1.8s, defasagem 0.5s)
+        //* Baforada 2 (período 1.8s, defasagem 0.5s)
         double t2 = (tempo + 1.3) % 1.8;
         double p2 = t2 / 1.8;
         TranslacaoFumaca2.Y = 40.0 - 90.0 * p2;
@@ -74,7 +74,7 @@ public partial class LocomotivaControl : UserControl
         EscalaFumaca2.ScaleY = s2;
         Fumaca2.Opacity = 0.7 * (1.0 - p2);
 
-        // Baforada 3 (período 2.0s, defasagem 1.0s)
+        //* Baforada 3 (período 2.0s, defasagem 1.0s)
         double t3 = (tempo + 1.0) % 2.0;
         double p3 = t3 / 2.0;
         TranslacaoFumaca3.Y = 40.0 - 100.0 * p3;

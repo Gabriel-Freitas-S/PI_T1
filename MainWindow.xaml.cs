@@ -23,9 +23,9 @@ namespace PI_T1;
 /// </summary>
 public partial class MainWindow : Window
 {
-    // # =======================================================================
-    // # ESTADO, TEMPORIZAÇÃO E MOTOR CINEMÁTICO
-    // # =======================================================================
+    //# =======================================================================
+    //# ESTADO, TEMPORIZAÇÃO E MOTOR CINEMÁTICO
+    //# =======================================================================
     private readonly Stopwatch _cronometro = new();
     private readonly LocomotivaKinematics _kinematics = new();
 
@@ -33,9 +33,9 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        // # ===================================================================
-        // # CICLO DE VIDA: ASSOCIAÇÃO AO RENDER TARGET DO WPF
-        // # ===================================================================
+        //# ===================================================================
+        //# CICLO DE VIDA: ASSOCIAÇÃO AO RENDER TARGET DO WPF
+        //# ===================================================================
         Loaded += (_, _) =>
         {
             _kinematics.Reset();
