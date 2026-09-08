@@ -65,7 +65,6 @@ artifacts/
 # ------------------------------------------------------------------------------
 # 5. Arquivos Temporários do Projeto e Capturas Locais
 # ------------------------------------------------------------------------------
-frame_check.png
 screenshot_actual.png
 temp_slide_img/
 *.tmp
