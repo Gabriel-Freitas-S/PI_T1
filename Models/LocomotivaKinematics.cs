@@ -4,12 +4,13 @@ namespace PI_T1.Models;
 /// Motor de cinemática mecânica e física analítica da locomotiva a vapor 2D.
 ///
 /// Classe pura em C#, sem dependência direta do subsistema gráfico do WPF,
-/// responsável por calcular o movimento contínuo da locomotiva, o rolamento puro
-/// sem deslizamento das rodas e a decomposição trigonométrica exata do sistema
-/// biela-manivela e cruzeta deslizante a cada quadro.
+/// responsável por calcular o movimento contínuo da locomotiva em circuito de túnel infinito
+/// (entra pela esquerda, cruza toda a janela e sai pela direita), o rolamento puro sem
+/// deslizamento das rodas e a decomposição trigonométrica exata do sistema biela-manivela
+/// e cruzeta deslizante a cada quadro.
 ///
 /// Normas de referência:
-/// - Trabalho C1.md:40-56 (Cinemática contínua, bielas sincronizadas e limites de janela)
+/// - Trabalho C1.md:40-56 (Cinemática contínua e bielas sincronizadas)
 /// - Slide 2D.md:225-299 (Transformações afins 2D e padrão do relógio)
 /// </summary>
 public class LocomotivaKinematics
@@ -20,62 +21,49 @@ public class LocomotivaKinematics
     public const double RaioRoda = 40.0;               // * Raio primitivo da roda (diâmetro 80px)
     public const double RaioManivela = 22.0;           // * Raio do pino excêntrico da manivela
     public const double ComprimentoBielaMotriz = 82.0; // * Distância entre centros dos olhais (L = 82px)
+    public const double LarguraLocomotiva = 560.0;     // * Extensão total do bloco da locomotiva com para-choques
 
     // * Posicionamento no Canvas da Locomotiva:
     public const double CentroRoda1X = 130.0;          // * Centro da Roda 1 (traseira) no Canvas
     public const double CentroRoda2X = 270.0;          // * Centro da Roda 2 (dianteira) no Canvas
     public const double CentroRodasY = 210.0;          // * Altura do eixo das rodas e da cruzeta (Y = 210px)
 
-    // * Ciclo Global e Limites de Janela (Trabalho C1.md:54):
-    public const double DuracaoCiclo = 14.0;           // * Duração total do ciclo completo (ida e volta em segundos)
-    public const double LimiteEsquerdo = -100.0;       // * Limite esquerdo da janela
-    public const double LimiteDireito = 540.0;         // * Limite direito da janela
-
-    // # =======================================================================
-    // # ESTADO DINÂMICO INTERNO
-    // # =======================================================================
-    private double _xLocoAnterior = LimiteEsquerdo;
-    private double _anguloRodaAcumulado = 0.0;
+    // * Parâmetros do Loop Contínuo:
+    public const double DuracaoLoopContinuo = 11.0;     // * Duração da travessia completa em segundos (~150 px/s)
 
     /// <summary>
-    /// Reinicia o estado dinâmico da locomotiva.
+    /// Reinicia o estado dinâmico da locomotiva (se necessário).
     /// </summary>
-    /// <param name="xInicial">Posição horizontal inicial no cenário.</param>
-    public void Reset(double xInicial = LimiteEsquerdo)
+    public void Reset()
     {
-        _xLocoAnterior = xInicial;
-        _anguloRodaAcumulado = 0.0;
+        // Estado puramente determinístico baseado em tempo contínuo
     }
 
     /// <summary>
     /// Calcula a cinemática física analítica para o instante de tempo informado.
+    /// A locomotiva começa oculta à esquerda (X = -560), cruza toda a largura até sair
+    /// à direita (X = larguraCenario) e reaparece em loop contínuo infinito.
     /// </summary>
     /// <param name="segundos">Tempo total decorrido em segundos desde o início da simulação.</param>
+    /// <param name="larguraCenario">Largura atual visível do cenário (para travessia dinâmica completa).</param>
     /// <returns>Estrutura imutável com todos os valores posicionais e angulares calculados.</returns>
-    public LocomotivaFrameState CalcularQuadro(double segundos)
+    public LocomotivaFrameState CalcularQuadro(double segundos, double larguraCenario = 1100.0)
     {
         // # ===================================================================
-        // # ETAPA 1: MOVIMENTO HORIZONTAL CONTÍNUO (VAI-E-VOLTA SUAVE)
+        // # ETAPA 1 & 2: TRANSLACAO HORIZONTAL EM LOOP CONTÍNUO E ROTAÇÃO DAS RODAS
         // # ===================================================================
-        // * Conforme Trabalho C1.md:54 — translação completa nos limites da janela
-        // ? Fórmula harmônica suave: progresso = (1 - cos(2 * PI * tau)) / 2
-        // ? Garante aceleração e frenagem progressivas e naturais nos pontos de retorno.
-        double tau = (segundos % DuracaoCiclo) / DuracaoCiclo; // [0, 1)
-        double progressoSuave = (1.0 - Math.Cos(tau * 2.0 * Math.PI)) / 2.0; // [0, 1]
-        double amplitude = LimiteDireito - LimiteEsquerdo;
-        double xLocoAtual = LimiteEsquerdo + amplitude * progressoSuave;
+        double xEntrada = -LarguraLocomotiva;
+        double xSaida = larguraCenario > 0 ? larguraCenario : 1100.0;
+        double distanciaTotal = xSaida - xEntrada;
+        double velocidade = distanciaTotal / DuracaoLoopContinuo;
 
-        // # ===================================================================
-        // # ETAPA 2: ROLAMENTO PURO DAS RODAS SEM DESLIZAMENTO
-        // # ===================================================================
-        // * Princípio da Dinâmica: distância percorrida = raio * ângulo radiano (s = R * theta)
-        // ? deltaAngulo = (deltaX / RaioRoda) * (180 / PI)
-        double deltaX = xLocoAtual - _xLocoAnterior;
-        _xLocoAnterior = xLocoAtual;
-        double deltaAnguloGraus = (deltaX / RaioRoda) * (180.0 / Math.PI);
-        _anguloRodaAcumulado += deltaAnguloGraus;
+        double distanciaPercorrida = velocidade * segundos;
+        double progressoNoCiclo = distanciaPercorrida % distanciaTotal;
+        double xLocoAtual = xEntrada + progressoNoCiclo;
 
-        double theta = _anguloRodaAcumulado;
+        // * Rotação pura e contínua sem saltos ou reversões (s = R * theta):
+        double theta = (distanciaPercorrida / RaioRoda) * (180.0 / Math.PI);
+
         double rad = theta * (Math.PI / 180.0);
 
         // # ===================================================================

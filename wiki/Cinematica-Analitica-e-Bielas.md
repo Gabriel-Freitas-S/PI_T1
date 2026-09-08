@@ -25,36 +25,56 @@ LocomotivaFrameState estado = _kinematics.CalcularQuadro(segundos);
 
 ---
 
-## 2. Etapa 1: Movimento Harmônico de Vai-e-Volta Suave
+## 2. Etapa 1: Translação Horizontal Contínua em Circuito de Túnel Infinito
 
-Para atender ao critério de movimento contínuo entre os limites da janela sem reversões bruscas que quebrem a ilusão mecânica, utiliza-se uma função de modulação harmônica cosenoidal com período `T = 14 s`:
+Para atender à experiência de travessia ferroviária contínua solicitada, o motor físico [`Models/LocomotivaKinematics.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaKinematics.cs) opera exclusivamente no modo de **Loop Contínuo (Túnel Ferroviário)**.
 
-```math
-\tau = \frac{t \pmod T}{T} \in [0, 1)
-```
+A locomotiva avança continuamente para a frente em sentido único:
+1. **Ponto de Partida**: Inicia sua trajetória completamente oculta fora da janela à esquerda ($X_{\text{start}} = -560\text{ px}$, correspondendo à largura total do corpo da locomotiva).
+2. **Travessia Completa**: Percorre toda a extensão visível do cenário ferroviário sobre os trilhos contínuos.
+3. **Ponto de Saída**: Ultrapassa e desaparece completamente pela margem direita ($X_{\text{end}} = \text{larguraCenario}$, capturada dinamicamente de `CenarioCanvas.ActualWidth`).
+4. **Reentrada Instantânea**: No exato instante em que o último milímetro do chassi sai pela direita, a locomotiva reaparece na extrema esquerda, simulando um circuito fechado de túnel contínuo.
 
-O progresso normalizado suave `P(\tau)` é obtido por:
+### Modelagem Matemática da Posição Instantânea:
 
-```math
-P(\tau) = \frac{1 - \cos(2\pi \tau)}{2} \in [0, 1]
-```
-
-A posição horizontal instantânea da locomotiva `x_loco(t)` é dada por:
+A distância total percorrida por ciclo de travessia é:
 
 ```math
-x_{\text{loco}}(t) = X_{\text{min}} + (X_{\text{max}} - X_{\text{min}}) \cdot P(\tau)
+\text{distanciaTotal} = \text{larguraCenario} - X_{\text{start}} = \text{larguraCenario} + 560\text{ px}
 ```
 
-Onde `X_min = -100 px` e `X_max = 540 px`.
-
-### Propriedades Físicas da Função Harmônica:
-- **Velocidade nos Extremos**: A derivada temporal da posição é:
+Com velocidade escalar constante $v$ calibrada para uma duração de ciclo $T = 11.0\text{ s}$:
 
 ```math
-v(t) = \frac{dx}{dt} = \frac{(X_{\text{max}} - X_{\text{min}})\pi}{T} \sin(2\pi\tau)
+v = \frac{\text{distanciaTotal}}{T} \approx \frac{1660\text{ px}}{11.0\text{ s}} \approx 150.91\text{ px/s}
 ```
 
-Nos instantes `\tau = 0` (extremo esquerdo) e `\tau = 0.5` (extremo direito), `\sin(2\pi\tau) = 0 \implies v = 0`. A locomotiva **desacelera suavemente até parar**, inverte a marcha e reacelera progressivamente, eliminando trancos.
+A cada quadro, a distância total percorrida $s(t)$ e o progresso normalizado no ciclo $u(t) \in [0, 1)$ são dados por:
+
+```math
+s(t) = v \cdot t
+```
+
+```math
+u(t) = \frac{t \pmod T}{T}
+```
+
+A posição horizontal instantânea do trem no `LocomotivaCanvas` é:
+
+```math
+x_{\text{loco}}(t) = X_{\text{start}} + \text{distanciaTotal} \cdot u(t)
+```
+
+### Rolamento Monotônico Contínuo sem Saltos Angulares:
+
+Como o trem desloca-se em sentido único progressivo, a rotação acumulada das rodas $\theta(t)$ é calculada com base na distância temporal total $s(t)$, acoplada ao raio primitivo $R_{\text{roda}} = 40\text{ px}$:
+
+```math
+\theta(t) = \left(\frac{v \cdot t}{R_{\text{roda}}}\right) \cdot \left(\frac{180}{\pi}\right)
+```
+
+> [!TIP]
+> Por ser derivada diretamente da função contínua do tempo $s(t)$, a rotação angular $\theta(t)$ cresce monotonicamente sem qualquer salto angular, tranco ou quebra de fase quando o trem reentra pela esquerda, mantendo o movimento mecânico 100% fluido e ininterrupto.
 
 ---
 
@@ -194,6 +214,21 @@ double xCruzeta = pino2X + catetoHorizontal;
 ```
 > [!NOTE]
 > O uso de `Math.Max(0.0, ...)` é uma salvaguarda numérica para evitar raiz quadrada de números negativos em caso de anomalias de ponto flutuante. Como `L = 82 px` e `|ΔY| ≤ 22 px`, temos `L² - ΔY² ≥ 82² - 22² = 6724 - 484 = 6240 > 0`, garantindo que o radical seja sempre positivo.
+
+### 6.2 Curso Dinâmico e Oclusão Mecânica da Haste do Pistão
+A haste cromada do pistão (`Width="75 px"`) conecta a cruzeta móvel ao êmbolo interno do cilindro de vapor. A sua extremidade traseira é solidária à cruzeta:
+
+```csharp
+TranslacaoHastePistao.X = xCruzeta;
+```
+
+- **Curso Operacional da Cruzeta**: Com `L = 82 px` e $r = 22\text{ px}$, $x_{\text{cruzeta}}$ oscila estritamente no intervalo $[330\text{ px}, 374\text{ px}]$ (amplitude de $44\text{ px}$).
+- **Guias da Cruzeta (*Slide Bars*)**: Estendem-se de $X = 318\text{ px}$ até a gaxeta do cilindro em $X = 386\text{ px}$. O curso de $[330, 374]$ mantém uma folga simétrica de segurança de exatamente $12\text{ px}$ em relação ao retentor frontal ($386 - 374 = 12\text{ px}$).
+- **Efeito Visual de Diminuição e Aumento Realista**: Na árvore visual, o bloco do cilindro (iniciado em $X = 390\text{ px}$) e a gaxeta de vedação ($X = 386\text{ px}$) são renderizados **sobrepostos à haste**. Quando as rodas giram:
+  - Na posição de recuo máximo ($\theta = 180^\circ$, $x_{\text{cruzeta}} = 330\text{ px}$): a haste é puxada para fora do cilindro, ficando $47\text{ px}$ de sua extensão visíveis (*aumento*).
+  - Na posição de avanço máximo ($\theta = 0^\circ$, $x_{\text{cruzeta}} = 374\text{ px}$): a haste penetra no corpo do cilindro, restando apenas $3\text{ px}$ visíveis (*diminuição*).
+
+Essa oclusão por camadas no WPF reproduz com perfeição a cinemática industrial de um pistão de locomotiva a vapor real.
 
 ---
 

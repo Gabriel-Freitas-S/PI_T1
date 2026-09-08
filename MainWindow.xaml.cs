@@ -56,7 +56,8 @@ public partial class MainWindow : Window
     /// </summary>
     private void AtualizarQuadroMecanico(object? sender, EventArgs e)
     {
-        LocomotivaFrameState estado = _kinematics.CalcularQuadro(_cronometro.Elapsed.TotalSeconds);
+        double largura = CenarioCanvas.ActualWidth > 0 ? CenarioCanvas.ActualWidth : 1100.0;
+        LocomotivaFrameState estado = _kinematics.CalcularQuadro(_cronometro.Elapsed.TotalSeconds, largura);
         Locomotiva.AtualizarEstado(estado);
     }
 }

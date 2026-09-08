@@ -17,6 +17,7 @@ Abaixo está o catálogo estruturado de referências oficiais em português (`pt
 | **Classe Application** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.application) | Ponto de entrada global da aplicação em `App.xaml` e `App.xaml.cs`. |
 | **Classe Window** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.window) | Janela principal de visualização da locomotiva `MainWindow`. |
 | **Classe UserControl** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.controls.usercontrol) | Encapsulamento modular da locomotiva 2D em `LocomotivaControl`. |
+| **Classe KeyEventArgs** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.input.keyeventargs) | Captura de eventos de teclado na `MainWindow` para alternar modos de movimento. |
 
 ---
 

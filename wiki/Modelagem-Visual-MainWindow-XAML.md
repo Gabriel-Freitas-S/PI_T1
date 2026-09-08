@@ -29,24 +29,24 @@ O `CenarioCanvas` ocupa 100% da área da linha central da janela (`Grid.Row="1"`
 ```xml
 <Canvas>
     <Canvas.RenderTransform>
-        <TranslateTransform X="-200" Y="405"/>
+        <TranslateTransform X="-700" Y="405"/>
     </Canvas.RenderTransform>
     <!-- Solo inferior preenchendo solidamente até o rodapé sem vazamentos -->
-    <Rectangle Width="3000" Height="250" Fill="#17202A"/>
+    <Rectangle Width="4000" Height="250" Fill="#17202A"/>
     <!-- Lastro de brita -->
-    <Rectangle Width="3000" Height="30" Fill="#283747">
+    <Rectangle Width="4000" Height="30" Fill="#283747">
         <Rectangle.RenderTransform>
             <TranslateTransform X="0" Y="6"/>
         </Rectangle.RenderTransform>
     </Rectangle>
     <!-- Base do Trilho -->
-    <Rectangle Width="3000" Height="10" Fill="#11171E">
+    <Rectangle Width="4000" Height="10" Fill="#11171E">
         <Rectangle.RenderTransform>
             <TranslateTransform X="0" Y="6"/>
         </Rectangle.RenderTransform>
     </Rectangle>
     <!-- Trilho Superior de Aço Cromado (tangente exata à roda em Y=405) -->
-    <Rectangle Width="3000" Height="6" Fill="#BDC3C7" Stroke="#7F8C8D" StrokeThickness="1">
+    <Rectangle Width="4000" Height="6" Fill="#BDC3C7" Stroke="#7F8C8D" StrokeThickness="1">
         <Rectangle.RenderTransform>
             <TranslateTransform X="0" Y="0"/>
         </Rectangle.RenderTransform>
@@ -130,17 +130,19 @@ O conjunto propulsor dianteiro foi projetado com rigor mecânico:
 ## 4. Ordenação de Camadas Visuais (Z-Index)
 
 A ordem dos elementos declarados no XAML define a pilha de desenho (*painter's algorithm*):
-1. **Cenário de Fundo**: Céu e gradientes.
-2. **Trilhos e Brita**.
-3. **Corpo Estático da Locomotiva**: Caldeira, cabine, chassi e cilindro de vapor.
-4. **Guias da Cruzeta** e suportes estruturais.
-5. **Rodas da Locomotiva** (instâncias do `ControlTemplate`).
-6. **Biela de Acoplamento Horizontal** (*Side Rod*).
-7. **Cruzeta e Haste do Pistão**.
-8. **Biela Motriz Articulada** (*Connecting Rod*).
-9. **Partículas de Vapor** saindo da chaminé.
+1. **Cenário de Fundo**: Céu noturno e gradientes atmosféricos no `CenarioCanvas`.
+2. **Trilhos e Lastro de Brita**: Estendidos de $X = -700$ a $X = 3300\text{ px}$.
+3. **Corpo Estrutural da Locomotiva**: Caldeira, cabine, bunker de carvão, tanques e chassi em $(0,0)$.
+4. **Suporte Estrutural e Guias da Cruzeta (*Slide Bars*)**: Canaleta horizontal em $Y = 210\text{ px}$.
+5. **Haste Cromada do Pistão** (`TranslacaoHastePistao`): Desenha-se sob as rodas e sob o cilindro.
+6. **Rodas da Locomotiva** (instâncias do `RodaTemplate` com seus `RotateTransform`).
+7. **Biela de Acoplamento Horizontal** (*Side Rod* com `MancalBielaTemplate`).
+8. **Biela Motriz Articulada** (*Connecting Rod*, $L=82\text{ px}$): O olhal dianteiro conecta atrás do bloco da cruzeta.
+9. **Cruzeta e Pino Frontal** (`TranslacaoCruzeta` e `TranslacaoPinoCruzeta`): Desenhados sobre a biela motriz e sobre a haste.
+10. **Bloco do Cilindro de Vapor e Gaxeta Traseira**: Renderizados **sobrepostos à haste**, ocultando sua extremidade frontal e produzindo a ilusão visual perfeita de diminuição e aumento do curso à medida que o trem anda.
+11. **Partículas de Vapor e Fumaça** saindo da chaminé com animação de escala e opacidade via `Storyboard`.
 
-Essa sobreposição garante que as bielas fiquem na frente das rodas e que a biela motriz passe suavemente sobre a cruzeta, exatamente como nas locomotivas reais.
+Essa sobreposição garante precisão mecânica total: a cruzeta segura a haste, a biela motriz movimenta a cruzeta, e a haste entra e sai realisticamente de dentro do bloco do cilindro.
 
 ---
 

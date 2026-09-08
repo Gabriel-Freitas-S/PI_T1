@@ -141,15 +141,15 @@ PI_T1/
 - **`LocomotivaControl.xaml.cs`**: Expõe uma interface limpa com o método `AtualizarEstado(in LocomotivaFrameState estado)`, atualizando internamente suas 9 transformações afins sem que a janela principal precise conhecer seus elementos internos.
 
 ### 6.2 Camada de Modelo e Cinemática Pura (`Models/`)
-- **`LocomotivaKinematics.cs`**: Implementa toda a física analítica e cálculos trigonométricos sem qualquer dependência de classes da UI do WPF. Recebe o tempo decorrido $t$ e retorna um estado imutável. Permite 100% de cobertura por testes de unidade.
+- **`LocomotivaKinematics.cs`**: Implementa toda a física analítica e cálculos trigonométricos sem qualquer dependência de classes da UI do WPF. Calcula a cinemática contínua de loop infinito (travessia completa da esquerda para a direita e reentrada imediata), rolamento monotônico puro sem deslizamento das rodas e equações analíticas da cruzeta/bielas baseadas na largura real do cenário (`CenarioCanvas.ActualWidth`).
 - **`LocomotivaFrameState.cs`**: Estrutura imutável de alto desempenho (`readonly record struct`) que transporta as coordenadas analíticas $(X, Y)$ e ângulos $\theta$ calculados para o quadro atual.
 
 ### 6.3 Camada de Recursos e Templates (`Resources/`)
 - **`LocomotivaResources.xaml`**: Arquivo [`ResourceDictionary`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.resourcedictionary) dedicado contendo o `ControlTemplate x:Key="RodaTemplate"`, o `ControlTemplate x:Key="MancalBielaTemplate"` e a paleta de materiais (`SolidColorBrush`). É mesclado globalmente em `App.xaml` via `ResourceDictionary.MergedDictionaries`.
 
 ### 6.4 Camada de Apresentação e Orquestração (`MainWindow`)
-- **`MainWindow.xaml`**: Casca visual limpa (74 linhas) responsável pela janela responsiva de 3 linhas (`Grid`), cabeçalho informativo, rodapé de status e o cenário ferroviário edge-to-edge onde `<controls:LocomotivaControl x:Name="Locomotiva"/>` é instanciado.
-- **`MainWindow.xaml.cs`**: View orquestradora minimalista (48 linhas) que apenas gerencia o ciclo de vida da janela (`Loaded`/`Unloaded`), captura os pulsos de renderização em [`CompositionTarget.Rendering`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.compositiontarget.rendering), obtém o `LocomotivaFrameState` do motor e delega ao componente `Locomotiva.AtualizarEstado(estado)`.
+- **`MainWindow.xaml`**: Casca visual limpa e responsiva (`Grid`), cabeçalho superior informativo, rodapé de status e o cenário ferroviário edge-to-edge onde `<controls:LocomotivaControl x:Name="Locomotiva"/>` é instanciado.
+- **`MainWindow.xaml.cs`**: View orquestradora ultra-minimalista (~40 linhas) que gerencia o ciclo de vida da janela (`Loaded`/`Unloaded`), captura os pulsos de renderização em [`CompositionTarget.Rendering`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.compositiontarget.rendering), obtém o `LocomotivaFrameState` do motor e delega ao componente `Locomotiva.AtualizarEstado(estado)`.
 
 ---
 

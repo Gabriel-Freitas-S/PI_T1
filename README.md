@@ -26,7 +26,7 @@ O projeto atende a 100% dos critérios avaliativos estipulados no enunciado acad
 | **1** | **3,0 pts** | Corpo estático (`Rectangle`, `Polygon`, `Ellipse`) desenhado em `(0,0)` com `RenderTransform` + `ControlTemplate` de roda com raios visíveis e $\ge 2$ instâncias sob o chassi. | Chassi, cabine com porta e estribos, caldeira, domo, chaminé e cilindro desenhados em `(0,0)` com `TranslateTransform`. `RodaTemplate` com aro, 8 raios, contrapeso e manivela excêntrica instanciado nas Rodas 1 e 2. |
 | **2** | **6,0 pts** | Objeto completo agrupado em `Canvas`, `RotateTransform` com rotação contínua nas rodas e `TranslateTransform` para movimentação horizontal da locomotiva. | Todo o trem agrupado em `LocomotivaCanvas`. `RotateTransform` acoplado nas instâncias das rodas. Movimentação horizontal contínua através do cenário com trilhos e brita. |
 | **3** | **8,0 pts** | Bielas conectando as rodas com movimento mecânico sincronizado simulando o acoplamento real ("combinação de transformações a cada quadro"). | **Biela de Acoplamento** (*Side Rod*) mantida horizontal em órbita circular síncrona. **Biela Motriz** (*Connecting Rod*) e **Cruzeta** (*Crosshead*) calculadas com cinemática analítica exata via Teorema de Pitágoras e `Math.Atan2` em `CompositionTarget.Rendering`. |
-| **4** | **10,0 pts** | Locomotiva completa em movimento contínuo de vai-e-volta nos limites da janela do aplicativo. | Função harmônica de aceleração suave percorrendo de $X = -100$ a $X = 540$ com desaceleração e inversão suave nos limites da janela, sem corte abrupto de quadros. |
+| **4** | **10,0 pts** | Locomotiva completa em movimento contínuo nos limites da janela do aplicativo. | **Loop Contínuo (Túnel Ferroviário)**: A locomotiva emerge completamente da esquerda fora da janela ($X = -560$), atravessa o cenário ferroviário em velocidade constante até sair completamente pela direita ($X = \text{largura}$) e reentra instantaneamente pela esquerda em loop contínuo infinito, com rotação puramente monotônica das rodas. |
 
 ---
 
@@ -39,13 +39,13 @@ O projeto atende a 100% dos critérios avaliativos estipulados no enunciado acad
      - `LocomotivaControl.xaml`: `UserControl` autônomo que encapsula toda a modelagem gráfica vetorial da locomotiva (chassi, cabine, caldeira, cilindros, bielas e animação de vapor).
      - `LocomotivaControl.xaml.cs`: Code-behind que expõe o método `AtualizarEstado(in LocomotivaFrameState estado)` e atualiza suas próprias transformações afins internas.
    - **Camada de Modelo/Física (`Models/`)**:
-     - `LocomotivaKinematics.cs`: Motor analítico em C# puro, desacoplado da UI do WPF, responsável pelo cálculo harmônico suave, rolamento sem deslizamento das rodas e equações da cruzeta/bielas.
+     - `LocomotivaKinematics.cs`: Motor analítico em C# puro, desacoplado da UI do WPF, responsável pelo cálculo cinemático do loop contínuo, rolamento monotônico sem deslizamento das rodas e equações analíticas da cruzeta/bielas.
      - `LocomotivaFrameState.cs`: DTO imutável (`record struct`) contendo as coordenadas e rotações calculadas para cada quadro.
    - **Camada de Recursos (`Resources/`)**:
      - `LocomotivaResources.xaml`: `ResourceDictionary` que isola o `ControlTemplate` da roda (`RodaTemplate`), o template dos mancais (`MancalBielaTemplate`) e a paleta de materiais metálicos (`SolidColorBrush`).
    - **Camada de Apresentação/View (`MainWindow`)**:
      - `MainWindow.xaml`: Casca enxuta (~70 linhas) com o cabeçalho, rodapé e o cenário com trilhos onde `<controls:LocomotivaControl/>` é instanciado.
-     - `MainWindow.xaml.cs`: Orquestrador minimalista (~45 linhas) que escuta `CompositionTarget.Rendering`, consulta o motor físico e delega para `Locomotiva.AtualizarEstado(estado)`.
+     - `MainWindow.xaml.cs`: Orquestrador ultra-minimalista (~40 linhas) que escuta `CompositionTarget.Rendering`, consulta o motor físico e delega para `Locomotiva.AtualizarEstado(estado)`.
 4. **Mecanismo Biela-Manivela-Pistão (Cinemática Analítica)**:
    - **Biela de Acoplamento**: Transladada circularmente para $(pino1X, pino1Y)$, conectando os eixos das duas rodas com $140\text{ px}$ de distância.
    - **Cruzeta do Pistão**: Desliza no eixo horizontal $Y = 210\text{ px}$ entre as guias de aço, com coordenada calculada analiticamente por:

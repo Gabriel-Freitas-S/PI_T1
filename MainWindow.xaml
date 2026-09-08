@@ -30,7 +30,7 @@
         <Border Grid.Row="0" Height="48" Background="#17202A" BorderBrush="#2C3E50" BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,20,0">
                 <TextBlock Text="PROCESSO DE IMAGENS — TRABALHO C1: LOCOMOTIVA A VAPOR 2D" Foreground="#ECF0F1" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"/>
-                <TextBlock Text=" | Mecanismo Biela-Manivela &amp; Cinemática Analítica WPF" Foreground="#BDC3C7" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                <TextBlock Text=" | Cinemática Analítica &amp; Mecanismo Biela-Manivela" Foreground="#BDC3C7" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0"/>
             </StackPanel>
         </Border>
 
@@ -50,24 +50,24 @@
             <!-- # ===================================================================== -->
             <Canvas>
                 <Canvas.RenderTransform>
-                    <TranslateTransform X="-200" Y="405"/>
+                    <TranslateTransform X="-700" Y="405"/>
                 </Canvas.RenderTransform>
                 <!-- Solo inferior preenchendo solidamente até o rodapé sem vazamentos -->
-                <Rectangle Width="3000" Height="250" Fill="#17202A"/>
+                <Rectangle Width="4000" Height="250" Fill="#17202A"/>
                 <!-- Lastro de brita -->
-                <Rectangle Width="3000" Height="30" Fill="#283747">
+                <Rectangle Width="4000" Height="30" Fill="#283747">
                     <Rectangle.RenderTransform>
                         <TranslateTransform X="0" Y="6"/>
                     </Rectangle.RenderTransform>
                 </Rectangle>
                 <!-- Base do Trilho -->
-                <Rectangle Width="3000" Height="10" Fill="#11171E">
+                <Rectangle Width="4000" Height="10" Fill="#11171E">
                     <Rectangle.RenderTransform>
                         <TranslateTransform X="0" Y="6"/>
                     </Rectangle.RenderTransform>
                 </Rectangle>
                 <!-- Trilho Superior de Aço Cromado (tangente exata à roda em Y=405) -->
-                <Rectangle Width="3000" Height="6" Fill="#BDC3C7" Stroke="#7F8C8D" StrokeThickness="1">
+                <Rectangle Width="4000" Height="6" Fill="#BDC3C7" Stroke="#7F8C8D" StrokeThickness="1">
                     <Rectangle.RenderTransform>
                         <TranslateTransform X="0" Y="0"/>
                     </Rectangle.RenderTransform>
@@ -81,10 +81,10 @@
 
         </Canvas>
 
-        <!-- # BARRA INFERIOR DE STATUS COM INSTRUÇÕES -->
+        <!-- # BARRA INFERIOR DE STATUS -->
         <Border Grid.Row="2" Height="36" Background="#11171E" BorderBrush="#2C3E50" BorderThickness="0,1,0,0">
             <Grid Margin="20,0,20,0">
-                <TextBlock Text="WPF 2D • Cinemática Mecânica Analítica • Biela Motriz &amp; Acoplamento • 100% Sincronizado" Foreground="#7F8C8D" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <TextBlock Text="Trajetória contínua em loop: entra pela esquerda, cruza o cenário e sai pela direita em circuito infinito." Foreground="#BDC3C7" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                 <TextBlock Text="Trabalho 1 concluído com encaixe analítico perfeito (10,0)" Foreground="#2ECC71" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right"/>
             </Grid>
         </Border>
