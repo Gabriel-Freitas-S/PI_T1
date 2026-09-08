@@ -16,6 +16,11 @@
 ### 📂 Código no Repositório
 - [`MainWindow.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml)
 - [`MainWindow.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml.cs)
+- [`Controls/LocomotivaControl.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml)
+- [`Controls/LocomotivaControl.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml.cs)
+- [`Models/LocomotivaKinematics.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaKinematics.cs)
+- [`Models/LocomotivaFrameState.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaFrameState.cs)
+- [`Resources/LocomotivaResources.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Resources/LocomotivaResources.xaml)
 - [`App.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/App.xaml)
 - [`App.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/App.xaml.cs)
 - [`PI_T1.csproj`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/PI_T1.csproj)

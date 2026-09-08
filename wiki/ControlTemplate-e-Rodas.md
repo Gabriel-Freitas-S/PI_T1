@@ -8,12 +8,13 @@ Neste capítulo, detalha-se a arquitetura e a geometria do `ControlTemplate` uti
 
 No desenvolvimento de interfaces em WPF, o [`ControlTemplate`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/controltemplates-overview/) permite desacoplar completamente a **estrutura visual** de um controle da sua **lógica comportamental**.
 
-Nos slides da disciplina (padrão do relógio analógico), o mostrador e os marcadores são declarados dentro de `<ControlTemplate x:Key="RodaTemplate">` nos recursos (`Resources`). Em seguida, a janela simplesmente declara instâncias de `<Control Template="{StaticResource RodaTemplate}"/>`, aplicando transformações independentes de translação e rotação.
+Nos slides da disciplina (padrão do relógio analógico), o mostrador e os marcadores são declarados dentro de `<ControlTemplate>` nos recursos (`Resources`). No projeto, seguindo as melhores práticas de modularização e separação de responsabilidades (SRP), o `RodaTemplate` foi isolado em seu próprio dicionário de recursos: [`Resources/LocomotivaResources.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Resources/LocomotivaResources.xaml), mesclado globalmente em `App.xaml`. Em seguida, a janela simplesmente declara instâncias de `<Control Template="{StaticResource RodaTemplate}"/>`, aplicando transformações independentes de translação e rotação.
 
 ### Vantagens Técnicas:
 1. **DRY (Don't Repeat Yourself)**: Os mais de 10 elementos que compõem uma roda completa (aros, raios, contrapeso, braço de manivela e pinos) são escritos uma única vez no código XAML.
-2. **Coerência Mecânica Absoluta**: Todas as rodas da locomotiva compartilham rigorosamente as mesmas tolerâncias dimensionais, raios de manivela ($r = 22\text{ px}$) e centro geométrico ($(40,40)$).
-3. **Desempenho de Memória**: O WPF compartilha a mesma árvore de recursos compilada em tempo de execução para todas as instâncias do controle.
+2. **Modularização e Baixo Acoplamento**: O arquivo XAML principal (`MainWindow.xaml`) fica limpo e desacoplado dos detalhes internos da roda, que ficam confinados no `ResourceDictionary`.
+3. **Coerência Mecânica Absoluta**: Todas as rodas da locomotiva compartilham rigorosamente as mesmas tolerâncias dimensionais, raios de manivela ($r = 22\text{ px}$) e centro geométrico ($(40,40)$).
+4. **Desempenho de Memória**: O WPF compartilha a mesma árvore de recursos compilada em tempo de execução para todas as instâncias do controle.
 
 ---
 
@@ -117,8 +118,26 @@ Essa distância entre eixos de 140 px é o parâmetro geométrico fundamental ut
 
 ---
 
+## 4. Reuso Modular: `MancalBielaTemplate`
+
+Além do `RodaTemplate`, o arquivo [`Resources/LocomotivaResources.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Resources/LocomotivaResources.xaml) introduz o **`MancalBielaTemplate`**, um modelo de controle reutilizável que encapsula a unidade mecânica de um mancal de biela completo:
+- **Copo de lubrificação de latão**: `Rectangle` $4 \times 4\text{ px}$ em $(0, -11)$.
+- **Bucha externa de bronze forjado**: `Ellipse` $18 \times 18\text{ px}$ centrada em $(0,0)$.
+- **Rolamento interno de aço usinado**: `Ellipse` $10 \times 10\text{ px}$ centrada em $(0,0)$.
+- **Pino excêntrico central vermelho**: `Ellipse` $6 \times 6\text{ px}$ centrada em $(0,0)$.
+
+### Instanciações no Projeto:
+1. **Olhal Traseiro da Biela de Acoplamento**: `<Control Template="{StaticResource MancalBielaTemplate}"/>` em $(0,0)$.
+2. **Olhal Dianteiro da Biela de Acoplamento**: `<Control Template="{StaticResource MancalBielaTemplate}">` transladado para $X=140\text{ px}$.
+3. **Olhal Traseiro da Biela Motriz**: `<Control Template="{StaticResource MancalBielaTemplate}"/>` em $(0,0)$.
+
+Isso elimina mais de 30 linhas de primitivas repetidas e garante uniformidade geométrica perfeita em todos os mancais da máquina.
+
+---
+
 ## 🔗 Referências Oficiais da Microsoft
 - [Microsoft Learn — Visão Geral de Modelos de Controle (ControlTemplate)](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/controltemplates-overview/)
 - [Microsoft Learn — Como aplicar um ControlTemplate](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/how-to-apply-a-controltemplate/)
 - [Microsoft Learn — Classe Control](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.controls.control/)
 - [Microsoft Learn — Classe RotateTransform](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.rotatetransform/)
+- [Microsoft Learn — Pincéis e SolidColorBrush](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.solidcolorbrush)

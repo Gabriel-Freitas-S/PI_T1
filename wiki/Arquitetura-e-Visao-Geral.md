@@ -85,18 +85,19 @@ O WPF possui duas propriedades fundamentais para transformações de elementos v
 
 ## 5. Hierarquia de Árvore Visual dos `Canvas`
 
-A cena gráfica da aplicação é estruturada como uma árvore hierárquica estrita de contêineres [`Canvas`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/canvas/):
+A cena gráfica da aplicação é estruturada como uma árvore hierárquica estrita de contêineres [`Canvas`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/canvas/) e controles autônomos:
 
 ```mermaid
 graph TD
     Window["MainWindow (Window)"] --> GridRoot["Grid"]
     GridRoot --> Header["Border (Painel Superior)"]
-    GridRoot --> CenarioCanvas["CenarioCanvas (1060 x 480)"]
+    GridRoot --> CenarioCanvas["CenarioCanvas (Edge-to-Edge)"]
     GridRoot --> Footer["Border (Barra Inferior)"]
     
     CenarioCanvas --> Rails["Canvas dos Trilhos e Brita (Y=405)"]
-    CenarioCanvas --> LocomotivaCanvas["LocomotivaCanvas (560 x 300) [TranslateTransform]"]
+    CenarioCanvas --> LocomotivaControl["LocomotivaControl (UserControl)"]
     
+    LocomotivaControl --> LocomotivaCanvas["LocomotivaCanvas (560 x 300) [TranslateTransform]"]
     LocomotivaCanvas --> Shapes["Primitivas do Corpo em (0,0) (Chassi, Cabine, Caldeira, Cilindro)"]
     LocomotivaCanvas --> Wheel1["Control (Roda 1 Traseira) [RodaTemplate + RotateTransform]"]
     LocomotivaCanvas --> Wheel2["Control (Roda 2 Dianteira) [RodaTemplate + RotateTransform]"]
@@ -107,19 +108,48 @@ graph TD
 ```
 
 ### Propriedades da Hierarquia:
-1. **`CenarioCanvas`**: Espaço estático onde o céu, os trilhos e o lastro de brita são fixados. A propriedade `ClipToBounds="True"` impede que qualquer elemento transborde para fora da área visual.
-2. **`LocomotivaCanvas`**: Contêiner móvel da locomotiva. A sua propriedade `RenderTransform.TranslateTransform` (`TranslacaoLocomotiva`) recebe a coordenada horizontal calculada $x_{\text{trem}}$, transportando simultaneamente todos os elementos filhos sem necessidade de somar $x_{\text{trem}}$ individualmente em cada parafuso ou biela.
-3. **Sub-Canvases Mecânicos**:
-   - `BielaAcoplamentoCanvas`: Mantém a barra de ligação paralela e transladada para o pino da primeira roda.
+1. **`CenarioCanvas`**: Espaço estático onde o céu, os trilhos e o lastro de brita são fixados de ponta a ponta (*edge-to-edge*). A propriedade `ClipToBounds="True"` impede qualquer vazamento visual para fora da área central da janela.
+2. **`LocomotivaControl`**: Controle autônomo reutilizável ([`UserControl`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.controls.usercontrol)) que encapsula o contêiner móvel `LocomotivaCanvas` e todas as matrizes de transformação afim do trem.
+3. **`LocomotivaCanvas`**: O Canvas móvel da locomotiva ($560 \times 300\text{ px}$). Sua propriedade `RenderTransform.TranslateTransform` (`TranslacaoLocomotiva`) recebe a coordenada horizontal $x_{\text{trem}}$, transportando em bloco todas as partes do trem.
+4. **Sub-Canvases Mecânicos**:
+   - `BielaAcoplamentoCanvas`: Mantém a barra de ligação paralela e transladada para o pino excêntrico da primeira roda.
    - `BielaMotrizCanvas`: Ponto de ancoragem no pino da segunda roda, combinando rotação angular calculada com translação espacial.
 
 ---
 
-## 6. Separação de Responsabilidades: XAML versus C#
+## 6. Separação de Responsabilidades e Arquitetura em Camadas (SRP)
 
-O projeto segue estritamente a separação recomendada pela engenharia de software do WPF:
-- **`MainWindow.xaml` (Declarativo)**: Define a geometria vetorial, cores das ligas metálicas (bronze, latão, aço cromado, ferro fundido), agrupamento em camadas (Z-Index), templates reutilizáveis (`ControlTemplate`) e disparadores declarativos de animação de fumaça (`Storyboard`).
-- **`MainWindow.xaml.cs` (Imperativo / Físico)**: Executa a cinemática física analítica de alta precisão conectada ao evento de renderização `CompositionTarget.Rendering`. Nenhuma primitiva visual é instanciada ou destruída dinamicamente no código C#; o código apenas alimenta as propriedades das matrizes de transformação dos elementos já declarados.
+O projeto adota rigorosamente o **Princípio da Responsabilidade Única (Single Responsibility Principle - SRP)**, decompondo o código em quatro camadas altamente coesas e desacopladas:
+
+```
+PI_T1/
+├── Controls/
+│   ├── LocomotivaControl.xaml      <-- UserControl com toda a modelagem vetorial e fumaça
+│   └── LocomotivaControl.xaml.cs   <-- Encapsulamento visual via AtualizarEstado(estado)
+├── Models/
+│   ├── LocomotivaFrameState.cs     <-- DTO imutável (record struct) com os dados cinemáticos do quadro
+│   └── LocomotivaKinematics.cs    <-- Motor matemático puro (harmônica, rolamento sem deslize, bielas)
+├── Resources/
+│   └── LocomotivaResources.xaml    <-- ResourceDictionary com RodaTemplate, MancalBielaTemplate e Brushes
+├── App.xaml                        <-- MergedDictionaries global
+├── MainWindow.xaml                 <-- View orquestradora enxuta (74 linhas: Janela + Cenário + LocomotivaControl)
+└── MainWindow.xaml.cs              <-- Orquestrador mínimo (48 linhas: CompositionTarget.Rendering e Stopwatch)
+```
+
+### 6.1 Camada de Controles Autônomos (`Controls/`)
+- **`LocomotivaControl.xaml`**: Encapsula todas as mais de 450 linhas de primitivas vetoriais da locomotiva, isolando chassi, cabine, caldeira, cilindro, instâncias de rodas, bielas e disparadores do `Storyboard` de vapor.
+- **`LocomotivaControl.xaml.cs`**: Expõe uma interface limpa com o método `AtualizarEstado(in LocomotivaFrameState estado)`, atualizando internamente suas 9 transformações afins sem que a janela principal precise conhecer seus elementos internos.
+
+### 6.2 Camada de Modelo e Cinemática Pura (`Models/`)
+- **`LocomotivaKinematics.cs`**: Implementa toda a física analítica e cálculos trigonométricos sem qualquer dependência de classes da UI do WPF. Recebe o tempo decorrido $t$ e retorna um estado imutável. Permite 100% de cobertura por testes de unidade.
+- **`LocomotivaFrameState.cs`**: Estrutura imutável de alto desempenho (`readonly record struct`) que transporta as coordenadas analíticas $(X, Y)$ e ângulos $\theta$ calculados para o quadro atual.
+
+### 6.3 Camada de Recursos e Templates (`Resources/`)
+- **`LocomotivaResources.xaml`**: Arquivo [`ResourceDictionary`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.resourcedictionary) dedicado contendo o `ControlTemplate x:Key="RodaTemplate"`, o `ControlTemplate x:Key="MancalBielaTemplate"` e a paleta de materiais (`SolidColorBrush`). É mesclado globalmente em `App.xaml` via `ResourceDictionary.MergedDictionaries`.
+
+### 6.4 Camada de Apresentação e Orquestração (`MainWindow`)
+- **`MainWindow.xaml`**: Casca visual limpa (74 linhas) responsável pela janela responsiva de 3 linhas (`Grid`), cabeçalho informativo, rodapé de status e o cenário ferroviário edge-to-edge onde `<controls:LocomotivaControl x:Name="Locomotiva"/>` é instanciado.
+- **`MainWindow.xaml.cs`**: View orquestradora minimalista (48 linhas) que apenas gerencia o ciclo de vida da janela (`Loaded`/`Unloaded`), captura os pulsos de renderização em [`CompositionTarget.Rendering`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.compositiontarget.rendering), obtém o `LocomotivaFrameState` do motor e delega ao componente `Locomotiva.AtualizarEstado(estado)`.
 
 ---
 

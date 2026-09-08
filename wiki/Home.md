@@ -19,13 +19,13 @@ Abaixo é exibido o registro de um quadro de renderização em tempo de execuç�
 A documentação está dividida em 7 capítulos técnicos especializados:
 
 1. **[Arquitetura e Princípios 2D](Arquitetura-e-Visao-Geral)**  
-   *O sistema de coordenadas do WPF, o invariante $(0,0)$, a hierarquia de `Canvas` e transformações afins (`RenderTransform`).*
+   *O sistema de coordenadas do WPF, o invariante $(0,0)$, arquitetura limpa em camadas (SRP), a hierarquia de `Canvas` e transformações afins (`RenderTransform`).*
 2. **[Modelagem Visual e Geometria XAML](Modelagem-Visual-MainWindow-XAML)**  
-   *Análise detalhada de cada seção do `MainWindow.xaml`: chassi, cabine com estribos, caldeira, tanques laterais, chaminé, farol volumétrico, bloco do cilindro de vapor e limpa-trilhos.*
+   *Análise detalhada da modelagem em `Controls/LocomotivaControl.xaml` e `MainWindow.xaml`: chassi, cabine com estribos, caldeira, tanques laterais, chaminé, farol volumétrico, bloco do cilindro, limpa-trilhos e cenário contínuo.*
 3. **[ControlTemplate e Parametrização de Rodas](ControlTemplate-e-Rodas)**  
-   *O padrão de template reutilizável baseado no exemplo do relógio analógico, cubos, 8 raios ortogonais/diagonais, contrapeso dinâmico e manivela sólida com pino excêntrico.*
+   *O padrão de template reutilizável em `Resources/LocomotivaResources.xaml` baseado no relógio analógico, cubos, 8 raios cruzados, contrapeso dinâmico e manivela sólida com pino excêntrico.*
 4. **[Cinemática Analítica do Mecanismo Biela-Manivela](Cinematica-Analitica-e-Bielas)**  
-   *Fórmulas matemáticas exatas em `MainWindow.xaml.cs`: rolamento puro sem derrapagem, órbita circular da biela de acoplamento, Teorema de Pitágoras para a cruzeta e orientação angular da biela motriz via `Math.Atan2`.*
+   *Fórmulas matemáticas exatas no motor desacoplado `Models/LocomotivaKinematics.cs`: rolamento puro sem derrapagem, órbita circular da biela de acoplamento, Teorema de Pitágoras para a cruzeta e orientação angular da biela motriz via `Math.Atan2`.*
 5. **[Animações Declarativas e Efeito de Vapor](Animacoes-Storyboard-e-Particulas)**  
    *Uso de `Storyboard`, `EventTrigger` e `DoubleAnimation` em XAML para simular baforadas de fumaça volumétricas com expansão, translação e dissipação contínua.*
 6. **[Padrões de Qualidade, SonarQube e EditorConfig](Qualidade-SonarQube-e-EditorConfig)**  

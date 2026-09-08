@@ -1,0 +1,158 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- # ========================================================================= -->
+    <!-- # PALETA SEMÂNTICA DE PINCÉIS (REAPROVEITAMENTO DE MATERIAIS GRÁFICOS)      -->
+    <!-- # Centraliza a definição de ligas metálicas, acabamentos e tintas           -->
+    <!-- # ========================================================================= -->
+    <!-- * Materiais Ferrosos e Estrutura: -->
+    <SolidColorBrush x:Key="FerroEscuroBrush" Color="#17202A"/>
+    <SolidColorBrush x:Key="AcoTemperadoBrush" Color="#2C3E50"/>
+    <SolidColorBrush x:Key="AcoPolidoBrush" Color="#BDC3C7"/>
+    <SolidColorBrush x:Key="AcoEscovadoBrush" Color="#7F8C8D"/>
+    <SolidColorBrush x:Key="ChassiPretoBrush" Color="#1C2833"/>
+    <SolidColorBrush x:Key="BordaPretaBrush" Color="#0E161C"/>
+
+    <!-- * Elementos de Segurança e Mecânica (Vermelho Ferroviário): -->
+    <SolidColorBrush x:Key="VermelhoFerroviarioBrush" Color="#C0392B"/>
+    <SolidColorBrush x:Key="BordaVermelhaBrush" Color="#78281F"/>
+
+    <!-- * Metais Nobres (Latão, Bronze, Copos de Óleo e Sino): -->
+    <SolidColorBrush x:Key="LataoBronzeBrush" Color="#D4AC0D"/>
+    <SolidColorBrush x:Key="BordaBronzeBrush" Color="#7D6608"/>
+    <SolidColorBrush x:Key="OleoCopoBrush" Color="#F39C12"/>
+    <SolidColorBrush x:Key="BordaOleoBrush" Color="#B7950B"/>
+
+    <!-- * Destaques e Raios: -->
+    <SolidColorBrush x:Key="BrancoGeloBrush" Color="#ECF0F1"/>
+
+    <!-- # ========================================================================= -->
+    <!-- # RECURSO 1: CONTROLTEMPLATE DA RODA DA LOCOMOTIVA (Slide 2D.md:258)        -->
+    <!-- # ========================================================================= -->
+    <!-- * Requisito: Trabalho C1.md:36 (Criação do ControlTemplate para modelo de roda)-->
+    <!-- * Centro analítico do eixo rigorosamente em (40,40), diâmetro 80px          -->
+    <!-- * 8 raios em cruz e diagonais convergindo exatamente ao centro (40,40)       -->
+    <!-- * Manivela sólida de aço ligando o centro (40,40) ao pino (62,40), r=22px    -->
+    <!-- ! Contrapeso em meia-lua posicionado a 180° para balanceamento dinâmico     -->
+    <!-- ! Invariante gráfica: Primitivas em (0,0) com RenderTransform.Translate     -->
+    <ControlTemplate x:Key="RodaTemplate" TargetType="{x:Type Control}">
+        <Canvas Width="80" Height="80">
+            <!-- Aro externo de aco forjado -->
+            <Ellipse Width="80" Height="80" Stroke="{StaticResource FerroEscuroBrush}" StrokeThickness="5" Fill="#212F3D">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="0" Y="0"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+
+            <!-- Pneu intermediario metalico -->
+            <Ellipse Width="70" Height="70" Stroke="{StaticResource AcoEscovadoBrush}" StrokeThickness="2" Fill="{StaticResource AcoTemperadoBrush}">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="5" Y="5"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+
+            <!-- Contrapeso de balanceamento (lado esquerdo, oposto a manivela) -->
+            <Polygon Points="10,24 38,24 38,56 10,56" Fill="{StaticResource FerroEscuroBrush}">
+                <Polygon.RenderTransform>
+                    <TranslateTransform X="0" Y="0"/>
+                </Polygon.RenderTransform>
+            </Polygon>
+
+            <!-- 8 Raios simetricos convergindo exatamente ao centro (40,40) -->
+            <Line X1="0" Y1="0" X2="0" Y2="64" Stroke="{StaticResource BrancoGeloBrush}" StrokeThickness="3">
+                <Line.RenderTransform>
+                    <TranslateTransform X="40" Y="8"/>
+                </Line.RenderTransform>
+            </Line>
+            <Line X1="0" Y1="0" X2="64" Y2="0" Stroke="{StaticResource BrancoGeloBrush}" StrokeThickness="3">
+                <Line.RenderTransform>
+                    <TranslateTransform X="8" Y="40"/>
+                </Line.RenderTransform>
+            </Line>
+            <Line X1="0" Y1="0" X2="46" Y2="46" Stroke="{StaticResource AcoPolidoBrush}" StrokeThickness="3">
+                <Line.RenderTransform>
+                    <TranslateTransform X="17" Y="17"/>
+                </Line.RenderTransform>
+            </Line>
+            <Line X1="0" Y1="46" X2="46" Y2="0" Stroke="{StaticResource AcoPolidoBrush}" StrokeThickness="3">
+                <Line.RenderTransform>
+                    <TranslateTransform X="17" Y="17"/>
+                </Line.RenderTransform>
+            </Line>
+
+            <!-- MANIVELA DA RODA (CRANK): NASCE NO CENTRO EXATO (40,40) -->
+            <!-- Cubo da manivela no centro exato do eixo (40,40) -->
+            <Ellipse Width="24" Height="24" Fill="#5D6D7E" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="2">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="28" Y="28"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+
+            <!-- Braco solido de aco da manivela ligando o centro (40,40) ao pino (62,40) -->
+            <Rectangle Width="26" Height="12" Fill="#85929E" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="1.5" RadiusX="4" RadiusY="4">
+                <Rectangle.RenderTransform>
+                    <TranslateTransform X="38" Y="34"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+            <!-- Cabeca do pino da manivela em (62,40) -->
+            <Ellipse Width="16" Height="16" Fill="#5D6D7E" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="1.5">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="54" Y="32"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+
+            <!-- Pino excentrico de manivela vermelho em (62,40) raio r=22px -->
+            <Ellipse Width="8" Height="8" Fill="{StaticResource VermelhoFerroviarioBrush}" Stroke="{StaticResource BordaVermelhaBrush}" StrokeThickness="1">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="58" Y="36"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+
+            <!-- Parafuso do eixo no centro matematico absoluto da roda (40,40) -->
+            <Ellipse Width="8" Height="8" Fill="#111111">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="36" Y="36"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+        </Canvas>
+    </ControlTemplate>
+
+    <!-- # ========================================================================= -->
+    <!-- # RECURSO 2: CONTROLTEMPLATE DO MANCAL/OLHAL DE BIELA (Slide 2D.md:258)     -->
+    <!-- # ========================================================================= -->
+    <!-- * Modelo reutilizável em (0,0) para mancais de bielas mecânicas             -->
+    <!-- * Contém bucha de bronze forjado, rolamento de aço, pino e copo de graxa    -->
+    <ControlTemplate x:Key="MancalBielaTemplate" TargetType="{x:Type Control}">
+        <Canvas Width="18" Height="22">
+            <!-- Copo de lubrificação de latão no topo do mancal -->
+            <Rectangle Width="4" Height="4" Fill="{StaticResource OleoCopoBrush}" Stroke="{StaticResource BordaOleoBrush}" StrokeThickness="0.8">
+                <Rectangle.RenderTransform>
+                    <TranslateTransform X="-2" Y="-13"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+            <!-- Mancal/Olhal externo de bronze forjado -->
+            <Ellipse Width="18" Height="18" Fill="{StaticResource LataoBronzeBrush}" Stroke="{StaticResource BordaBronzeBrush}" StrokeThickness="1.5">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="-9" Y="-9"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+
+            <!-- Rolamento intermediário de aço usinado -->
+            <Ellipse Width="10" Height="10" Fill="{StaticResource AcoEscovadoBrush}" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="1">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="-5" Y="-5"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+
+            <!-- Cabeça do pino central de manivela vermelho -->
+            <Ellipse Width="6" Height="6" Fill="{StaticResource VermelhoFerroviarioBrush}">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="-3" Y="-3"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+        </Canvas>
+    </ControlTemplate>
+
+</ResourceDictionary>

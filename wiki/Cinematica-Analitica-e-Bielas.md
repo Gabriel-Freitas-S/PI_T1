@@ -1,12 +1,12 @@
 # 📐 Cinemática Analítica do Mecanismo Biela-Manivela
 
-Neste capítulo, explora-se a modelagem matemática exata implementada no arquivo [`MainWindow.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml.cs), que atende aos requisitos de sincronismo mecânico do **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md#L48)** (Etapa 3 - 8,0 pontos e Etapa 4 - 10,0 pontos).
+Neste capítulo, explora-se a modelagem matemática exata encapsulada no motor desacoplado [`Models/LocomotivaKinematics.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaKinematics.cs) e orquestrada em [`MainWindow.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml.cs), atendendo aos requisitos de sincronismo mecânico do **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md#L48)** (Etapa 3 - 8,0 pontos e Etapa 4 - 10,0 pontos).
 
 ---
 
 ## 1. O Loop de Renderização: `CompositionTarget.Rendering`
 
-Ao contrário de abordagens rudimentares baseadas em `DispatcherTimer` ou `System.Threading.Thread.Sleep` (que introduzem *jitter*, engasgos e descompasso com a taxa de atualização do monitor), o projeto conecta o cálculo físico diretamente ao manipulador de eventos de alta prioridade do WPF:
+Ao contrário de abordagens rudimentares baseadas em `DispatcherTimer` ou `System.Threading.Thread.Sleep` (que introduzem *jitter*, engasgos e descompasso com a taxa de atualização do monitor), o projeto conecta a atualização visual diretamente ao manipulador de eventos de alta prioridade do WPF:
 
 ```csharp
 CompositionTarget.Rendering += AtualizarQuadroMecanico;
@@ -14,10 +14,13 @@ CompositionTarget.Rendering += AtualizarQuadroMecanico;
 
 Conforme especificado no **Microsoft Learn**, o evento [`CompositionTarget.Rendering`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.compositiontarget.rendering) é acionado pelo subsistema gráfico do WPF **uma vez por quadro** (tipicamente a 60 Hz, 120 Hz ou 144 Hz conforme o monitor do usuário), logo após a passagem de layout e imediatamente antes da composição final da árvore visual pela GPU.
 
+A `MainWindow.xaml.cs` atua apenas como orquestradora: captura o tempo com `_cronometro.Elapsed.TotalSeconds`, solicita o quadro calculado ao `LocomotivaKinematics` e delega o [`LocomotivaFrameState`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaFrameState.cs) diretamente ao controle autônomo através de `Locomotiva.AtualizarEstado(estado)`.
+
 ### Temporização de Alta Resolução (`Stopwatch`)
 Para evitar qualquer defasagem acumulada por variações de *frame-rate*, o tempo decorrido $t$ é mensurado com o cronômetro nativo do hardware ([`System.Diagnostics.Stopwatch`](https://learn.microsoft.com/pt-br/dotnet/api/system.diagnostics.stopwatch)):
 ```csharp
 double segundos = _cronometro.Elapsed.TotalSeconds;
+LocomotivaFrameState estado = _kinematics.CalcularQuadro(segundos);
 ```
 
 ---
@@ -146,7 +149,7 @@ O mecanismo biela-manivela converte o movimento retilíneo do pistão a vapor em
 ```
        (pino2X, pino2Y)
               O============================O (xCruzeta, 210)
-            /        BIELA MOTRIZ (L=95)   |
+            /        BIELA MOTRIZ (L=82)   |
           / r=22                           | \Delta Y
         /                                  |
       O------------------------------------+
@@ -160,7 +163,7 @@ A cruzeta está mecanicamente restrita a deslizar dentro das guias de aço horiz
 Y_{\text{cruzeta}} = 210\text{ px}
 ```
 
-A biela motriz tem comprimento fixo entre olhais `L = 95 px`. Aplicando o **Teorema de Pitágoras** no triângulo retângulo formado pelo pino da Roda 2 e a cruzeta:
+A biela motriz tem comprimento fixo entre olhais `L = 82 px`. Aplicando o **Teorema de Pitágoras** no triângulo retângulo formado pelo pino da Roda 2 e a cruzeta:
 
 ```math
 (x_{\text{cruzeta}} - pino2X)^2 + (Y_{\text{cruzeta}} - pino2Y)^2 = L^2
@@ -190,13 +193,13 @@ double catetoHorizontal = Math.Sqrt(termoRadical);
 double xCruzeta = pino2X + catetoHorizontal;
 ```
 > [!NOTE]
-> O uso de `Math.Max(0.0, ...)` é uma salvaguarda numérica para evitar raiz quadrada de números negativos em caso de anomalias de ponto flutuante. Como `L = 95 px` e `|ΔY| ≤ 22 px`, temos `L² - ΔY² ≥ 95² - 22² = 9025 - 484 = 8541 > 0`, garantindo que o radical seja sempre positivo.
+> O uso de `Math.Max(0.0, ...)` é uma salvaguarda numérica para evitar raiz quadrada de números negativos em caso de anomalias de ponto flutuante. Como `L = 82 px` e `|ΔY| ≤ 22 px`, temos `L² - ΔY² ≥ 82² - 22² = 6724 - 484 = 6240 > 0`, garantindo que o radical seja sempre positivo.
 
 ---
 
 ## 7. Etapa 6: Orientação Angular da Biela Motriz (`Math.Atan2`)
 
-A biela motriz possui seu Olhal Traseiro em `(0,0)` e seu Olhal Dianteiro a uma distância `L = 95 px` ao longo de seu eixo local X.
+A biela motriz possui seu Olhal Traseiro em `(0,0)` e seu Olhal Dianteiro a uma distância `L = 82 px` ao longo de seu eixo local X.
 
 1. **Translação**: O olhal traseiro é transladado diretamente para o pino da Roda 2:
    ```csharp

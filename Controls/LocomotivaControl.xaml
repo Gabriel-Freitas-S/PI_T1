@@ -1,0 +1,489 @@
+<UserControl x:Class="PI_T1.Controls.LocomotivaControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- # ========================================================================= -->
+    <!-- # CONTROLE AUTÔNOMO DA LOCOMOTIVA A VAPOR 2D (0-4-0T)                       -->
+    <!-- # Encapsula a modelagem vetorial, bielas, rodas e partículas de fumaça      -->
+    <!-- # Invariante gráfica: Primitivas em (0,0) com RenderTransform               -->
+    <!-- # Normas: Trabalho C1.md:32-56 e Slide 2D.md:225-299                        -->
+    <!-- # ========================================================================= -->
+    <Canvas x:Name="LocomotivaCanvas" Width="560" Height="300">
+        <Canvas.RenderTransform>
+            <TranslateTransform x:Name="TranslacaoLocomotiva" X="-100" Y="155"/>
+        </Canvas.RenderTransform>
+
+        <!-- * Feixe de luz volumétrico do farol dianteiro -->
+        <Polygon Points="0,15 240,-35 240,65" Fill="#18FFF59D">
+            <Polygon.RenderTransform>
+                <TranslateTransform X="475" Y="100"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+
+        <!-- * Partículas volumétricas de vapor saindo da chaminé -->
+        <Ellipse x:Name="Fumaca1" Width="20" Height="20" Fill="#65FFFFFF">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform x:Name="EscalaFumaca1" ScaleX="1" ScaleY="1" CenterX="10" CenterY="10"/>
+                    <TranslateTransform x:Name="TranslacaoFumaca1" X="395" Y="20"/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Ellipse x:Name="Fumaca2" Width="26" Height="26" Fill="#55E0E0E0">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform x:Name="EscalaFumaca2" ScaleX="1" ScaleY="1" CenterX="13" CenterY="13"/>
+                    <TranslateTransform x:Name="TranslacaoFumaca2" X="380" Y="0"/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Ellipse x:Name="Fumaca3" Width="34" Height="34" Fill="#38D0D0D0">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform x:Name="EscalaFumaca3" ScaleX="1" ScaleY="1" CenterX="17" CenterY="17"/>
+                    <TranslateTransform x:Name="TranslacaoFumaca3" X="355" Y="-25"/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- # ===================================================================== -->
+        <!-- # CORPO DA LOCOMOTIVA: PRIMITIVAS EM (0,0) COM RENDERTRANSFORM         -->
+        <!-- # ===================================================================== -->
+
+        <!-- # SEÇÃO 1: CHASSI E ESTRUTURA INFERIOR RÍGIDA -->
+        <Rectangle Width="500" Height="18" Fill="{StaticResource ChassiPretoBrush}" Stroke="{StaticResource BordaPretaBrush}" StrokeThickness="2" RadiusX="3" RadiusY="3">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="15" Y="190"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+
+        <!-- * Para-choque traseiro (Buffer Beam & Buffer) -->
+        <Rectangle Width="10" Height="22" Fill="{StaticResource VermelhoFerroviarioBrush}" Stroke="{StaticResource BordaVermelhaBrush}" StrokeThickness="1.5">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="8" Y="188"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Ellipse Width="10" Height="14" Fill="{StaticResource AcoEscovadoBrush}" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="1.5">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="2" Y="192"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- # SEÇÃO 2: PARA-CHOQUES, ENGATE E LIMPA-TRILHOS DIANTEIRO -->
+        <Rectangle Width="12" Height="24" Fill="{StaticResource VermelhoFerroviarioBrush}" Stroke="{StaticResource BordaVermelhaBrush}" StrokeThickness="1.5">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="496" Y="187"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Width="8" Height="6" Fill="{StaticResource AcoEscovadoBrush}">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="508" Y="196"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Ellipse Width="8" Height="16" Fill="{StaticResource AcoPolidoBrush}" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="1.5">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="514" Y="191"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- * Engate Ferroviário: Gancho forjado e elo de corrente -->
+        <Polygon Points="0,3 12,0 12,12 0,9" Fill="{StaticResource AcoTemperadoBrush}" Stroke="{StaticResource FerroEscuroBrush}" StrokeThickness="1">
+            <Polygon.RenderTransform>
+                <TranslateTransform X="506" Y="203"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Ellipse Width="8" Height="12" Fill="Transparent" Stroke="{StaticResource AcoEscovadoBrush}" StrokeThickness="2">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="514" Y="204"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- * Limpa-Trilhos em Cunha (Cowcatcher / Pilot com grades protetoras) -->
+        <Polygon Points="0,0 26,38 0,38" Fill="{StaticResource VermelhoFerroviarioBrush}" Stroke="{StaticResource BordaVermelhaBrush}" StrokeThickness="2">
+            <Polygon.RenderTransform>
+                <TranslateTransform X="496" Y="208"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Line X1="0" Y1="0" X2="18" Y2="26" Stroke="#F4D03F" StrokeThickness="2">
+            <Line.RenderTransform>
+                <TranslateTransform X="500" Y="216"/>
+            </Line.RenderTransform>
+        </Line>
+        <Line X1="0" Y1="0" X2="9" Y2="20" Stroke="#F4D03F" StrokeThickness="2">
+            <Line.RenderTransform>
+                <TranslateTransform X="498" Y="224"/>
+            </Line.RenderTransform>
+        </Line>
+
+        <!-- # SEÇÃO 3: DEPÓSITO TRASEIRO DE CARVÃO (BUNKER DA LOCOMOTIVA-TANQUE) -->
+        <Rectangle Width="35" Height="100" Fill="#1F618D" Stroke="#154360" StrokeThickness="2" RadiusX="2" RadiusY="2">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="20" Y="95"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Polygon Points="0,15 10,0 25,2 35,15" Fill="{StaticResource FerroEscuroBrush}">
+            <Polygon.RenderTransform>
+                <TranslateTransform X="20" Y="82"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Ellipse Width="10" Height="12" Fill="#E74C3C" Stroke="#922B21" StrokeThickness="1.5">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="12" Y="110"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- # SEÇÃO 4: CABINE DO MAQUINISTA COM ACESSO, ESTRIBOS E JANELA -->
+        <Rectangle Width="120" Height="135" Fill="#21618C" Stroke="#154360" StrokeThickness="2" RadiusX="3" RadiusY="3">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="55" Y="65"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Polygon Points="0,14 10,0 142,0 137,14" Fill="#1A5276" Stroke="#113349" StrokeThickness="2">
+            <Polygon.RenderTransform>
+                <TranslateTransform X="45" Y="52"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Rectangle Width="36" Height="95" Fill="#1B4F72" Stroke="#154360" StrokeThickness="1.5" RadiusX="3" RadiusY="3">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="62" Y="95"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Ellipse Width="6" Height="6" Fill="#F1C40F" Stroke="#B7950B" StrokeThickness="1">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="90" Y="145"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Line X1="0" Y1="0" X2="0" Y2="85" Stroke="{StaticResource OleoCopoBrush}" StrokeThickness="2.5">
+            <Line.RenderTransform>
+                <TranslateTransform X="60" Y="102"/>
+            </Line.RenderTransform>
+        </Line>
+
+        <!-- * Estribos / Escada metálica de subida do maquinista -->
+        <Rectangle Width="28" Height="4" Fill="{StaticResource AcoEscovadoBrush}" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="1">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="66" Y="198"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Width="28" Height="4" Fill="{StaticResource AcoEscovadoBrush}" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="1">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="66" Y="208"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Line X1="0" Y1="0" X2="0" Y2="20" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="2">
+            <Line.RenderTransform>
+                <TranslateTransform X="66" Y="192"/>
+            </Line.RenderTransform>
+        </Line>
+        <Line X1="0" Y1="0" X2="0" Y2="20" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="2">
+            <Line.RenderTransform>
+                <TranslateTransform X="94" Y="192"/>
+            </Line.RenderTransform>
+        </Line>
+
+        <!-- * Janela panorâmica da cabine com divisória -->
+        <Rectangle Width="42" Height="40" Fill="#A9CCE3" Stroke="#1B4F72" StrokeThickness="2.5" RadiusX="4" RadiusY="4">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="112" Y="88"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Line X1="21" Y1="0" X2="21" Y2="40" Stroke="#1B4F72" StrokeThickness="2">
+            <Line.RenderTransform>
+                <TranslateTransform X="112" Y="88"/>
+            </Line.RenderTransform>
+        </Line>
+
+        <!-- # SEÇÃO 5: CALDEIRA CILÍNDRICA E CINTAS DE BRONZE -->
+        <Rectangle Width="235" Height="65" Fill="#2874A6" Stroke="#1B4F72" StrokeThickness="2" RadiusX="3" RadiusY="3">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="175" Y="95"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Width="6" Height="65" Fill="{StaticResource OleoCopoBrush}">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="235" Y="95"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Width="6" Height="65" Fill="{StaticResource OleoCopoBrush}">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="300" Y="95"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+
+        <!-- # SEÇÃO 6: TANQUE LATERAL DE ÁGUA (SIDE TANK - MODELO 0-4-0T) -->
+        <Rectangle Width="185" Height="60" Fill="#1F618D" Stroke="#154360" StrokeThickness="2" RadiusX="4" RadiusY="4">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="175" Y="135"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Width="185" Height="8" Fill="#1A5276">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="175" Y="145"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Width="16" Height="10" Fill="{StaticResource OleoCopoBrush}" Stroke="{StaticResource BordaOleoBrush}" StrokeThickness="1" RadiusX="2" RadiusY="2">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="255" Y="126"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Ellipse Width="18" Height="6" Fill="#D68910">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="254" Y="124"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- # SEÇÃO 7: DOMO DE VAPOR, SINO, CÂMARA DE FUMAÇA E FAROL -->
+        <Ellipse Width="42" Height="34" Fill="#D35400" Stroke="#935116" StrokeThickness="2">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="220" Y="70"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Rectangle Width="46" Height="12" Fill="#A04000">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="218" Y="90"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Polygon Points="6,0 18,0 22,16 2,16" Fill="#F1C40F" Stroke="{StaticResource BordaOleoBrush}" StrokeThickness="1">
+            <Polygon.RenderTransform>
+                <TranslateTransform X="295" Y="80"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Rectangle Width="6" Height="6" Fill="{StaticResource AcoEscovadoBrush}">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="304" Y="92"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Ellipse Width="38" Height="85" Fill="#1B4F72" Stroke="#154360" StrokeThickness="2">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="392" Y="105"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Polygon Points="4,0 44,0 36,60 12,60" Fill="{StaticResource FerroEscuroBrush}" Stroke="{StaticResource BordaPretaBrush}" StrokeThickness="2">
+            <Polygon.RenderTransform>
+                <TranslateTransform X="383" Y="46"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Ellipse Width="46" Height="10" Fill="{StaticResource VermelhoFerroviarioBrush}" Stroke="{StaticResource BordaVermelhaBrush}" StrokeThickness="1.5">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="382" Y="42"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <Polygon Points="0,6 28,0 28,34 0,28" Fill="{StaticResource OleoCopoBrush}" Stroke="{StaticResource BordaOleoBrush}" StrokeThickness="2">
+            <Polygon.RenderTransform>
+                <TranslateTransform X="428" Y="102"/>
+            </Polygon.RenderTransform>
+        </Polygon>
+        <Ellipse Width="8" Height="26" Fill="#FFFF99" Stroke="#F1C40F" StrokeThickness="1">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="452" Y="106"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- # SEÇÃO 8: ESTRUTURA DE SUPORTE E GUIAS DA CRUZETA -->
+        <Rectangle Width="8" Height="32" Fill="{StaticResource ChassiPretoBrush}" Stroke="{StaticResource BordaPretaBrush}" StrokeThickness="1">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="314" Y="192"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <!-- * Guias lineares paralelas da cruzeta (Slide Bars) -->
+        <Line X1="0" Y1="0" X2="72" Y2="0" Stroke="{StaticResource AcoPolidoBrush}" StrokeThickness="3.5">
+            <Line.RenderTransform>
+                <TranslateTransform X="318" Y="200"/>
+            </Line.RenderTransform>
+        </Line>
+        <Line X1="0" Y1="0" X2="72" Y2="0" Stroke="{StaticResource AcoPolidoBrush}" StrokeThickness="3.5">
+            <Line.RenderTransform>
+                <TranslateTransform X="318" Y="220"/>
+            </Line.RenderTransform>
+        </Line>
+
+        <!-- # HASTE DO PISTÃO (Desenhada atrás da cruzeta e atrás do cilindro) -->
+        <!-- Penetra no cilindro e sua extensão visível diminui e aumenta naturalmente com o curso da cruzeta -->
+        <Rectangle Width="75" Height="6" Fill="{StaticResource BrancoGeloBrush}" Stroke="{StaticResource AcoEscovadoBrush}" StrokeThickness="1">
+            <Rectangle.RenderTransform>
+                <TranslateTransform x:Name="TranslacaoHastePistao" X="330" Y="207"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+
+        <!-- # ===================================================================== -->
+        <!-- # INSTÂNCIAS DAS RODAS SOB O CHASSI (ControlTemplate + RotateTransform) -->
+        <!-- # ===================================================================== -->
+        <!-- * Roda 1 (Traseira): Centro analítico em (130, 210) -->
+        <Control Template="{StaticResource RodaTemplate}" Width="80" Height="80">
+            <Control.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="RotacaoRoda1" Angle="0" CenterX="40" CenterY="40"/>
+                    <TranslateTransform X="90" Y="170"/>
+                </TransformGroup>
+            </Control.RenderTransform>
+        </Control>
+
+        <!-- * Roda 2 (Dianteira): Centro analítico em (270, 210) -->
+        <Control Template="{StaticResource RodaTemplate}" Width="80" Height="80">
+            <Control.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="RotacaoRoda2" Angle="0" CenterX="40" CenterY="40"/>
+                    <TranslateTransform X="230" Y="170"/>
+                </TransformGroup>
+            </Control.RenderTransform>
+        </Control>
+
+        <!-- # ===================================================================== -->
+        <!-- # SISTEMA DE BIELAS COM CINEMÁTICA ANALÍTICA POR QUADRO                 -->
+        <!-- # ===================================================================== -->
+
+        <!-- # BIELA A: BARRA DE ACOPLAMENTO HORIZONTAL (SIDE ROD) -->
+        <Canvas x:Name="BielaAcoplamentoCanvas" Width="160" Height="20">
+            <Canvas.RenderTransform>
+                <TranslateTransform x:Name="TranslacaoBielaAcoplamento" X="152" Y="210"/>
+            </Canvas.RenderTransform>
+
+            <!-- * Corpo de aço usinado com perfil I-Beam -->
+            <Rectangle Width="150" Height="8" RadiusX="3" RadiusY="3" Fill="{StaticResource AcoPolidoBrush}" Stroke="#566573" StrokeThickness="1.5">
+                <Rectangle.RenderTransform>
+                    <TranslateTransform X="-5" Y="-4"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <!-- * Canaleta central rebaixada de alívio de peso -->
+            <Rectangle Width="124" Height="3" Fill="{StaticResource AcoTemperadoBrush}">
+                <Rectangle.RenderTransform>
+                    <TranslateTransform X="8" Y="-1.5"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+            <!-- * Mancal/Olhal Traseiro encaixado perfeitamente no pino da Roda 1 em (0,0) -->
+            <Control Template="{StaticResource MancalBielaTemplate}"/>
+
+            <!-- * Mancal/Olhal Dianteiro encaixado perfeitamente no pino da Roda 2 em (140,0) -->
+            <Control Template="{StaticResource MancalBielaTemplate}">
+                <Control.RenderTransform>
+                    <TranslateTransform X="140" Y="0"/>
+                </Control.RenderTransform>
+            </Control>
+        </Canvas>
+
+        <!-- # BIELA C: BIELA MOTRIZ ARTICULADA (CONNECTING ROD) -->
+        <!-- Posicionada atrás da cruzeta no Z-Index: olhal dianteiro encaixa atrás do bloco da cruzeta -->
+        <Canvas x:Name="BielaMotrizCanvas" Width="92" Height="16">
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <RotateTransform x:Name="RotacaoBielaMotriz" Angle="0" CenterX="0" CenterY="0"/>
+                    <TranslateTransform x:Name="TranslacaoBielaMotriz" X="292" Y="210"/>
+                </TransformGroup>
+            </Canvas.RenderTransform>
+
+            <!-- * Braço da Biela Motriz de comprimento L=82px em aço usinado -->
+            <Rectangle Width="82" Height="7" RadiusX="3" RadiusY="3" Fill="{StaticResource AcoPolidoBrush}" Stroke="#566573" StrokeThickness="1.5">
+                <Rectangle.RenderTransform>
+                    <TranslateTransform X="0" Y="-3.5"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+            <!-- * Canaleta interna rebaixada -->
+            <Rectangle Width="60" Height="2.5" Fill="{StaticResource AcoTemperadoBrush}">
+                <Rectangle.RenderTransform>
+                    <TranslateTransform X="11" Y="-1.25"/>
+                </Rectangle.RenderTransform>
+            </Rectangle>
+
+            <!-- * Mancal/Olhal Traseiro conectado perfeitamente ao pino da Roda 2 em (0,0) -->
+            <Control Template="{StaticResource MancalBielaTemplate}"/>
+
+            <!-- * Olhal dianteiro conectado perfeitamente ao pino da cruzeta em (82,0) -->
+            <Ellipse Width="14" Height="14" Fill="{StaticResource LataoBronzeBrush}" Stroke="{StaticResource BordaBronzeBrush}" StrokeThickness="1.5">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="75" Y="-7"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse Width="6" Height="6" Fill="#F1C40F" Stroke="{StaticResource BordaOleoBrush}" StrokeThickness="1">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform X="79" Y="-3"/>
+                </Ellipse.RenderTransform>
+            </Ellipse>
+        </Canvas>
+
+        <!-- # BIELA B: CRUZETA DESLIZANTE (CROSSHEAD) E PINO FRONTAL -->
+        <!-- Desenhada sobre a biela motriz e sobre a haste do pistão -->
+        <Rectangle Width="18" Height="18" Fill="{StaticResource AcoEscovadoBrush}" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="1.5" RadiusX="3" RadiusY="3">
+            <Rectangle.RenderTransform>
+                <TranslateTransform x:Name="TranslacaoCruzeta" X="321" Y="201"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Ellipse Width="8" Height="8" Fill="#F1C40F" Stroke="{StaticResource BordaOleoBrush}" StrokeThickness="1">
+            <Ellipse.RenderTransform>
+                <TranslateTransform x:Name="TranslacaoPinoCruzeta" X="326" Y="206"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- # CILINDRO DE VAPOR FRONTAL (Sobreposto à haste do pistão) -->
+        <!-- Oculta a extremidade interna da haste, fazendo-a diminuir e aumentar realisticamente -->
+        <Rectangle Width="82" Height="10" Fill="{StaticResource FerroEscuroBrush}" Stroke="{StaticResource BordaPretaBrush}" StrokeThickness="1">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="390" Y="186"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Width="75" Height="36" Fill="{StaticResource AcoTemperadoBrush}" Stroke="#1A252F" StrokeThickness="2" RadiusX="3" RadiusY="3">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="390" Y="192"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Ellipse Width="14" Height="36" Fill="#34495E" Stroke="#1A252F" StrokeThickness="2">
+            <Ellipse.RenderTransform>
+                <TranslateTransform X="457" Y="192"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+        <!-- * Gaxeta de vedação traseira (Packing Gland) onde a haste entra no cilindro -->
+        <Rectangle Width="6" Height="26" Fill="#1A252F" Stroke="{StaticResource BordaPretaBrush}" StrokeThickness="1">
+            <Rectangle.RenderTransform>
+                <TranslateTransform X="386" Y="197"/>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+    </Canvas>
+
+    <!-- # ========================================================================= -->
+    <!-- # ANIMAÇÃO AUTÔNOMA: FUMAÇA DA CHAMINÉ VIA STORYBOARD                       -->
+    <!-- # ========================================================================= -->
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard>
+                <Storyboard RepeatBehavior="Forever">
+                    <!-- * Baforada 1 -->
+                    <DoubleAnimation Storyboard.TargetName="TranslacaoFumaca1" Storyboard.TargetProperty="Y"
+                                     From="40" To="-40" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="TranslacaoFumaca1" Storyboard.TargetProperty="X"
+                                     From="395" To="320" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="EscalaFumaca1" Storyboard.TargetProperty="ScaleX"
+                                     From="0.5" To="2.2" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="EscalaFumaca1" Storyboard.TargetProperty="ScaleY"
+                                     From="0.5" To="2.2" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="Fumaca1" Storyboard.TargetProperty="Opacity"
+                                     From="0.8" To="0.0" Duration="0:0:1.5" RepeatBehavior="Forever"/>
+
+                    <!-- * Baforada 2 (com defasagem temporal de 0.5s) -->
+                    <DoubleAnimation Storyboard.TargetName="TranslacaoFumaca2" Storyboard.TargetProperty="Y"
+                                     BeginTime="0:0:0.5" From="40" To="-50" Duration="0:0:1.8" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="TranslacaoFumaca2" Storyboard.TargetProperty="X"
+                                     BeginTime="0:0:0.5" From="395" To="290" Duration="0:0:1.8" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="EscalaFumaca2" Storyboard.TargetProperty="ScaleX"
+                                     BeginTime="0:0:0.5" From="0.6" To="2.8" Duration="0:0:1.8" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="EscalaFumaca2" Storyboard.TargetProperty="ScaleY"
+                                     BeginTime="0:0:0.5" From="0.6" To="2.8" Duration="0:0:1.8" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="Fumaca2" Storyboard.TargetProperty="Opacity"
+                                     BeginTime="0:0:0.5" From="0.7" To="0.0" Duration="0:0:1.8" RepeatBehavior="Forever"/>
+
+                    <!-- * Baforada 3 (com defasagem temporal de 1.0s) -->
+                    <DoubleAnimation Storyboard.TargetName="TranslacaoFumaca3" Storyboard.TargetProperty="Y"
+                                     BeginTime="0:0:1.0" From="40" To="-60" Duration="0:0:2.0" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="TranslacaoFumaca3" Storyboard.TargetProperty="X"
+                                     BeginTime="0:0:1.0" From="395" To="260" Duration="0:0:2.0" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="EscalaFumaca3" Storyboard.TargetProperty="ScaleX"
+                                     BeginTime="0:0:1.0" From="0.7" To="3.5" Duration="0:0:2.0" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="EscalaFumaca3" Storyboard.TargetProperty="ScaleY"
+                                     BeginTime="0:0:1.0" From="0.7" To="3.5" Duration="0:0:2.0" RepeatBehavior="Forever"/>
+                    <DoubleAnimation Storyboard.TargetName="Fumaca3" Storyboard.TargetProperty="Opacity"
+                                     BeginTime="0:0:1.0" From="0.6" To="0.0" Duration="0:0:2.0" RepeatBehavior="Forever"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+</UserControl>

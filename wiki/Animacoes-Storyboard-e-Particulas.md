@@ -27,7 +27,7 @@ Uma pluma de fumaça saindo da chaminé de uma locomotiva a vapor em movimento e
 
 ## 3. Estrutura XAML das Partículas de Vapor
 
-Três elipses translúcidas (`Fumaca1`, `Fumaca2`, `Fumaca3`) foram posicionadas na saída superior da chaminé da locomotiva ($X \approx 395, Y \approx 20$). Cada elipse contém um [`TransformGroup`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.transformgroup) composto por um [`ScaleTransform`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.scaletransform) e um [`TranslateTransform`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.translatetransform):
+Três elipses translúcidas (`Fumaca1`, `Fumaca2`, `Fumaca3`) foram posicionadas na saída superior da chaminé da locomotiva ($X \approx 395, Y \approx 20$) dentro do componente autônomo [`Controls/LocomotivaControl.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml). Cada elipse contém um [`TransformGroup`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.transformgroup) composto por um [`ScaleTransform`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.scaletransform) e um [`TranslateTransform`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.translatetransform):
 
 ```xml
 <Ellipse x:Name="Fumaca1" Width="20" Height="20" Fill="#65FFFFFF">

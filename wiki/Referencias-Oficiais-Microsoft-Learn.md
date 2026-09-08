@@ -16,6 +16,7 @@ Abaixo está o catálogo estruturado de referências oficiais em português (`pt
 | **Sintaxe XAML em Detalhes** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/advanced/xaml-syntax-in-detail/) | Sintaxe de propriedades anexadas, sintaxe de ponto e coleções. |
 | **Classe Application** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.application) | Ponto de entrada global da aplicação em `App.xaml` e `App.xaml.cs`. |
 | **Classe Window** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.window) | Janela principal de visualização da locomotiva `MainWindow`. |
+| **Classe UserControl** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.controls.usercontrol) | Encapsulamento modular da locomotiva 2D em `LocomotivaControl`. |
 
 ---
 
@@ -53,7 +54,9 @@ Abaixo está o catálogo estruturado de referências oficiais em português (`pt
 | :--- | :--- | :--- |
 | **Visão Geral de Estilos e Modelos** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/styles-templates-overview/) | Separação entre estrutura visual e controle. |
 | **Modelos de Controle (ControlTemplate)** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/controltemplates-overview/) | Implementação do `RodaTemplate` baseado no relógio dos slides. |
-| **Recursos XAML** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/systems/xaml-resources/) | Definição de recursos estáticos via `StaticResource`. |
+| **Classe ResourceDictionary** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.resourcedictionary) | Dicionário de recursos `LocomotivaResources.xaml` para isolamento de templates. |
+| **Propriedade MergedDictionaries** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.resourcedictionary.mergeddictionaries) | Composição modular de dicionários de recursos em `App.xaml`. |
+| **Recursos XAML** | [Acessar Documentação](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/systems/xaml-resources/) | Definição e consumo de recursos estáticos via `StaticResource`. |
 
 ---
 

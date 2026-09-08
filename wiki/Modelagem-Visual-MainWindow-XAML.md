@@ -1,6 +1,6 @@
 # 🎨 Modelagem Visual e Geometria XAML
 
-Este capítulo detalha a construção geométrica de todas as partes da locomotiva a vapor em [`MainWindow.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml), demonstrando como cada componente foi modelado a partir de primitivas vetoriais na origem canônica $(0,0)$ e transformado via `RenderTransform`.
+Este capítulo detalha a construção geométrica de todas as partes da locomotiva a vapor encapsuladas no componente [`Controls/LocomotivaControl.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml) e o cenário ferroviário em [`MainWindow.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml), demonstrando como cada componente foi modelado a partir de primitivas vetoriais na origem canônica $(0,0)$ e transformado via `RenderTransform`.
 
 ---
 
@@ -24,28 +24,35 @@ O fundo da cena é composto por um gradiente vertical [`LinearGradientBrush`](ht
 - `0.85`: Azul ardósia médio (`#284659`).
 - `1.0`: Carvão escuro (`#17202A`).
 
-### 2.2 Lastro de Brita e Trilhos de Aço
-Posicionado em $Y = 405\text{ px}$ no `CenarioCanvas`:
+### 2.2 Lastro de Brita e Trilhos de Aço Estendidos (Edge-to-Edge)
+O `CenarioCanvas` ocupa 100% da área da linha central da janela (`Grid.Row="1"`), sem margens ou bordas laterais. O conjunto da ferrovia é posicionado em $Y = 405\text{ px}$ e se estende por toda a largura com fundação descendo até a barra inferior:
 ```xml
-<Canvas Width="1060" Height="40">
+<Canvas>
     <Canvas.RenderTransform>
-        <TranslateTransform X="0" Y="405"/>
+        <TranslateTransform X="-200" Y="405"/>
     </Canvas.RenderTransform>
+    <!-- Solo inferior preenchendo solidamente até o rodapé sem vazamentos -->
+    <Rectangle Width="3000" Height="250" Fill="#17202A"/>
     <!-- Lastro de brita -->
-    <Rectangle Width="1060" Height="30" Fill="#283747"/>
-    <!-- Trilho Superior de Aço Cromado -->
-    <Rectangle Width="1060" Height="6" Fill="#BDC3C7" Stroke="#7F8C8D" StrokeThickness="1">
-        <Rectangle.RenderTransform>
-            <TranslateTransform X="0" Y="0"/>
-        </Rectangle.RenderTransform>
-    </Rectangle>
-    <!-- Base do Trilho -->
-    <Rectangle Width="1060" Height="10" Fill="#17202A">
+    <Rectangle Width="3000" Height="30" Fill="#283747">
         <Rectangle.RenderTransform>
             <TranslateTransform X="0" Y="6"/>
         </Rectangle.RenderTransform>
     </Rectangle>
+    <!-- Base do Trilho -->
+    <Rectangle Width="3000" Height="10" Fill="#11171E">
+        <Rectangle.RenderTransform>
+            <TranslateTransform X="0" Y="6"/>
+        </Rectangle.RenderTransform>
+    </Rectangle>
+    <!-- Trilho Superior de Aço Cromado (tangente exata à roda em Y=405) -->
+    <Rectangle Width="3000" Height="6" Fill="#BDC3C7" Stroke="#7F8C8D" StrokeThickness="1">
+        <Rectangle.RenderTransform>
+            <TranslateTransform X="0" Y="0"/>
+        </Rectangle.RenderTransform>
+    </Rectangle>
 </Canvas>
+```
 O topo do trilho fica rigorosamente em `Y = 405 px`. Como a locomotiva tem sua origem em `Y = 155 px` e o centro das rodas fica em `Y_local = 210 px` com raio `R = 40 px`, a base inferior da roda toca exatamente:
 
 ```math
