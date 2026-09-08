@@ -46,9 +46,12 @@ Posicionado em $Y = 405\text{ px}$ no `CenarioCanvas`:
         </Rectangle.RenderTransform>
     </Rectangle>
 </Canvas>
+O topo do trilho fica rigorosamente em `Y = 405 px`. Como a locomotiva tem sua origem em `Y = 155 px` e o centro das rodas fica em `Y_local = 210 px` com raio `R = 40 px`, a base inferior da roda toca exatamente:
+
+```math
+Y_{\text{contato}} = 155 + 210 + 40 = 405\text{ px}
 ```
-O topo do trilho fica rigorosamente em $Y = 405\text{ px}$. Como a locomotiva tem sua origem em $Y = 155\text{ px}$ e o centro das rodas fica em $Y_{\text{local}} = 210\text{ px}$ com raio $R = 40\text{ px}$, a base inferior da roda toca exatamente:
-$$Y_{\text{contato}} = 155 + 210 + 40 = 405\text{ px}$$
+
 Isso estabelece **tangência perfeita** entre a roda e o trilho superior sem qualquer penetração ou flutuação visual.
 
 ---

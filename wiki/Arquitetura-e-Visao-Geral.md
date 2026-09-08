@@ -40,17 +40,27 @@ Ao definir todo elemento gráfico ancorado na sua origem canônica $(0,0)$ e apl
 
 ## 3. Composição e Álgebra Linear de Transformações Afins
 
-No plano 2D, as transformações afins preservam linhas retas e paralelismos. Em coordenadas homogêneas, um ponto $P = (x, y)$ é representado pelo vetor $[x, y, 1]^T$.
+No plano 2D, as transformações afins preservam linhas retas e paralelismos. Em coordenadas homogêneas, um ponto `P = (x, y)` é representado pelo vetor `[x, y, 1]ᵀ`.
 
-A matriz geral de transformação afim $3 \times 3$ no WPF é dada por:
+A matriz geral de transformação afim 3×3 no WPF é dada por:
 
-$$\begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = \begin{bmatrix} M_{11} & M_{12} & 0 \\ M_{21} & M_{22} & 0 \\ \text{OffsetX} & \text{OffsetY} & 1 \end{bmatrix}^T \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}$$
+```math
+\begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = \begin{bmatrix} M_{11} & M_{12} & 0 \\ M_{21} & M_{22} & 0 \\ \text{OffsetX} & \text{OffsetY} & 1 \end{bmatrix}^T \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+```
 
 Onde:
+
 - **Translação pura (`TranslateTransform`)**:
-  $$\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ \Delta X & \Delta Y & 1 \end{bmatrix}$$
-- **Rotação pura (`RotateTransform`)** por um ângulo $\theta$:
-  $$\begin{bmatrix} \cos\theta & \sin\theta & 0 \\ -\sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{bmatrix}$$
+
+```math
+\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ \Delta X & \Delta Y & 1 \end{bmatrix}
+```
+
+- **Rotação pura (`RotateTransform`)** por um ângulo θ:
+
+```math
+\begin{bmatrix} \cos\theta & \sin\theta & 0 \\ -\sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{bmatrix}
+```
 
 No projeto da locomotiva, quando combinamos translação e rotação em uma biela ou roda, o WPF utiliza o elemento [`TransformGroup`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.transformgroup), multiplicando as matrizes de forma eficiente e acelerada por hardware (DirectX/MilCore).
 

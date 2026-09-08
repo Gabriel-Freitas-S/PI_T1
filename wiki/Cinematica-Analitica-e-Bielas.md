@@ -24,25 +24,34 @@ double segundos = _cronometro.Elapsed.TotalSeconds;
 
 ## 2. Etapa 1: Movimento Harmônico de Vai-e-Volta Suave
 
-Para atender ao critério de movimento contínuo entre os limites da janela sem reversões bruscas que quebrem a ilusão mecânica, utiliza-se uma função de modulação harmônica cosenoidal com período $T = 14\text{ s}$:
+Para atender ao critério de movimento contínuo entre os limites da janela sem reversões bruscas que quebrem a ilusão mecânica, utiliza-se uma função de modulação harmônica cosenoidal com período `T = 14 s`:
 
-$$\tau = \frac{t \pmod T}{T} \in [0, 1)$$
+```math
+\tau = \frac{t \pmod T}{T} \in [0, 1)
+```
 
-O progresso normalizado suave $P(\tau)$ é obtido por:
+O progresso normalizado suave `P(\tau)` é obtido por:
 
-$$P(\tau) = \frac{1 - \cos(2\pi \tau)}{2} \in [0, 1]$$
+```math
+P(\tau) = \frac{1 - \cos(2\pi \tau)}{2} \in [0, 1]
+```
 
-A posição horizontal instantânea da locomotiva $x_{\text{loco}}(t)$ é dada por:
+A posição horizontal instantânea da locomotiva `x_loco(t)` é dada por:
 
-$$x_{\text{loco}}(t) = X_{\text{min}} + (X_{\text{max}} - X_{\text{min}}) \cdot P(\tau)$$
+```math
+x_{\text{loco}}(t) = X_{\text{min}} + (X_{\text{max}} - X_{\text{min}}) \cdot P(\tau)
+```
 
-Onde $X_{\text{min}} = -100\text{ px}$ e $X_{\text{max}} = 540\text{ px}$.
+Onde `X_min = -100 px` e `X_max = 540 px`.
 
 ### Propriedades Físicas da Função Harmônica:
 - **Velocidade nos Extremos**: A derivada temporal da posição é:
-  $$v(t) = \frac{dx}{dt} = \frac{(X_{\text{max}} - X_{\text{min}})\pi}{T} \sin(2\pi\tau)$$
-  Nos instantes $\tau = 0$ (extremo esquerdo) e $\tau = 0.5$ (extremo direito), $\sin(2\pi\tau) = 0 \implies v = 0$.  
-  A locomotiva **desacelera suavemente até parar**, inverte a marcha e reacelera progressivamente, eliminando trancos.
+
+```math
+v(t) = \frac{dx}{dt} = \frac{(X_{\text{max}} - X_{\text{min}})\pi}{T} \sin(2\pi\tau)
+```
+
+Nos instantes `\tau = 0` (extremo esquerdo) e `\tau = 0.5` (extremo direito), `\sin(2\pi\tau) = 0 \implies v = 0`. A locomotiva **desacelera suavemente até parar**, inverte a marcha e reacelera progressivamente, eliminando trancos.
 
 ---
 
@@ -50,13 +59,17 @@ Onde $X_{\text{min}} = -100\text{ px}$ e $X_{\text{max}} = 540\text{ px}$.
 
 Para que as rodas não pareçam "patinar" no gelo sobre os trilhos, a rotação angular deve ser matematicamente acoplada ao deslocamento linear da locomotiva através da lei fundamental da cinemática circular:
 
-$$s = R \cdot \Delta\theta_{\text{rad}} \implies \Delta\theta_{\text{rad}} = \frac{\Delta X}{R_{\text{roda}}}$$
+```math
+s = R \cdot \Delta\theta_{\text{rad}} \implies \Delta\theta_{\text{rad}} = \frac{\Delta X}{R_{\text{roda}}}
+```
 
-Convertendo para graus e considerando o raio primitivo $R_{\text{roda}} = 40\text{ px}$:
+Convertendo para graus e considerando o raio primitivo `R_roda = 40 px`:
 
-$$\Delta\theta_{\text{graus}} = \left(\frac{\Delta X}{R_{\text{roda}}}\right) \cdot \left(\frac{180}{\pi}\right)$$
+```math
+\Delta\theta_{\text{graus}} = \left(\frac{\Delta X}{R_{\text{roda}}}\right) \cdot \left(\frac{180}{\pi}\right)
+```
 
-No código, mantemos um acumulador de fase $\theta$:
+No código, mantemos um acumulador de fase θ:
 ```csharp
 double deltaX = xLocoAtual - _xLocoAnterior;
 _xLocoAnterior = xLocoAtual;
@@ -73,40 +86,54 @@ Essa formulação garante que:
 ## 4. Etapa 3: Coordenadas Analíticas dos Pinos de Manivela
 
 Os centros das duas rodas no espaço local do `LocomotivaCanvas` estão em:
-- Centro Roda 1: $(X_1, Y) = (130, 210)$
-- Centro Roda 2: $(X_2, Y) = (270, 210)$
+- Centro Roda 1: `(X1, Y) = (130, 210)`
+- Centro Roda 2: `(X2, Y) = (270, 210)`
 
-Como cada manivela possui raio excêntrico $r = 22\text{ px}$ e o ângulo instantâneo é $\theta$ (em radianos, $\text{rad} = \theta \times \frac{\pi}{180}$), as posições cartesianas exatas dos dois pinos são calculadas a cada quadro por decomposição trigonométrica:
+Como cada manivela possui raio excêntrico `r = 22 px` e o ângulo instantâneo é `θ` (em radianos, `rad = θ × π / 180`), as posições cartesianas exatas dos dois pinos são calculadas a cada quadro por decomposição trigonométrica:
 
-$$\begin{cases}
-pino_1X = 130 + 22 \cdot \cos(\theta) \\
-pino_1Y = 210 + 22 \cdot \sin(\theta)
-\end{cases}$$
+```math
+\begin{cases}
+pino1X = 130 + 22 \cdot \cos(\theta) \\
+pino1Y = 210 + 22 \cdot \sin(\theta)
+\end{cases}
+```
 
-$$\begin{cases}
-pino_2X = 270 + 22 \cdot \cos(\theta) \\
-pino_2Y = 210 + 22 \cdot \sin(\theta)
-\end{cases}$$
+```math
+\begin{cases}
+pino2X = 270 + 22 \cdot \cos(\theta) \\
+pino2Y = 210 + 22 \cdot \sin(\theta)
+\end{cases}
+```
 
 ---
 
 ## 5. Etapa 4: Biela de Acoplamento Horizontal (*Side Rod*)
 
 A biela de acoplamento conecta as duas rodas motrizes para que operem com o mesmo torque.
-- **Geometria**: É uma barra rígida de aço com dois olhais: Olhal Traseiro em $(0,0)$ e Olhal Dianteiro em $(140,0)$.
-- **Cinemática**: As duas manivelas têm o mesmo raio $r = 22\text{ px}$ e giram com a mesma velocidade angular $\theta(t)$. Logo, a distância vetorial entre os pinos é constante e horizontal:
-  $$\vec{P}_2 - \vec{P}_1 = (270 - 130, 0) = (140, 0)$$
-- **Transformação Aplicada**: O corpo da biela de acoplamento não precisa de rotação sobre si mesmo ($\omega_{\text{barra}} = 0$). Ele executa **translação circular pura**:
+- **Geometria**: É uma barra rígida de aço com dois olhais: Olhal Traseiro em `(0,0)` e Olhal Dianteiro em `(140,0)`.
+- **Cinemática**: As duas manivelas têm o mesmo raio `r = 22 px` e giram com a mesma velocidade angular `θ(t)`. Logo, a distância vetorial entre os pinos é constante e horizontal:
+
+```math
+\vec{P}_2 - \vec{P}_1 = (270 - 130, 0) = (140, 0)
+```
+
+- **Transformação Aplicada**: O corpo da biela de acoplamento não precisa de rotação sobre si mesmo (`ω = 0`). Ele executa **translação circular pura**:
   ```csharp
   TranslacaoBielaAcoplamento.X = pino1X;
   TranslacaoBielaAcoplamento.Y = pino1Y;
   ```
 
 ### Demonstração de Coincidência Geométrica:
+
 - Posição do Olhal 1:
-  $$(pino_1X + 0, pino_1Y + 0) = (pino_1X, pino_1Y) \quad \checkmark$$
+```math
+(pino1X + 0, pino1Y + 0) = (pino1X, pino1Y)
+```
+
 - Posição do Olhal 2:
-  $$(pino_1X + 140, pino_1Y + 0) = (130 + 22\cos\theta + 140, 210 + 22\sin\theta) = (pino_2X, pino_2Y) \quad \checkmark$$
+```math
+(pino1X + 140, pino1Y + 0) = (130 + 22\cos\theta + 140, 210 + 22\sin\theta) = (pino2X, pino2Y)
+```
 
 Ambos os olhais coincidem com precisão absoluta de sub-pixel com os pinos das duas rodas durante os 360° da trajetória.
 
@@ -128,21 +155,32 @@ O mecanismo biela-manivela converte o movimento retilíneo do pistão a vapor em
 
 ### 6.1 Restrição Cinemática da Cruzeta (*Crosshead*)
 A cruzeta está mecanicamente restrita a deslizar dentro das guias de aço horizontais, fixando sua ordenada estritamente em:
-$$Y_{\text{cruzeta}} = 210\text{ px}$$
 
-A biela motriz tem comprimento fixo entre olhais $L = 95\text{ px}$. Aplicando o **Teorema de Pitágoras** no triângulo retângulo formado pelo pino da Roda 2 e a cruzeta:
+```math
+Y_{\text{cruzeta}} = 210\text{ px}
+```
 
-$$(x_{\text{cruzeta}} - pino_2X)^2 + (Y_{\text{cruzeta}} - pino_2Y)^2 = L^2$$
+A biela motriz tem comprimento fixo entre olhais `L = 95 px`. Aplicando o **Teorema de Pitágoras** no triângulo retângulo formado pelo pino da Roda 2 e a cruzeta:
 
-Substituindo $Y_{\text{cruzeta}} = 210$:
+```math
+(x_{\text{cruzeta}} - pino2X)^2 + (Y_{\text{cruzeta}} - pino2Y)^2 = L^2
+```
 
-$$\Delta Y = 210 - pino_2Y = -22 \cdot \sin(\theta)$$
+Substituindo `Y_cruzeta = 210`:
 
-$$(x_{\text{cruzeta}} - pino_2X)^2 + \Delta Y^2 = L^2$$
+```math
+\Delta Y = 210 - pino2Y = -22 \cdot \sin(\theta)
+```
 
-Como a cruzeta fica à frente da roda ($x_{\text{cruzeta}} > pino_2X$):
+```math
+(x_{\text{cruzeta}} - pino2X)^2 + \Delta Y^2 = L^2
+```
 
-$$x_{\text{cruzeta}} = pino_2X + \sqrt{L^2 - \Delta Y^2}$$
+Como a cruzeta fica à frente da roda (`x_cruzeta > pino2X`):
+
+```math
+x_{\text{cruzeta}} = pino2X + \sqrt{L^2 - \Delta Y^2}
+```
 
 No código C#:
 ```csharp
@@ -152,25 +190,31 @@ double catetoHorizontal = Math.Sqrt(termoRadical);
 double xCruzeta = pino2X + catetoHorizontal;
 ```
 > [!NOTE]
-> O uso de `Math.Max(0.0, ...)` é uma salvaguarda numérica para evitar raiz quadrada de números negativos em caso de anomalias de ponto flutuante. Como $L = 95\text{ px}$ e $|\Delta Y| \le 22\text{ px}$, temos $L^2 - \Delta Y^2 \ge 95^2 - 22^2 = 9025 - 484 = 8541 > 0$, garantindo que o radical seja sempre positivo.
+> O uso de `Math.Max(0.0, ...)` é uma salvaguarda numérica para evitar raiz quadrada de números negativos em caso de anomalias de ponto flutuante. Como `L = 95 px` e `|ΔY| ≤ 22 px`, temos `L² - ΔY² ≥ 95² - 22² = 9025 - 484 = 8541 > 0`, garantindo que o radical seja sempre positivo.
 
 ---
 
 ## 7. Etapa 6: Orientação Angular da Biela Motriz (`Math.Atan2`)
 
-A biela motriz possui seu Olhal Traseiro em $(0,0)$ e seu Olhal Dianteiro a uma distância $L = 95\text{ px}$ ao longo de seu eixo local $X$.
+A biela motriz possui seu Olhal Traseiro em `(0,0)` e seu Olhal Dianteiro a uma distância `L = 95 px` ao longo de seu eixo local X.
 
 1. **Translação**: O olhal traseiro é transladado diretamente para o pino da Roda 2:
    ```csharp
    TranslacaoBielaMotriz.X = pino2X;
    TranslacaoBielaMotriz.Y = pino2Y;
    ```
-2. **Ângulo de Apontamento**: A biela precisa rotacionar em torno do seu olhal traseiro para que o olhal dianteiro atinja a cruzeta em $(x_{\text{cruzeta}}, 210)$.
+2. **Ângulo de Apontamento**: A biela precisa rotacionar em torno do seu olhal traseiro para que o olhal dianteiro atinja a cruzeta em `(xCruzeta, 210)`.
    O vetor que liga o pino à cruzeta é:
-   $$\vec{V} = (x_{\text{cruzeta}} - pino_2X, 210 - pino_2Y)$$
+
+```math
+\vec{V} = (x_{\text{cruzeta}} - pino2X, 210 - pino2Y)
+```
 
 No WPF, onde o eixo Y aponta para baixo e rotações positivas são no sentido horário:
-$$\alpha = \text{atan2}(210 - pino_2Y, x_{\text{cruzeta}} - pino_2X) \cdot \left(\frac{180}{\pi}\right)$$
+
+```math
+\alpha = \text{atan2}(210 - pino2Y, x_{\text{cruzeta}} - pino2X) \cdot \left(\frac{180}{\pi}\right)
+```
 
 No código:
 ```csharp
@@ -180,8 +224,14 @@ RotacaoBielaMotriz.Angle = anguloBielaMotriz;
 
 ### Prova Matemática de Fechamento do Mecanismo:
 A posição final do olhal dianteiro na tela é:
-$$X_{\text{olhal\_frente}} = pino_2X + L \cdot \cos\alpha = pino_2X + L \cdot \frac{x_{\text{cruzeta}} - pino_2X}{L} = x_{\text{cruzeta}}$$
-$$Y_{\text{olhal\_frente}} = pino_2Y + L \cdot \sin\alpha = pino_2Y + L \cdot \frac{210 - pino_2Y}{L} = 210$$
+
+```math
+X_{\text{frente}} = pino2X + L \cdot \cos\alpha = pino2X + L \cdot \frac{x_{\text{cruzeta}} - pino2X}{L} = x_{\text{cruzeta}}
+```
+
+```math
+Y_{\text{frente}} = pino2Y + L \cdot \sin\alpha = pino2Y + L \cdot \frac{210 - pino2Y}{L} = 210
+```
 
 Portanto, **o olhal dianteiro coincide com o pino da cruzeta em 100% dos quadros**, sem qualquer desvio ou atraso perceptível.
 

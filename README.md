@@ -37,7 +37,11 @@ O projeto atende a 100% dos critérios avaliativos estipulados no enunciado acad
 3. **Mecanismo Biela-Manivela-Pistão (Cinemática Analítica)**:
    - **Biela de Acoplamento**: Transladada circularmente para $(pino1X, pino1Y)$, conectando os eixos das duas rodas com $140\text{ px}$ de distância.
    - **Cruzeta do Pistão**: Desliza no eixo horizontal $Y = 210\text{ px}$ entre as guias de aço, com coordenada calculada analiticamente por:
-     $$x_{\text{cruzeta}} = pino2X + \sqrt{L^2 - (210 - pino2Y)^2} \quad (L = 95\text{ px})$$
+
+```math
+x_{\text{cruzeta}} = pino2X + \sqrt{L^2 - (210 - pino2Y)^2} \quad (L = 95\text{ px})
+```
+
    - **Biela Motriz**: Transladada para o pino da Roda 2 e rotacionada no sentido horário por $\alpha = \text{atan2}(210 - pino2Y, x_{\text{cruzeta}} - pino2X) \times \frac{180}{\pi}$, garantindo coincidência geométrica absoluta de seus olhais a cada sub-pixel.
 4. **Acabamento Estético Realista**: Modelo autônomo de **locomotiva-tanque (Tank Engine 0-4-0T)** com caixas de água laterais, bunker de carvão traseiro, limpa-trilhos em cunha dianteiro, para-choques de absorção e engate ferroviário.
 5. **Análise de Qualidade (SonarQube Community)**: **0 bugs, 0 vulnerabilidades, 0 code smells, 0.0% duplicação** e **Quality Gate PASSED (A)**.

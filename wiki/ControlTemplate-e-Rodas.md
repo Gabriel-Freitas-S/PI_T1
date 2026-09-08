@@ -58,10 +58,14 @@ Diferente de desenhos simplistas onde o pino fica flutuando solto sobre a roda, 
 1. **Cubo Central**: `Ellipse` de $24 \times 24\text{ px}$ transladada para $(28, 28)$ (centro exato $(40,40)$).
 2. **Braço da Manivela**: `Rectangle` maciço de $26 \times 12\text{ px}$ com cantos arredondados, transladado para $(38, 34)$, ligando o centro $(40,40)$ até o ponto $(62,40)$.
 3. **Cabeça de Fixação do Pino**: `Ellipse` de $16 \times 16\text{ px}$ transladada para $(54, 32)$ (centro $(62,40)$).
-4. **Pino Excêntrico**: `Ellipse` de $8 \times 8\text{ px}$ em vermelho/bronze (`#C0392B`) transladada para $(58, 36)$ (centro $(62,40)$).
+4. **Pino Excêntrico**: `Ellipse` de 8×8 px em vermelho/bronze (`#C0392B`) transladada para (58, 36) (centro (62, 40)).
    - O raio da manivela é:
-     $$r_{\text{manivela}} = 62 - 40 = 22\text{ px}$$
-5. **Parafuso Central do Eixo**: `Ellipse` preta de $8 \times 8\text{ px}$ transladada para $(36, 36)$ (centro $(40,40)$), marcando com precisão o pivô de rotação.
+
+```math
+r_{\text{manivela}} = 62 - 40 = 22\text{ px}
+```
+
+5. **Parafuso Central do Eixo**: `Ellipse` preta de 8×8 px transladada para (36, 36) (centro (40, 40)), marcando com precisão o pivô de rotação.
 
 ---
 
@@ -104,9 +108,12 @@ Como a roda possui largura e altura de $80\text{ px}$, o ponto $(40,40)$ é o ce
 - **Roda 1**: Transladada para $(90, 170) \implies \text{Centro em } (90+40, 170+40) = \mathbf{(130, 210)}$.
 - **Roda 2**: Transladada para $(230, 170) \implies \text{Centro em } (230+40, 170+40) = \mathbf{(270, 210)}$.
 - **Distância entre Eixos (*Wheelbase*)**:
-  $$D = 270 - 130 = \mathbf{140\text{ px}}$$
 
-Essa distância entre eixos de $140\text{ px}$ é o parâmetro geométrico fundamental utilizado na modelagem da biela de acoplamento (*Side Rod*).
+```math
+D = 270 - 130 = 140\text{ px}
+```
+
+Essa distância entre eixos de 140 px é o parâmetro geométrico fundamental utilizado na modelagem da biela de acoplamento (*Side Rod*).
 
 ---
 
