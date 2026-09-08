@@ -1,0 +1,65 @@
+# ==============================================================================
+# EditorConfig - Processamento de Imagens - Trabalho 1 (Locomotiva 2D WPF)
+# Documentação oficial: https://learn.microsoft.com/pt-br/dotnet/fundamentals/code-analysis/configuration-files
+# ==============================================================================
+
+root = true
+
+# ------------------------------------------------------------------------------
+# Configurações Globais para Todos os Arquivos
+# ------------------------------------------------------------------------------
+[*]
+indent_style = space
+indent_size = 4
+tab_width = 4
+end_of_line = crlf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# ------------------------------------------------------------------------------
+# Código C# (.NET 10 / C# 13)
+# ------------------------------------------------------------------------------
+[*.{cs,csx}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+# Preferências de Linguagem C#
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+
+# Organização de Usings
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# ------------------------------------------------------------------------------
+# Arquivos de Marcação XAML e XML (.xaml, .xml, .csproj, .props)
+# ------------------------------------------------------------------------------
+[*.{xaml,xml,csproj,props,targets}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# ------------------------------------------------------------------------------
+# Configurações JSON e YAML
+# ------------------------------------------------------------------------------
+[*.{json,jsonc,yml,yaml}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# ------------------------------------------------------------------------------
+# Documentação Markdown
+# ------------------------------------------------------------------------------
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+insert_final_newline = true

@@ -1,0 +1,99 @@
+# ==============================================================================
+# .gitignore — Processamento de Imagens - Trabalho 1 (Locomotiva 2D WPF .NET 10)
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Compilação e Binários do .NET / C# / WPF
+# ------------------------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Aa]pp[Dd]ata/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]uild/
+publish/
+
+# Arquivos de usuário e caches de projeto
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.pidb
+*.booproj
+*.svclog
+
+# ------------------------------------------------------------------------------
+# 2. Visual Studio e Ambientes de Desenvolvimento
+# ------------------------------------------------------------------------------
+.vs/
+*.DotSettings.user
+_ReSharper*/
+
+# VS Code (Permite versionar settings.json, tasks.json, launch.json, extensions.json)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.vscode/*.log
+
+# ------------------------------------------------------------------------------
+# 3. SonarQube e SonarScanner (.scannerwork, relatórios)
+# ------------------------------------------------------------------------------
+.scannerwork/
+.sonar/
+.sonarqube/
+sonar-scanner/
+
+# ------------------------------------------------------------------------------
+# 4. Pacotes NuGet e Caches
+# ------------------------------------------------------------------------------
+*.nuget.props
+*.nuget.targets
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ------------------------------------------------------------------------------
+# 5. Arquivos Temporários do Projeto e Capturas Locais
+# ------------------------------------------------------------------------------
+frame_check.png
+screenshot_actual.png
+temp_slide_img/
+*.tmp
+*.temp
+
+# ------------------------------------------------------------------------------
+# 6. Logs, Diagnósticos e Crash Dumps
+# ------------------------------------------------------------------------------
+*.log
+*.dmp
+*.crash
+*.mdmp
+*.stackdump
+
+# ------------------------------------------------------------------------------
+# 7. Arquivos de Sistema Operacional (Windows / macOS / Linux)
+# ------------------------------------------------------------------------------
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+*~

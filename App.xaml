@@ -1,0 +1,12 @@
+<Application x:Class="PI_T1.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:PI_T1"
+             StartupUri="MainWindow.xaml">
+    <!-- # ===================================================================== -->
+    <!-- # DEFINIÇÃO DA APLICAÇÃO WPF                                            -->
+    <!-- # ===================================================================== -->
+    <!-- * StartupUri inicializa a janela principal da locomotiva 2D             -->
+    <Application.Resources>
+    </Application.Resources>
+</Application>
