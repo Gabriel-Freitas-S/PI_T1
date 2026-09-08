@@ -14,4 +14,58 @@
     <AssemblyName>PI_T1</AssemblyName>
   </PropertyGroup>
 
+  <!-- # ===================================================================== -->
+  <!-- # ANINHAMENTO DE ARQUIVOS (DEPENDENTUPON NO SOLUTION EXPLORER)          -->
+  <!-- # ===================================================================== -->
+  <!-- * Agrupa visualmente os arquivos .xaml.cs sob seus respectivos .xaml    -->
+  <ItemGroup>
+    <Compile Update="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\LocomotivaControl.xaml.cs">
+      <DependentUpon>LocomotivaControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <!-- # ===================================================================== -->
+  <!-- # DEFINIÇÃO DE PÁGINAS E RECURSOS XAML (DESIGNER DO VISUAL STUDIO)      -->
+  <!-- # ===================================================================== -->
+  <ItemGroup>
+    <ApplicationDefinition Update="App.xaml">
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\LocomotivaControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Resources\LocomotivaResources.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+  <!-- # ===================================================================== -->
+  <!-- # EXIBIÇÃO EXPLÍCITA DE PASTAS, DOCUMENTAÇÕES E ASSETS NO PROJETO       -->
+  <!-- # ===================================================================== -->
+  <!-- * Garante que a Wiki, Trabalhos, Slides, scripts e mídias apareçam      -->
+  <!-- * organizados no Gerenciador de Soluções / Solution Explorer            -->
+  <ItemGroup>
+    <None Include="generate_gif.ps1" />
+    <None Include="locomotiva.gif" />
+    <None Include="frame_check.png" />
+    <None Include="README.md" />
+    <None Include="sonar-project.properties" />
+    <None Include=".editorconfig" />
+    <None Include="Slide\**" />
+    <None Include="Trabalho\**" />
+    <None Include="wiki\**" />
+  </ItemGroup>
+
 </Project>
