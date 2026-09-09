@@ -52,7 +52,7 @@ public partial class App : Application
             window.Arrange(new Rect(0, 0, 1100, 620));
             window.UpdateLayout();
 
-            double duration = e.Args.Length > 1 && double.TryParse(e.Args[1], System.Globalization.CultureInfo.InvariantCulture, out double d) ? d : 11.0;
+            double duration = e.Args.Length > 1 && double.TryParse(e.Args[1], System.Globalization.CultureInfo.InvariantCulture, out double d) ? d : 15.0;
             int fps = e.Args.Length > 2 && int.TryParse(e.Args[2], out int f) ? f : 25;
             string outDir = e.Args.Length > 3 ? e.Args[3] : "frames";
 

@@ -1,8 +1,8 @@
-# Navegação da Wiki
+# Navegação da Documentação
 
-### 🚂 Locomotiva a Vapor 2D (WPF)
+### Sumário Técnico
 
-- **[Home (Início)](Home)**
+- **[Página Inicial](Home)**
 - **[1. Arquitetura e Princípios 2D](Arquitetura-e-Visao-Geral)**
 - **[2. Modelagem Visual (XAML)](Modelagem-Visual-MainWindow-XAML)**
 - **[3. ControlTemplate e Rodas](ControlTemplate-e-Rodas)**
@@ -13,26 +13,23 @@
 
 ---
 
-### 📂 Código no Repositório
-- [`MainWindow.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml)
-- [`MainWindow.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml.cs)
-- [`Controls/LocomotivaControl.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml)
-- [`Controls/LocomotivaControl.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml.cs)
-- [`Models/LocomotivaKinematics.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaKinematics.cs)
-- [`Models/LocomotivaFrameState.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaFrameState.cs)
-- [`ViewModels/ViewModelBase.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/ViewModels/ViewModelBase.cs)
-- [`ViewModels/LocomotivaViewModel.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/ViewModels/LocomotivaViewModel.cs)
-- [`ViewModels/MainViewModel.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/ViewModels/MainViewModel.cs)
-- [`Resources/LocomotivaResources.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Resources/LocomotivaResources.xaml)
-- [`App.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/App.xaml)
-- [`App.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/App.xaml.cs)
-- [`PI_T1.csproj`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/PI_T1.csproj)
-- [`generate_gif.ps1`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/generate_gif.ps1)
-- [`.editorconfig`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/.editorconfig)
-- [`sonar-project.properties`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/sonar-project.properties)
+### Módulos do Sistema
+
+- **Janela e Cenário**: [`MainWindow.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml) • [`.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml.cs)
+- **Controle da Locomotiva**: [`LocomotivaControl.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml) • [`.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml.cs)
+- **Model (Física e Cinemática)**: [`LocomotivaKinematics.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaKinematics.cs)
+- **DTO de Estado**: [`LocomotivaFrameState.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaFrameState.cs)
+- **Infraestrutura MVVM**: [`ViewModelBase.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/ViewModels/ViewModelBase.cs)
+- **ViewModel da Locomotiva**: [`LocomotivaViewModel.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/ViewModels/LocomotivaViewModel.cs)
+- **ViewModel Principal**: [`MainViewModel.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/ViewModels/MainViewModel.cs)
+- **Templates e Recursos**: [`LocomotivaResources.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Resources/LocomotivaResources.xaml)
+- **Ciclo de Vida do App**: [`App.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/App.xaml) • [`.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/App.xaml.cs)
+- **Projeto .NET 10**: [`PI_T1.csproj`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/PI_T1.csproj)
+- **Script de Gravação**: [`generate_gif.ps1`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/generate_gif.ps1)
 
 ---
 
-### 📄 Enunciado & Slides
+### Fontes Normativas
+
 - [Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md)
-- [Slides Transformações 2D](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Slide/2D.md)
+- [Slides de Aula: Transformações 2D](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Slide/2D.md)

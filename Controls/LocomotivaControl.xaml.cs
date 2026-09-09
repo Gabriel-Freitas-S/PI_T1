@@ -19,9 +19,7 @@ public partial class LocomotivaControl : UserControl
     }
 
     /// <summary>
-    /// Aplica o estado cinemático calculado.
-    /// Se o DataContext for um LocomotivaViewModel, delega ao ViewModel para notificação reativa;
-    /// caso contrário, atualiza diretamente as matrizes de hardware de transformação afim.
+    /// Aplica o estado cinemático calculado delegando diretamente ao LocomotivaViewModel via Data Binding (MVVM puro).
     /// </summary>
     /// <param name="estado">Estado imutável contendo coordenadas e rotações do quadro atual.</param>
     public void AtualizarEstado(in LocomotivaFrameState estado)
@@ -29,42 +27,7 @@ public partial class LocomotivaControl : UserControl
         if (DataContext is LocomotivaViewModel vm)
         {
             vm.AtualizarEstado(estado);
-            return;
         }
-
-        AplicarTransformacoesDiretas(estado);
-    }
-
-    /// <summary>
-    /// Atribuição direta às transformações afins (utilizada quando o DataContext não está associado).
-    /// </summary>
-    private void AplicarTransformacoesDiretas(in LocomotivaFrameState estado)
-    {
-        //* 1. Rotação das rodas sob o chassi
-        RotacaoRoda1.Angle = estado.AnguloRodas;
-        RotacaoRoda2.Angle = estado.AnguloRodas;
-
-        //* 2. Translação da biela de acoplamento horizontal (side rod)
-        TranslacaoBielaAcoplamento.X = estado.BielaAcoplamentoX;
-        TranslacaoBielaAcoplamento.Y = estado.BielaAcoplamentoY;
-
-        //* 3. Cruzeta deslizante e componentes do pistão
-        TranslacaoCruzeta.X = estado.CruzetaX;
-        TranslacaoCruzeta.Y = estado.CruzetaY;
-
-        TranslacaoPinoCruzeta.X = estado.PinoCruzetaX;
-        TranslacaoPinoCruzeta.Y = estado.PinoCruzetaY;
-
-        TranslacaoHastePistao.X = estado.HastePistaoX;
-        TranslacaoHastePistao.Y = estado.HastePistaoY;
-
-        //* 4. Biela motriz articulada (translação + rotação analítica)
-        TranslacaoBielaMotriz.X = estado.BielaMotrizX;
-        TranslacaoBielaMotriz.Y = estado.BielaMotrizY;
-        RotacaoBielaMotriz.Angle = estado.BielaMotrizAngulo;
-
-        //* 5. Translação global do Canvas da locomotiva através da tela
-        TranslacaoLocomotiva.X = estado.LocomotivaX;
     }
 
     /// <summary>

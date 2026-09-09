@@ -1,9 +1,9 @@
 ---
 name: msdocs-wpf-xml
-description: Consulta documentacao oficial Microsoft Learn de WPF/XAML e XML no .NET via MCP fetch-docs-microsoft. Use quando precisar de RotateTransform, TranslateTransform, Storyboard, ControlTemplate, Canvas, data binding, estilos, ou System.Xml, XmlReader, XmlWriter, LINQ to XML.
+description: Consulta documentacao oficial Microsoft Learn de WPF/XAML, XML e C#/.NET via MCP fetch-docs-microsoft. Use quando precisar de RotateTransform, TranslateTransform, Storyboard, ControlTemplate, Canvas, data binding, estilos, System.Xml, XmlReader, XmlWriter, LINQ to XML, ou C# (tipos, POO, excecoes, async/await, eventos) e API .NET no code-behind.
 ---
 
-# MSDocs WPF/XML
+# MSDocs WPF/XML/C#
 
 Skill de projeto para buscar conteudo oficial da Microsoft via MCP `fetch-docs-microsoft`
 (`uvx mcp-server-fetch`). Vale para **opencode**, **Gemini CLI** e **Antigravity**,
@@ -16,7 +16,11 @@ pois fica em `.agents/skills/` — caminho lido pelos tres.
 - Duvida de XAML: sintaxe, namespaces, `StaticResource`/`DynamicResource`, templates, triggers.
 - Duvida de XML no .NET: `System.Xml`, `XmlReader`/`XmlWriter`, `XmlDocument`, `XPath`,
   `XDocument` / LINQ to XML, `XmlSerializer`.
-- Sempre que for responder sobre WPF/XML neste projeto, prefira o Learn ao conhecimento do modelo.
+- Duvida de C# no code-behind: tipos, POO (classes/structs/heranca), excecoes,
+  `async`/`await`, eventos (`+=`, `EventHandler`, `RoutedEventArgs`), palavras-chave.
+- Duvida de .NET: fundamentos, referencia da API (`System.*`), eventos, boas praticas de excecao.
+- Duvida de code-behind WPF: `DispatcherTimer`, eventos roteados, `Loaded`/`Click`.
+- Sempre que for responder sobre WPF/XML/C# neste projeto, prefira o Learn ao conhecimento do modelo.
 
 ## Como usar (obrigatorio)
 
@@ -32,6 +36,7 @@ pois fica em `.agents/skills/` — caminho lido pelos tres.
 - `Use o fetch-docs-microsoft para ler https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/xaml/ e me mostrar como declarar uma RotateTransform animada`
 - `Busque no Learn como animar TranslateTransform de um Canvas com Storyboard para a locomotiva`
 - `Leia a doc de XDocument (LINQ to XML) e mostre como ler/escrever XML no .NET`
+- `Use o fetch-docs-microsoft para ler o Tour do C# e mostrar como declarar o handler Tick do DispatcherTimer no code-behind`
 
 ## Rules resumidas
 

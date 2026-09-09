@@ -1,11 +1,13 @@
 # Rules — msdocs-wpf-xml (projeto PI_T1)
 
 Estas rules valem para **opencode**, **Gemini CLI** e **Antigravity** neste projeto.
+Escopo: WPF/XAML, XML e C#/.NET (code-behind).
 
 ## 1. Fonte de verdade
 
-- Para WPF/XAML/XML, a fonte oficial e o Microsoft Learn via MCP `fetch-docs-microsoft`.
-- Nao adivinhe assinatura de API (`RotateTransform.Angle`, `Storyboard.TargetProperty`, etc.).
+- Para WPF/XAML/XML e C#/.NET, a fonte oficial e o Microsoft Learn via MCP `fetch-docs-microsoft`.
+- Nao adivinhe assinatura de API (`RotateTransform.Angle`, `Storyboard.TargetProperty`,
+  `DispatcherTimer.Tick`, etc.).
   Se nao lembra, busque na URL catalogada em `references/urls.md` e cite.
 
 ## 2. Allowlist de dominios (fetch MCP)

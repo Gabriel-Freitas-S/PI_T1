@@ -4,11 +4,11 @@
 # Uso: .\generate_gif.ps1
 #
 # Parametros opcionais:
-#   .\generate_gif.ps1 -Duration 11.0 -Fps 25 -Width 880 -OutputFile "locomotiva.gif"
+#   .\generate_gif.ps1 -Duration 15.0 -Fps 25 -Width 880 -OutputFile "locomotiva.gif"
 # ==============================================================================
 
 param(
-    [double]$Duration = 11.0,
+    [double]$Duration = 15.0,
     [int]$Fps = 20,
     [int]$Width = 800,
     [string]$OutputFile = "locomotiva.gif"

@@ -10,7 +10,10 @@
     <!--# ========================================================================= -->
     <Canvas x:Name="LocomotivaCanvas" Width="560" Height="300">
         <Canvas.RenderTransform>
-            <TranslateTransform x:Name="TranslacaoLocomotiva" X="{Binding LocomotivaX, FallbackValue=-100}" Y="155"/>
+            <TransformGroup>
+                <ScaleTransform x:Name="EscalaDirecaoLocomotiva" ScaleX="{Binding EscalaDirecaoX, FallbackValue=1.0}" CenterX="280" CenterY="150"/>
+                <TranslateTransform x:Name="TranslacaoLocomotiva" X="{Binding LocomotivaX, FallbackValue=20}" Y="155"/>
+            </TransformGroup>
         </Canvas.RenderTransform>
 
         <!--* Feixe de luz volumétrico do farol dianteiro -->

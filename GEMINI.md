@@ -2,7 +2,7 @@
 
 ## Skill de docs
 
-- Ative a skill `msdocs-wpf-xml` (`.agents/skills/msdocs-wpf-xml/SKILL.md`) para WPF/XAML/XML.
+- Ative a skill `msdocs-wpf-xml` (`.agents/skills/msdocs-wpf-xml/SKILL.md`) para WPF/XAML/XML e C#/.NET.
 - MCP local: `fetch-docs-microsoft` (ver `.gemini/settings.json` e `.agents/mcp_config.json`).
 - URLs: `.agents/skills/msdocs-wpf-xml/references/urls.md`
 - Rules: `.agents/skills/msdocs-wpf-xml/references/rules.md`
@@ -14,6 +14,6 @@
 
 ## Rules
 
-1. Consulte o Learn via MCP antes de afirmar sintaxe WPF/XAML; cite a URL (pt-br, fallback en-us).
+1. Consulte o Learn via MCP antes de afirmar sintaxe WPF/XAML ou C#/.NET; cite a URL (pt-br, fallback en-us).
 2. Allowlist: apenas `https://learn.microsoft.com/**`.
 3. Padrao do trabalho: `(0,0)` + `RenderTransform`; rodas `ControlTemplate` + `RotateTransform` + `Storyboard`; `Canvas` + `TranslateTransform`; bielas `Rectangle`/`Line`.

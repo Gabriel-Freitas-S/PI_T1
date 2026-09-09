@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using PI_T1.Models;
 
 namespace PI_T1.ViewModels;
@@ -16,10 +17,29 @@ namespace PI_T1.ViewModels;
 public class LocomotivaViewModel : ViewModelBase
 {
     //# =======================================================================
+    //# CACHE ESTÁTICO DE ARGUMENTOS DE NOTIFICAÇÃO (ZERO HEAP ALLOCATIONS NO GC)
+    //# =======================================================================
+    private static readonly PropertyChangedEventArgs LocomotivaXArgs = new(nameof(LocomotivaX));
+    private static readonly PropertyChangedEventArgs EscalaDirecaoXArgs = new(nameof(EscalaDirecaoX));
+    private static readonly PropertyChangedEventArgs AnguloRodasArgs = new(nameof(AnguloRodas));
+    private static readonly PropertyChangedEventArgs BielaAcoplamentoXArgs = new(nameof(BielaAcoplamentoX));
+    private static readonly PropertyChangedEventArgs BielaAcoplamentoYArgs = new(nameof(BielaAcoplamentoY));
+    private static readonly PropertyChangedEventArgs CruzetaXArgs = new(nameof(CruzetaX));
+    private static readonly PropertyChangedEventArgs CruzetaYArgs = new(nameof(CruzetaY));
+    private static readonly PropertyChangedEventArgs PinoCruzetaXArgs = new(nameof(PinoCruzetaX));
+    private static readonly PropertyChangedEventArgs PinoCruzetaYArgs = new(nameof(PinoCruzetaY));
+    private static readonly PropertyChangedEventArgs HastePistaoXArgs = new(nameof(HastePistaoX));
+    private static readonly PropertyChangedEventArgs HastePistaoYArgs = new(nameof(HastePistaoY));
+    private static readonly PropertyChangedEventArgs BielaMotrizXArgs = new(nameof(BielaMotrizX));
+    private static readonly PropertyChangedEventArgs BielaMotrizYArgs = new(nameof(BielaMotrizY));
+    private static readonly PropertyChangedEventArgs BielaMotrizAnguloArgs = new(nameof(BielaMotrizAngulo));
+
+    //# =======================================================================
     //# CAMPOS PRIVADOS DE ESTADO DE APRESENTAÇÃO
     //# =======================================================================
 
-    private double _locomotivaX = -100.0;
+    private double _locomotivaX = 20.0;
+    private double _escalaDirecaoX = 1.0;
     private double _anguloRodas;
     private double _bielaAcoplamentoX = 152.0;
     private double _bielaAcoplamentoY = 210.0;
@@ -43,7 +63,16 @@ public class LocomotivaViewModel : ViewModelBase
     public double LocomotivaX
     {
         get => _locomotivaX;
-        set => SetProperty(ref _locomotivaX, value);
+        set => SetProperty(ref _locomotivaX, value, LocomotivaXArgs);
+    }
+
+    /// <summary>
+    /// Fator de escala horizontal direcional (+1.0 para a direita, -1.0 para a esquerda).
+    /// </summary>
+    public double EscalaDirecaoX
+    {
+        get => _escalaDirecaoX;
+        set => SetProperty(ref _escalaDirecaoX, value, EscalaDirecaoXArgs);
     }
 
     /// <summary>
@@ -52,7 +81,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double AnguloRodas
     {
         get => _anguloRodas;
-        set => SetProperty(ref _anguloRodas, value);
+        set => SetProperty(ref _anguloRodas, value, AnguloRodasArgs);
     }
 
     /// <summary>
@@ -61,7 +90,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double BielaAcoplamentoX
     {
         get => _bielaAcoplamentoX;
-        set => SetProperty(ref _bielaAcoplamentoX, value);
+        set => SetProperty(ref _bielaAcoplamentoX, value, BielaAcoplamentoXArgs);
     }
 
     /// <summary>
@@ -70,7 +99,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double BielaAcoplamentoY
     {
         get => _bielaAcoplamentoY;
-        set => SetProperty(ref _bielaAcoplamentoY, value);
+        set => SetProperty(ref _bielaAcoplamentoY, value, BielaAcoplamentoYArgs);
     }
 
     /// <summary>
@@ -79,7 +108,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double CruzetaX
     {
         get => _cruzetaX;
-        set => SetProperty(ref _cruzetaX, value);
+        set => SetProperty(ref _cruzetaX, value, CruzetaXArgs);
     }
 
     /// <summary>
@@ -88,7 +117,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double CruzetaY
     {
         get => _cruzetaY;
-        set => SetProperty(ref _cruzetaY, value);
+        set => SetProperty(ref _cruzetaY, value, CruzetaYArgs);
     }
 
     /// <summary>
@@ -97,7 +126,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double PinoCruzetaX
     {
         get => _pinoCruzetaX;
-        set => SetProperty(ref _pinoCruzetaX, value);
+        set => SetProperty(ref _pinoCruzetaX, value, PinoCruzetaXArgs);
     }
 
     /// <summary>
@@ -106,7 +135,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double PinoCruzetaY
     {
         get => _pinoCruzetaY;
-        set => SetProperty(ref _pinoCruzetaY, value);
+        set => SetProperty(ref _pinoCruzetaY, value, PinoCruzetaYArgs);
     }
 
     /// <summary>
@@ -115,7 +144,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double HastePistaoX
     {
         get => _hastePistaoX;
-        set => SetProperty(ref _hastePistaoX, value);
+        set => SetProperty(ref _hastePistaoX, value, HastePistaoXArgs);
     }
 
     /// <summary>
@@ -124,7 +153,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double HastePistaoY
     {
         get => _hastePistaoY;
-        set => SetProperty(ref _hastePistaoY, value);
+        set => SetProperty(ref _hastePistaoY, value, HastePistaoYArgs);
     }
 
     /// <summary>
@@ -133,7 +162,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double BielaMotrizX
     {
         get => _bielaMotrizX;
-        set => SetProperty(ref _bielaMotrizX, value);
+        set => SetProperty(ref _bielaMotrizX, value, BielaMotrizXArgs);
     }
 
     /// <summary>
@@ -142,7 +171,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double BielaMotrizY
     {
         get => _bielaMotrizY;
-        set => SetProperty(ref _bielaMotrizY, value);
+        set => SetProperty(ref _bielaMotrizY, value, BielaMotrizYArgs);
     }
 
     /// <summary>
@@ -151,7 +180,7 @@ public class LocomotivaViewModel : ViewModelBase
     public double BielaMotrizAngulo
     {
         get => _bielaMotrizAngulo;
-        set => SetProperty(ref _bielaMotrizAngulo, value);
+        set => SetProperty(ref _bielaMotrizAngulo, value, BielaMotrizAnguloArgs);
     }
 
     //# =======================================================================
@@ -160,11 +189,13 @@ public class LocomotivaViewModel : ViewModelBase
 
     /// <summary>
     /// Atualiza em bloco as propriedades observáveis a partir do estado cinemático imutável fornecido pelo Model.
+    /// Utiliza instâncias estáticas cacheadas de PropertyChangedEventArgs, garantindo Zero-Alloc no GC.
     /// </summary>
     /// <param name="estado">Estado calculado pelo motor de cinemática analítica.</param>
     public void AtualizarEstado(in LocomotivaFrameState estado)
     {
         LocomotivaX = estado.LocomotivaX;
+        EscalaDirecaoX = estado.EscalaDirecaoX;
         AnguloRodas = estado.AnguloRodas;
         BielaAcoplamentoX = estado.BielaAcoplamentoX;
         BielaAcoplamentoY = estado.BielaAcoplamentoY;

@@ -35,7 +35,7 @@ public class MainViewModel : ViewModelBase
 
     private string _titulo = "PROCESSO DE IMAGENS — TRABALHO C1: LOCOMOTIVA A VAPOR 2D";
     private string _subtitulo = " | Cinemática Analítica & Mecanismo Biela-Manivela";
-    private string _statusTrajetoria = "Trajetória contínua em loop: entra pela esquerda, cruza o cenário e sai pela direita em circuito infinito.";
+    private string _statusTrajetoria = "Trajetória contínua nos limites da janela (vai-e-volta com inversão e física analítica biela-manivela).";
     private string _autor = "Gabriel Freitas Souza";
 
     /// <summary>
@@ -85,8 +85,13 @@ public class MainViewModel : ViewModelBase
     /// <param name="larguraCenario">Largura atual do contêiner visual de percurso.</param>
     public void AtualizarQuadro(double tempoSegundos, double larguraCenario)
     {
-        LocomotivaFrameState estado = _kinematics.CalcularQuadro(tempoSegundos, larguraCenario);
+        LocomotivaFrameState estado = LocomotivaKinematics.CalcularQuadro(tempoSegundos, larguraCenario);
         Locomotiva.AtualizarEstado(estado);
+
+        if (!string.IsNullOrEmpty(estado.StatusDescritivo) && _statusTrajetoria != estado.StatusDescritivo)
+        {
+            StatusTrajetoria = estado.StatusDescritivo;
+        }
     }
 
     /// <summary>

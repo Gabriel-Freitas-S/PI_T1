@@ -17,6 +17,8 @@ namespace PI_T1.Models;
 /// <param name="BielaMotrizX">Coordenada X de ancoragem da biela motriz no pino da roda dianteira.</param>
 /// <param name="BielaMotrizY">Coordenada Y de ancoragem da biela motriz no pino da roda dianteira.</param>
 /// <param name="BielaMotrizAngulo">Ângulo de inclinação da biela motriz em graus (calculado via Math.Atan2).</param>
+/// <param name="EscalaDirecaoX">Fator de escala direcional horizontal (+1.0 para direita, -1.0 para esquerda).</param>
+/// <param name="StatusDescritivo">Descrição contextual do estado de movimento atual da locomotiva.</param>
 public readonly record struct LocomotivaFrameState(
     double LocomotivaX,
     double AnguloRodas,
@@ -30,5 +32,7 @@ public readonly record struct LocomotivaFrameState(
     double HastePistaoY,
     double BielaMotrizX,
     double BielaMotrizY,
-    double BielaMotrizAngulo
+    double BielaMotrizAngulo,
+    double EscalaDirecaoX = 1.0,
+    string StatusDescritivo = ""
 );

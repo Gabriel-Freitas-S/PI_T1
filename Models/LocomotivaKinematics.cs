@@ -22,14 +22,19 @@ public class LocomotivaKinematics
     public const double RaioManivela = 22.0;           //* Raio do pino excêntrico da manivela
     public const double ComprimentoBielaMotriz = 82.0; //* Distância entre centros dos olhais (L = 82px)
     public const double LarguraLocomotiva = 560.0;     //* Extensão total do bloco da locomotiva com para-choques
+    public const double MargemSegurancaLateral = 20.0; //* Margem de segurança das bordas (100% visível na janela)
 
     //* Posicionamento no Canvas da Locomotiva:
     public const double CentroRoda1X = 130.0;          //* Centro da Roda 1 (traseira) no Canvas
     public const double CentroRoda2X = 270.0;          //* Centro da Roda 2 (dianteira) no Canvas
     public const double CentroRodasY = 210.0;          //* Altura do eixo das rodas e da cruzeta (Y = 210px)
 
-    //* Parâmetros do Loop Contínuo:
-    public const double DuracaoLoopContinuo = 11.0;     //* Duração da travessia completa em segundos (~150 px/s)
+    //* Parâmetros do Perfil Ferroviário Ping-Pong (Trapezoidal com Easing):
+    public const double TempoAceleracao = 1.5;         //* Aceleração suave na partida (s)
+    public const double TempoCruzeiro = 3.5;           //* Deslocamento em velocidade de cruzeiro (s)
+    public const double TempoFrenagem = 1.5;           //* Frenagem suave até repouso (s)
+    public const double TempoPausaManobra = 1.0;       //* Parada na estação para manobra e inversão (s)
+    public const double DuracaoMeioCiclo = TempoAceleracao + TempoCruzeiro + TempoFrenagem + TempoPausaManobra; // 7.5s
 
     /// <summary>
     /// Reinicia o estado dinâmico da locomotiva (se necessário).
@@ -41,36 +46,99 @@ public class LocomotivaKinematics
 
     /// <summary>
     /// Calcula a cinemática física analítica para o instante de tempo informado.
-    /// A locomotiva começa oculta à esquerda (X = -560), cruza toda a largura até sair
-    /// à direita (X = larguraCenario) e reaparece em loop contínuo infinito.
+    /// A locomotiva se desloca em movimento contínuo de vai-e-volta (Ping-Pong) entre os limites
+    /// visíveis da janela, com aceleração suave, cruzeiro constante, frenagem realista nas extremidades
+    /// e inversão visual de sentido (Trabalho C1.md:23, 56).
     /// </summary>
     /// <param name="segundos">Tempo total decorrido em segundos desde o início da simulação.</param>
-    /// <param name="larguraCenario">Largura atual visível do cenário (para travessia dinâmica completa).</param>
-    /// <returns>Estrutura imutável com todos os valores posicionais e angulares calculados.</returns>
-    public LocomotivaFrameState CalcularQuadro(double segundos, double larguraCenario = 1100.0)
+    /// <param name="larguraCenario">Largura atual visível do cenário (para adaptação dinâmica ao redimensionamento).</param>
+    /// <returns>Estrutura imutável com todos os valores posicionais, angulares e direcionais calculados.</returns>
+    public static LocomotivaFrameState CalcularQuadro(double segundos, double larguraCenario = 1100.0)
     {
         //# ===================================================================
-        //# ETAPA 1 & 2: TRANSLACAO HORIZONTAL EM LOOP CONTÍNUO E ROTAÇÃO DAS RODAS
+        //# ETAPA 1: LIMITES ESPACIAIS E VELOCIDADE ESCALAR DO PERCURSO PING-PONG
         //# ===================================================================
-        double xEntrada = -LarguraLocomotiva;
-        double xSaida = larguraCenario > 0 ? larguraCenario : 1100.0;
-        double distanciaTotal = xSaida - xEntrada;
-        double velocidade = distanciaTotal / DuracaoLoopContinuo;
+        double xMin = MargemSegurancaLateral;
+        double xMax = Math.Max(xMin + 50.0, larguraCenario - LarguraLocomotiva - MargemSegurancaLateral);
+        double cursoTotal = xMax - xMin;
 
-        double distanciaPercorrida = velocidade * segundos;
-        double progressoNoCiclo = distanciaPercorrida % distanciaTotal;
-        double xLocoAtual = xEntrada + progressoNoCiclo;
+        //* O tempo efetivo de deslocamento considera a média das velocidades nas transições (0.5 * T_acc + T_cru + 0.5 * T_fren)
+        double tempoEfetivoDeslocamento = (0.5 * TempoAceleracao) + TempoCruzeiro + (0.5 * TempoFrenagem);
+        double velocidadeCruzeiro = cursoTotal / tempoEfetivoDeslocamento;
+        double distanciaAceleracao = 0.5 * velocidadeCruzeiro * TempoAceleracao;
+        double distanciaCruzeiro = velocidadeCruzeiro * TempoCruzeiro;
+        double distanciaFrenagem = 0.5 * velocidadeCruzeiro * TempoFrenagem;
 
-        //* Rotação pura e contínua sem saltos ou reversões (s = R * theta):
-        double theta = (distanciaPercorrida / RaioRoda) * (180.0 / Math.PI);
+        long indiceMeioCiclo = (long)(segundos / DuracaoMeioCiclo);
+        double tempoNoMeioCiclo = segundos % DuracaoMeioCiclo;
+        bool indoParaDireita = (indiceMeioCiclo % 2) == 0;
 
+        double distanciaNoTrecho;
+        string status;
+
+        if (tempoNoMeioCiclo <= TempoAceleracao)
+        {
+            //* Fase 1: Partida e aceleração suave via curva cosseno (C1 contínua em velocidade)
+            double u = tempoNoMeioCiclo / TempoAceleracao;
+            double fatorIntegral = u - (Math.Sin(Math.PI * u) / Math.PI);
+            distanciaNoTrecho = distanciaAceleracao * fatorIntegral;
+            status = indoParaDireita
+                ? "Partida da estação oeste: acelerando suavemente para a direita..."
+                : "Partida da estação leste: acelerando suavemente para a esquerda...";
+        }
+        else if (tempoNoMeioCiclo <= TempoAceleracao + TempoCruzeiro)
+        {
+            //* Fase 2: Velocidade constante de cruzeiro no corpo central do cenário
+            double tCruzeiro = tempoNoMeioCiclo - TempoAceleracao;
+            distanciaNoTrecho = distanciaAceleracao + (velocidadeCruzeiro * tCruzeiro);
+            status = indoParaDireita
+                ? $"Em trânsito de cruzeiro: deslocando-se para a direita (~{velocidadeCruzeiro:F0} px/s)..."
+                : $"Em trânsito de cruzeiro: deslocando-se para a esquerda (~{velocidadeCruzeiro:F0} px/s)...";
+        }
+        else if (tempoNoMeioCiclo <= TempoAceleracao + TempoCruzeiro + TempoFrenagem)
+        {
+            //* Fase 3: Frenagem progressiva suave até imobilização completa
+            double tFrenagem = tempoNoMeioCiclo - (TempoAceleracao + TempoCruzeiro);
+            double u = tFrenagem / TempoFrenagem;
+            double fatorIntegral = u + (Math.Sin(Math.PI * u) / Math.PI);
+            distanciaNoTrecho = distanciaAceleracao + distanciaCruzeiro + (distanciaFrenagem * fatorIntegral);
+            status = indoParaDireita
+                ? "Aproximação da estação leste: frenagem suave nos limites..."
+                : "Aproximação da estação oeste: frenagem suave nos limites...";
+        }
+        else
+        {
+            //* Fase 4: Breve pausa de manobra para reversão de marcha
+            distanciaNoTrecho = cursoTotal;
+            status = indoParaDireita
+                ? "Estação leste alcançada: manobra e inversão de sentido..."
+                : "Estação oeste alcançada: manobra e inversão de sentido...";
+        }
+
+        double xLocoAtual;
+        double escalaDirecaoX;
+
+        if (indoParaDireita)
+        {
+            xLocoAtual = xMin + distanciaNoTrecho;
+            escalaDirecaoX = 1.0;
+        }
+        else
+        {
+            xLocoAtual = xMax - distanciaNoTrecho;
+            escalaDirecaoX = -1.0;
+        }
+
+        //# ===================================================================
+        //# ETAPA 2: ROTAÇÃO PURA DAS RODAS (MONÓTONA E SEM DESCONTINUIDADES)
+        //# ===================================================================
+        double distanciaTotalRolada = (indiceMeioCiclo * cursoTotal) + distanciaNoTrecho;
+        double theta = (distanciaTotalRolada / RaioRoda) * (180.0 / Math.PI);
         double rad = theta * (Math.PI / 180.0);
 
         //# ===================================================================
         //# ETAPA 3: COORDENADAS ANALÍTICAS DOS PINOS DE MANIVELA
         //# ===================================================================
-        //? Decomposição circular exata a partir dos centros das rodas (130,210) e (270,210)
-        //? Cálculo trigonométrico unificado para eliminar operações duplicadas por quadro
         double dxManivela = RaioManivela * Math.Cos(rad);
         double dyManivela = RaioManivela * Math.Sin(rad);
 
@@ -83,26 +151,17 @@ public class LocomotivaKinematics
         //# ===================================================================
         //# ETAPA 4: BIELA DE ACOPLAMENTO HORIZONTAL (SIDE ROD)
         //# ===================================================================
-        //* Conforme Trabalho C1.md:48-52 (Etapa 3 - 8,0 pontos)
-        //* A barra possui olhais em (0,0) e (140,0), correspondendo à distância exata entre as rodas.
-        //? Ao transladar a origem da barra para (pino1X, pino1Y), ambos os olhais
-        //? coincidem matematicamente com os pinos das duas rodas em 100% do tempo.
         double bielaAcoplamentoX = pino1X;
         double bielaAcoplamentoY = pino1Y;
 
         //# ===================================================================
         //# ETAPA 5: CRUZETA E MECANISMO DO PISTÃO (CROSSHEAD)
         //# ===================================================================
-        //* A cruzeta desliza rigorosamente no eixo horizontal Y = 210 entre as guias de aço.
-        //? Teorema de Pitágoras no triângulo da biela motriz de hipotenusa L = 82px:
-        //? (xCruzeta - pino2X)^2 + (CentroRodasY - pino2Y)^2 = L^2
-        //? xCruzeta = pino2X + sqrt(L^2 - (CentroRodasY - pino2Y)^2)
-        double catetoVertical = CentroRodasY - pino2Y; //? = -RaioManivela * sin(rad)
+        double catetoVertical = CentroRodasY - pino2Y;
         double termoRadical = Math.Max(0.0, (ComprimentoBielaMotriz * ComprimentoBielaMotriz) - (catetoVertical * catetoVertical));
         double catetoHorizontal = Math.Sqrt(termoRadical);
         double xCruzeta = pino2X + catetoHorizontal;
 
-        //* Coordenadas de translação para Cruzeta, Pino e Haste do Pistão
         double cruzetaX = xCruzeta - 9.0;
         double cruzetaY = CentroRodasY - 9.0;
 
@@ -115,11 +174,6 @@ public class LocomotivaKinematics
         //# ===================================================================
         //# ETAPA 6: BIELA MOTRIZ ARTICULADA (CONNECTING ROD)
         //# ===================================================================
-        //* Olhal traseiro em (0,0) coincide exatamente com o pino da Roda 2 (pino2X, pino2Y).
-        //! No WPF o eixo Y aponta para baixo na tela e RotateTransform.Angle em graus gira no sentido horário.
-        //? Com o vetor (xCruzeta - pino2X, CentroRodasY - pino2Y), Math.Atan2(deltaY, deltaX)
-        //? fornece com precisão analítica o ângulo horário perfeito para o olhal dianteiro (L=82px)
-        //? coincidir rigorosamente com a cruzeta em (xCruzeta, CentroRodasY).
         double bielaMotrizX = pino2X;
         double bielaMotrizY = pino2Y;
         double anguloBielaMotriz = Math.Atan2(CentroRodasY - pino2Y, xCruzeta - pino2X) * (180.0 / Math.PI);
@@ -137,7 +191,9 @@ public class LocomotivaKinematics
             HastePistaoY: hastePistaoY,
             BielaMotrizX: bielaMotrizX,
             BielaMotrizY: bielaMotrizY,
-            BielaMotrizAngulo: anguloBielaMotriz
+            BielaMotrizAngulo: anguloBielaMotriz,
+            EscalaDirecaoX: escalaDirecaoX,
+            StatusDescritivo: status
         );
     }
 }

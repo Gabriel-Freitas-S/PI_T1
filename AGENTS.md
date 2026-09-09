@@ -1,6 +1,6 @@
 # PI_T1 — Processamento de Imagens (WPF locomotiva 2D)
 
-## Skill de docs (obrigatoria para WPF/XML)
+## Skill de docs (obrigatoria para WPF/XML/C#)
 
 - Skill: `msdocs-wpf-xml` em `.agents/skills/msdocs-wpf-xml/SKILL.md`.
 - MCP: `fetch-docs-microsoft` (fetch do Learn). Configs locais:
@@ -19,6 +19,6 @@
 
 ## Rules
 
-1. Para qualquer API WPF/XAML/XML, consulte o Learn via `fetch-docs-microsoft` antes de responder; cite a URL (pt-br preferencial, fallback en-us).
+1. Para qualquer API WPF/XAML/XML ou C#/.NET, consulte o Learn via `fetch-docs-microsoft` antes de responder; cite a URL (pt-br preferencial, fallback en-us).
 2. Allowlist docs: apenas `https://learn.microsoft.com/**`.
 3. Elementos graficos em `(0,0)` + `RenderTransform`; rodas via `ControlTemplate` + `RotateTransform` + `Storyboard`; conjunto em `Canvas` + `TranslateTransform`; bielas com `Rectangle`/`Line`.
