@@ -1,10 +1,10 @@
 # Padrões de Qualidade, SonarQube e EditorConfig
 
 [![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Gabriel-Freitas-S_PI_T1&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
-[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
-![Bugs](https://img.shields.io/badge/Bugs-0%20(Rating%20A)-success?style=flat-square)
-![Vulnerabilidades](https://img.shields.io/badge/Vulnerabilidades-0%20(Rating%20A)-success?style=flat-square)
-![Code Smells](https://img.shields.io/badge/Code%20Smells-0%20(Rating%20A)-success?style=flat-square)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Gabriel-Freitas-S_PI_T1&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Gabriel-Freitas-S_PI_T1&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Gabriel-Freitas-S_PI_T1&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Gabriel-Freitas-S_PI_T1&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
 ![Padronização](https://img.shields.io/badge/Formata%C3%A7%C3%A3o-.editorconfig-blue?style=flat-square)
 
 Neste capítulo, abordam-se os processos de governança de código, auditoria estática de qualidade, padronização tipográfica e convenções de documentação semântica aplicados no projeto.

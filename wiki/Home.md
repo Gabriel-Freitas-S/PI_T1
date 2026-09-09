@@ -3,7 +3,9 @@
 [![.NET Version](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/)
 [![Platform](https://img.shields.io/badge/Plataforma-WPF%20Windows-0078D7?style=flat-square&logo=windows&logoColor=white)](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/)
 [![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Gabriel-Freitas-S_PI_T1&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
-[![SonarQube Cloud](https://sonarcloud.io/images/project_badges/sonarcloud-light.svg)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Gabriel-Freitas-S_PI_T1&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Gabriel-Freitas-S_PI_T1&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Gabriel-Freitas-S_PI_T1&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=Gabriel-Freitas-S_PI_T1)
 [![Architecture](https://img.shields.io/badge/Padrão-MVVM%20Zero--Alloc-2ea44f?style=flat-square)](Arquitetura-e-Visao-Geral)
 [![Status](https://img.shields.io/badge/Avaliação-Concluído%20(Nota%2010%2C0)-brightgreen?style=flat-square)](Trabalho/Trabalho%20C1.md)
 
