@@ -1,161 +1,182 @@
-# 🏛️ Arquitetura e Princípios de Transformações 2D
+# 🏛️ Arquitetura e Princípios Gráficos: Como o Trem Foi Construído por Dentro
 
-Neste capítulo, aborda-se a base arquitetural do projeto, fundamentada na teoria de **Computação Gráfica e Processamento de Imagens**, explorando como o subsistema vetorial do **WPF (Windows Presentation Foundation)** processa primitivas geométricas, gerencia transformações afins e mantém o rigor matemático exigido nas aulas e enunciados.
-
----
-
-## 1. O Sistema de Coordenadas do WPF
-
-Diferente de sistemas gráficos clássicos de desenho por pixels brutos (como GDI ou buffers rasterizados), o WPF opera com **Device-Independent Pixels (DIPs)**, onde cada unidade lógica equivale a $\frac{1}{96}$ de polegada.
-
-- **Origem $(0,0)$ da Tela**: O canto superior esquerdo da área cliente representa a coordenada $(0,0)$.
-- **Eixo X**: Cresce positivamente para a **direita**.
-- **Eixo Y**: Cresce positivamente para **baixo** (convenção padrão de telas digitais).
-- **Ângulos de Rotação**: No WPF, valores positivos de ângulos em graus (`Angle > 0`) produzem rotações no **sentido horário**, enquanto ângulos negativos produzem rotações no sentido anti-horário.
-
-> [!NOTE]
-> Para consultar a documentação oficial sobre coordenadas e transformações no WPF, acesse:  
-> [Microsoft Learn — Visão Geral de Transformações](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview/)
+Se você nunca programou uma interface gráfica ou nunca estudou computação gráfica, este capítulo foi feito para você! Aqui explicamos a arquitetura do projeto usando analogias simples, mostrando como organizamos o código para que o trem seja bonito, rápido e fácil de entender.
 
 ---
 
-## 2. O Princípio Invariante da Origem $(0,0)$
+## 1. O Sistema de Coordenadas: A Tela Como um Tabuleiro
 
-Um dos requisitos mandatórios estipulados no enunciado acadêmico **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md#L32)** e demonstrado nos slides da disciplina (**[Slide 2D:182-299](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Slide/2D.md#L182-L299)**) é:
+Como vimos, a tela do computador funciona como uma folha quadriculada:
+- O ponto de partida $(0,0)$ é no **canto superior esquerdo**.
+- Para andar para a **direita**, somamos no eixo **$X$**.
+- Para andar para **baixo**, somamos no eixo **$Y$**.
 
+```
+(0,0) Canto Superior Esquerdo
+  +-------------------------> Eixo X (Direita)
+  |
+  |    (X=100, Y=50)
+  |       * [Um Ponto Aqui]
+  v
+Eixo Y (Baixo)
+```
+
+No WPF, todas as medidas são feitas em **DIPs** (*Device-Independent Pixels*). Isso significa que, não importa se você está usando um monitor 4K gigante ou um notebook pequeno, o trem sempre terá a mesma proporção perfeita, sem ficar esticado nem minúsculo!
+
+---
+
+## 2. A "Regra de Ouro do Lego": Por Que Desenhar na Origem $(0,0)$?
+
+Nas regras oficiais do trabalho (**[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md#L32)**) e nas aulas do professor (**[Slide 2D:182-299](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Slide/2D.md#L182-L299)**), existe uma exigência muito clara:
 > *"Os elementos que compõem o corpo e as rodas devem ser desenhados na origem (0,0) e posicionados utilizando RenderTransform."*
 
-### Por que desenhar em $(0,0)$ e não em posições absolutas?
-Se uma primitiva geométrica for modelada com coordenadas embutidas diretamente nos seus vértices (por exemplo, um retângulo com `X="200"` e `Y="150"`):
-1. **Perda de Reutilização**: O elemento não pode ser instanciado em múltiplos pontos da tela via templates.
-2. **Complexidade de Rotação**: Para rotacionar um elemento em torno de seu próprio centro de gravidade, torna-se necessário rastrear continuamente onde ele está no espaço global e alterar manualmente o ponto pivô (`CenterX`, `CenterY`).
-3. **Composição Matricial Suja**: A matriz de transformação acaba acumulando translações absolutas misturadas à rotação.
+### Por que isso é tão genial? (A Analogia do Bloco de Lego)
+Imagine que você está brincando de Lego:
+- Se você fabricar uma rodinha de plástico que já vem colada numa haste fixa a 2 metros de distância, você nunca vai conseguir colocar essa roda em outro lugar do carrinho.
+- Mas se você fabricar a rodinha solta na sua caixinha limpa $(0,0)$, você pode usar um ímã (uma translação) para colocá-la na frente, atrás ou onde você quiser!
 
-Ao definir todo elemento gráfico ancorado na sua origem canônica $(0,0)$ e aplicar suas posições espaciais através de `RenderTransform` (`TranslateTransform`, `RotateTransform`, `ScaleTransform`), a arquitetura atinge:
-- **Ortogonalidade**: A forma gráfica é desacoplada da sua posição no mundo.
-- **Parametrização**: Uma única definição (`ControlTemplate`) pode ser instanciada em $N$ posições apenas mudando sua translação.
-- **Comutação Elegante**: A rotação em torno do centro do objeto é feita simplesmente fixando `CenterX` e `CenterY` no espaço local da forma.
+No nosso código:
+1. **Desenhamos a peça na caixinha neutra $(0,0)$**.
+2. **Movemos a peça com o [`TranslateTransform`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.translatetransform/)**.
 
----
-
-## 3. Composição e Álgebra Linear de Transformações Afins
-
-No plano 2D, as transformações afins preservam linhas retas e paralelismos. Em coordenadas homogêneas, um ponto `P = (x, y)` é representado pelo vetor `[x, y, 1]ᵀ`.
-
-A matriz geral de transformação afim 3×3 no WPF é dada por:
-
-```math
-\begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = \begin{bmatrix} M_{11} & M_{12} & 0 \\ M_{21} & M_{22} & 0 \\ \text{OffsetX} & \text{OffsetY} & 1 \end{bmatrix}^T \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
-```
-
-Onde:
-
-- **Translação pura (`TranslateTransform`)**:
-
-```math
-\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ \Delta X & \Delta Y & 1 \end{bmatrix}
-```
-
-- **Rotação pura (`RotateTransform`)** por um ângulo θ:
-
-```math
-\begin{bmatrix} \cos\theta & \sin\theta & 0 \\ -\sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{bmatrix}
-```
-
-No projeto da locomotiva, quando combinamos translação e rotação em uma biela ou roda, o WPF utiliza o elemento [`TransformGroup`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.transformgroup), multiplicando as matrizes de forma eficiente e acelerada por hardware (DirectX/MilCore).
+Isso deixa o desenho desacoplado da posição: se amanhã você quiser empurrar a chaminé $10\text{ pixels}$ para o lado, você só altera o `TranslateTransform X="393"` sem precisar redesenhar os 4 vértices do cone!
 
 ---
 
-## 4. `RenderTransform` versus `LayoutTransform`
+## 3. `RenderTransform` vs `LayoutTransform`: Acelerando com a Placa de Vídeo
 
-O WPF possui duas propriedades fundamentais para transformações de elementos visuais:
+O WPF tem dois jeitos de mover coisas na tela:
 
-| Característica | `RenderTransform` | `LayoutTransform` |
-| :--- | :--- | :--- |
-| **Fase do Pipeline** | Executada após a fase de Layout (`Measure` e `Arrange`). | Executada antes ou durante a fase de Layout. |
-| **Custo de CPU** | Muito baixo (processada diretamente pela GPU / Render Thread). | Alto (dispara novo ciclo de medição de caixas e layout dos vizinhos). |
-| **Efeito em Contêineres** | Não altera o tamanho alocado do elemento nem força recalculação de layout dos pais. | Altera o retângulo envolvente (`BoundingBox`) e reposiciona controles adjacentes. |
-| **Uso no Projeto** | **Utilizada em 100% dos elementos da locomotiva**, bielas, rodas e fumaça. | Não utilizada, pois geraria sobrecarga inútil a 60 FPS. |
+### A Analogia da Reforma da Casa vs o Projetor de Luz:
+- **`LayoutTransform` (A Reforma com Pedreiro)**: É como derrubar uma parede de tijolos dentro de casa para aumentar a sala. O pedreiro precisa parar tudo, recalcular o peso do teto e empurrar os móveis dos vizinhos. No computador, isso usa a **CPU** e faz a tela travar e dar engasgos.
+- **`RenderTransform` (O Projetor de Luz / Camada do Photoshop)**: A casa continua intacta, mas você aponta uma lanterna ou projeta uma sombra que se move na parede. Quem processa isso é a sua **placa de vídeo (GPU)**, na velocidade da luz!
 
-> [!TIP]
-> O uso de `RenderTransform` garante que a cinemática calculada a cada quadro em `CompositionTarget.Rendering` seja fluida, sem provocar travamentos ou reflow da árvore visual.  
-> Referência: [Microsoft Learn — RenderTransform vs LayoutTransform](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview/#differences-between-the-rendertransform-and-layouttransform-properties)
+Por isso, **usamos `RenderTransform` em 100% da locomotiva**! Isso garante que o trem ande a 60 quadros por segundo super liso, sem esquentar o computador nem dar travamentos.  
+Referência oficial: [Microsoft Learn — RenderTransform vs LayoutTransform](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview/#differences-between-the-rendertransform-and-layouttransform-properties).
 
 ---
 
-## 5. Hierarquia de Árvore Visual dos `Canvas`
+## 4. A Hierarquia dos `Canvas`: A Analogia das Bonecas Russas (*Matryoshka*)
 
-A cena gráfica da aplicação é estruturada como uma árvore hierárquica estrita de contêineres [`Canvas`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/canvas/) e controles autônomos:
+Para não virar uma bagunça de peças soltas voando pela tela, organizamos o desenho em caixas dentro de caixas, como aquelas bonecas russas:
 
 ```mermaid
 graph TD
-    Window["MainWindow (Window)"] --> GridRoot["Grid"]
-    GridRoot --> Header["Border (Painel Superior)"]
-    GridRoot --> CenarioCanvas["CenarioCanvas (Edge-to-Edge)"]
-    GridRoot --> Footer["Border (Barra Inferior)"]
+    Window["1. MainWindow (A Janela Completa)"] --> Cenario["2. CenarioCanvas (O Céu e os Trilhos)"]
+    Cenario --> LocomotivaControl["3. LocomotivaControl (O Trem Inteiro)"]
     
-    CenarioCanvas --> Rails["Canvas dos Trilhos e Brita (Y=405)"]
-    CenarioCanvas --> LocomotivaControl["LocomotivaControl (UserControl)"]
-    
-    LocomotivaControl --> LocomotivaCanvas["LocomotivaCanvas (560 x 300) [TranslateTransform]"]
-    LocomotivaCanvas --> Shapes["Primitivas do Corpo em (0,0) (Chassi, Cabine, Caldeira, Cilindro)"]
-    LocomotivaCanvas --> Wheel1["Control (Roda 1 Traseira) [RodaTemplate + RotateTransform]"]
-    LocomotivaCanvas --> Wheel2["Control (Roda 2 Dianteira) [RodaTemplate + RotateTransform]"]
-    LocomotivaCanvas --> BielaA["BielaAcoplamentoCanvas [TranslateTransform]"]
-    LocomotivaCanvas --> CruzetaGroup["Haste e Cruzeta [TranslateTransform]"]
-    LocomotivaCanvas --> BielaM["BielaMotrizCanvas [RotateTransform + TranslateTransform]"]
-    LocomotivaCanvas --> SmokeGroup["Partículas de Fumaça (Fumaca1, Fumaca2, Fumaca3)"]
+    LocomotivaControl --> Corpo["Corpo da Locomotiva (Caldeira, Chassi, Cabine)"]
+    LocomotivaControl --> Roda1["Roda 1 Traseira (Gira com RotateTransform)"]
+    LocomotivaControl --> Roda2["Roda 2 Dianteira (Gira com RotateTransform)"]
+    LocomotivaControl --> Bielas["Sistema de Bielas e Cruzeta (Aço Articulado)"]
+    LocomotivaControl --> Fumaca["Partículas de Fumaça (Vapor Animado)"]
 ```
 
-### Propriedades da Hierarquia:
-1. **`CenarioCanvas`**: Espaço estático onde o céu, os trilhos e o lastro de brita são fixados de ponta a ponta (*edge-to-edge*). A propriedade `ClipToBounds="True"` impede qualquer vazamento visual para fora da área central da janela.
-2. **`LocomotivaControl`**: Controle autônomo reutilizável ([`UserControl`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.controls.usercontrol)) que encapsula o contêiner móvel `LocomotivaCanvas` e todas as matrizes de transformação afim do trem.
-3. **`LocomotivaCanvas`**: O Canvas móvel da locomotiva ($560 \times 300\text{ px}$). Sua propriedade `RenderTransform.TranslateTransform` (`TranslacaoLocomotiva`) recebe a coordenada horizontal $x_{\text{trem}}$, transportando em bloco todas as partes do trem.
-4. **Sub-Canvases Mecânicos**:
-   - `BielaAcoplamentoCanvas`: Mantém a barra de ligação paralela e transladada para o pino excêntrico da primeira roda.
-   - `BielaMotrizCanvas`: Ponto de ancoragem no pino da segunda roda, combinando rotação angular calculada com translação espacial.
+### Por que isso é incrível?
+Quando o trem precisa andar para a frente na ferrovia:
+- Nós **não precisamos** mover a caldeira, depois a cabine, depois o sino, depois as rodas um por um.
+- Nós apenas dizemos: **"Locomotiva inteira, ande $5\text{ pixels}$ para a direita!"**
+- Como todas as peças estão dentro da caixa da locomotiva, **tudo anda junto automaticamente** em perfeito bloco!
 
 ---
 
-## 6. Separação de Responsabilidades e Arquitetura em Camadas (SRP)
+## 5. Quem Faz o Quê no Código? (A Analogia de Uma Companhia de Teatro)
 
-O projeto adota rigorosamente o **Princípio da Responsabilidade Única (Single Responsibility Principle - SRP)**, decompondo o código em quatro camadas altamente coesas e desacopladas:
+Para manter o projeto organizado e profissional (seguindo o princípio de responsabilidade única - SRP), separamos o código em 4 pastas bem definidas:
 
+| Arquivo | Papel na "Companhia de Teatro" | O que ele faz? |
+| :--- | :--- | :--- |
+| **`MainWindow.xaml`** | **O Palco e o Cenário** | Monta a janela, o céu da noite com estrelas, a linha do trem e o chão. |
+| **`MainWindow.xaml.cs`** | **O Maestro da Orquestra** | Fica com o cronômetro na mão e avisa: *"Passou 1/60 de segundo, calculem a próxima cena!"* |
+| **`LocomotivaControl.xaml`** | **Os Atores e o Figurino** | O desenho vetorial completo da locomotiva (chassi, caldeira, cabine, lanternas e bielas). |
+| **`LocomotivaControl.xaml.cs`** | **O Coreógrafo Visual** | Recebe as posições e aplica nas peças certas dentro da locomotiva. |
+| **`LocomotivaKinematics.cs`** | **O Físico / Matemático** | Um arquivo em C# puro (sem gráficos) que calcula as contas de Pitágoras, ângulos das rodas e a posição do pistão. |
+| **`LocomotivaResources.xaml`** | **O Guarda-Roupa / Formas de Bolo** | Onde guardamos os moldes reutilizáveis das rodas (`RodaTemplate`) e dos anéis das bielas (`MancalBielaTemplate`). |
+
+Essa separação limpa garante que, se um dia você quiser colocar essa locomotiva em outro jogo ou aplicativo, você só precisa copiar a pastinha `Controls/` e `Models/`!
+
+---
+
+## 6. 📖 O Ponto de Partida: `App.xaml` e `App.xaml.cs` Explicados Linha a Linha
+
+Toda aplicação WPF começa a viver por esses dois arquivos:
+
+### 6.1 `App.xaml` (A Gaveta Global de Recursos)
+Este arquivo configura a inicialização da janela e carrega nossos materiais:
+
+```xml
+<Application x:Class="PI_T1.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:PI_T1"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Carrega globalmente o molde da roda, do mancal e as cores de aço -->
+                <ResourceDictionary Source="Resources/LocomotivaResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
 ```
-PI_T1/
-├── Controls/
-│   ├── LocomotivaControl.xaml      <-- UserControl com toda a modelagem vetorial e fumaça
-│   └── LocomotivaControl.xaml.cs   <-- Encapsulamento visual via AtualizarEstado(estado)
-├── Models/
-│   ├── LocomotivaFrameState.cs     <-- DTO imutável (record struct) com os dados cinemáticos do quadro
-│   └── LocomotivaKinematics.cs    <-- Motor matemático puro (harmônica, rolamento sem deslize, bielas)
-├── Resources/
-│   └── LocomotivaResources.xaml    <-- ResourceDictionary com RodaTemplate, MancalBielaTemplate e Brushes
-├── App.xaml                        <-- MergedDictionaries global
-├── MainWindow.xaml                 <-- View orquestradora enxuta (74 linhas: Janela + Cenário + LocomotivaControl)
-└── MainWindow.xaml.cs              <-- Orquestrador mínimo (48 linhas: CompositionTarget.Rendering e Stopwatch)
+- `StartupUri="MainWindow.xaml"`: Informa ao Windows: *"Assim que o programa abrir, crie e mostre a janela principal `MainWindow`"*.
+- `<ResourceDictionary.MergedDictionaries>`: Funciona como uma gaveta aberta para todo mundo. Ao colocar o [`LocomotivaResources.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Resources/LocomotivaResources.xaml) aqui, qualquer tela do aplicativo consegue acessar as cores de aço (`AcoPolidoBrush`) e a forma de corte da roda (`RodaTemplate`) automaticamente!
+
+---
+
+### 6.2 `App.xaml.cs` (Inicialização e Modo de Gravação de Fotos/GIF)
+
+Além de abrir a janela normal, o [`App.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/App.xaml.cs) possui um recurso avançado para gerar fotos automáticas via terminal:
+
+```csharp
+protected override void OnStartup(StartupEventArgs e)
+{
+    base.OnStartup(e);
+
+    // MODO 1: Se o usuário rodar "dotnet run -- --screenshot 3.5"
+    if (e.Args.Length > 0 && e.Args[0] == "--screenshot")
+    {
+        var window = new MainWindow();
+        window.Show();
+        window.Measure(new Size(1100, 620));
+        window.Arrange(new Rect(0, 0, 1100, 620));
+        window.UpdateLayout();
+
+        // 1. Calcula a física no segundo exato (ex: 3.5s)
+        double t = 3.5;
+        var kin = new Models.LocomotivaKinematics();
+        var st = kin.CalcularQuadro(t);
+        window.Locomotiva.AtualizarEstado(st);
+        window.Locomotiva.AtualizarFumaca(t);
+        window.UpdateLayout();
+
+        // 2. Tira uma foto digital direto da memória com RenderTargetBitmap
+        var rtb = new RenderTargetBitmap(1100, 620, 96, 96, PixelFormats.Pbgra32);
+        rtb.Render(window);
+
+        // 3. Salva a foto em PNG no disco
+        using var fs = File.Open("frame_check.png", FileMode.Create);
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(rtb));
+        encoder.Save(fs);
+
+        Shutdown(); // Fecha o programa automaticamente
+        return;
+    }
+}
 ```
 
-### 6.1 Camada de Controles Autônomos (`Controls/`)
-- **`LocomotivaControl.xaml`**: Encapsula todas as mais de 450 linhas de primitivas vetoriais da locomotiva, isolando chassi, cabine, caldeira, cilindro, instâncias de rodas, bielas e disparadores do `Storyboard` de vapor.
-- **`LocomotivaControl.xaml.cs`**: Expõe uma interface limpa com o método `AtualizarEstado(in LocomotivaFrameState estado)`, atualizando internamente suas 9 transformações afins sem que a janela principal precise conhecer seus elementos internos.
-
-### 6.2 Camada de Modelo e Cinemática Pura (`Models/`)
-- **`LocomotivaKinematics.cs`**: Implementa toda a física analítica e cálculos trigonométricos sem qualquer dependência de classes da UI do WPF. Calcula a cinemática contínua de loop infinito (travessia completa da esquerda para a direita e reentrada imediata), rolamento monotônico puro sem deslizamento das rodas e equações analíticas da cruzeta/bielas baseadas na largura real do cenário (`CenarioCanvas.ActualWidth`).
-- **`LocomotivaFrameState.cs`**: Estrutura imutável de alto desempenho (`readonly record struct`) que transporta as coordenadas analíticas $(X, Y)$ e ângulos $\theta$ calculados para o quadro atual.
-
-### 6.3 Camada de Recursos e Templates (`Resources/`)
-- **`LocomotivaResources.xaml`**: Arquivo [`ResourceDictionary`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.resourcedictionary) dedicado contendo o `ControlTemplate x:Key="RodaTemplate"`, o `ControlTemplate x:Key="MancalBielaTemplate"` e a paleta de materiais (`SolidColorBrush`). É mesclado globalmente em `App.xaml` via `ResourceDictionary.MergedDictionaries`.
-
-### 6.4 Camada de Apresentação e Orquestração (`MainWindow`)
-- **`MainWindow.xaml`**: Casca visual limpa e responsiva (`Grid`), cabeçalho superior informativo, rodapé de status e o cenário ferroviário edge-to-edge onde `<controls:LocomotivaControl x:Name="Locomotiva"/>` é instanciado.
-- **`MainWindow.xaml.cs`**: View orquestradora ultra-minimalista (~40 linhas) que gerencia o ciclo de vida da janela (`Loaded`/`Unloaded`), captura os pulsos de renderização em [`CompositionTarget.Rendering`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.compositiontarget.rendering), obtém o `LocomotivaFrameState` do motor e delega ao componente `Locomotiva.AtualizarEstado(estado)`.
+#### O que é o `RenderTargetBitmap`?
+É como uma **câmera fotográfica invisível** do WPF! Ela tira uma foto com qualidade máxima de $1100 \times 620\text{ pixels}$ diretamente da memória da placa de vídeo e salva como arquivo de imagem `.png`, sem precisar que uma pessoa aperte `PrintScreen` no teclado!
 
 ---
 
 ## 🔗 Referências Oficiais da Microsoft
-- [Microsoft Learn — Elemento Canvas](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/canvas/)
-- [Microsoft Learn — Visão Geral de Transformações](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview/)
+- [Microsoft Learn — Painel Canvas no WPF](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/canvas/)
+- [Microsoft Learn — Visão Geral de Transformações no WPF](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview/)
 - [Microsoft Learn — Classe TranslateTransform](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.translatetransform/)
 - [Microsoft Learn — Classe RotateTransform](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.rotatetransform/)
 - [Microsoft Learn — Classe TransformGroup](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.transformgroup/)
+- [Microsoft Learn — Classe Application e Ciclo de Vida](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.application)
+- [Microsoft Learn — Classe RenderTargetBitmap](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.imaging.rendertargetbitmap)
