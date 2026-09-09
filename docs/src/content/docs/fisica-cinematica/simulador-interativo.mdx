@@ -1,0 +1,93 @@
+---
+title: Simulador Cinemático Interativo
+description: Bancada interativa de experimentação cinemática em SVG com manipulação de rotação, velocidade angular e telemetria vetorial em tempo real.
+sidebar:
+  order: 2
+---
+
+import KinematicsSimulator from '../../../components/KinematicsSimulator.astro';
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import SvgIcon from '../../../components/SvgIcon.astro';
+
+Esta página disponibiliza a bancada interativa de experimentação do modelo analítico implementado em `Models/LocomotivaKinematics.cs`.
+
+Utilize os controles abaixo para inspecionar o comportamento mecânico das bielas e rodas em regime contínuo ou passo a passo.
+
+---
+
+## Bancada de Simulação Cinemática 2D
+
+<KinematicsSimulator initialRpm={30} />
+
+---
+
+## Roteiro de Experimentação e Análise Vetorial
+
+### 1. Ponto Morto Externo / Superior ($\theta = 0^\circ$)
+- **Configuração**: Pause a simulação e deslize o controle para $\theta = 0.0^\circ$.
+- **Comportamento Observado**: O pino da manivela $P_2$ atinge sua extensão máxima à direita. A cruzeta atinge a cota máxima de curso $X_p = 270 + 22 + 82 = \mathbf{374.0\text{ px}}$. O ângulo da biela é nulo ($\beta = 0.0^\circ$).
+
+### 2. Ponto de Quadrante Médio ($\theta = 90^\circ$)
+- **Configuração**: Posicione o controle em $\theta = 90.0^\circ$.
+- **Comportamento Observado**: O pino encontra-se no ponto mais baixo de sua órbita circular ($Y = 232.0\text{ px}$). A biela motriz atinge sua máxima inclinação descendente negativa ($\beta \approx -15.56^\circ$). A cruzeta recua para $X_p = 270 + 0 + \sqrt{82^2 - 22^2} \approx \mathbf{349.0\text{ px}}$.
+
+### 3. Ponto Morto Interno / Inferior ($\theta = 180^\circ$)
+- **Configuração**: Posicione o controle em $\theta = 180.0^\circ$.
+- **Comportamento Observado**: O pino encontra-se voltado para o interior do chassi. A cruzeta atinge a retração máxima para a esquerda $X_p = 270 - 22 + 82 = \mathbf{330.0\text{ px}}$. Novamente a inclinação é nula ($\beta = 0.0^\circ$).
+- **Curso Total do Pistão (Stroke)**:
+  $$
+  S = X_{p,\max} - X_{p,\min} = 374.0 - 330.0 = \mathbf{44.0\text{ px}} = 2 \cdot r
+  $$
+
+---
+
+## Tabela de Estados Notáveis do Mecanismo
+
+<div class="overflow-x-auto my-6">
+  <table class="w-full text-xs font-mono border-collapse border border-[#1e293b]">
+    <thead>
+      <tr class="bg-[#0f172a] text-slate-200 border-b border-[#1e293b]">
+        <th class="p-3 text-left">Ângulo da Roda $\theta$</th>
+        <th class="p-3 text-center">Pino Manivela $P_{2x}$</th>
+        <th class="p-3 text-center">Pino Manivela $P_{2y}$</th>
+        <th class="p-3 text-center">Posição Cruzeta $X_p$</th>
+        <th class="p-3 text-center">Ângulo Biela $\beta$</th>
+        <th class="p-3 text-left">Regime Físico</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-[#1e293b] text-slate-300">
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">0°</td>
+        <td class="p-3 text-center">292.0 px</td>
+        <td class="p-3 text-center">210.0 px</td>
+        <td class="p-3 text-center font-bold text-emerald-400">374.0 px</td>
+        <td class="p-3 text-center">0.0°</td>
+        <td class="p-3">Extensão Máxima (PME). Velocidade linear do pistão $v_p = 0$.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">90°</td>
+        <td class="p-3 text-center">270.0 px</td>
+        <td class="p-3 text-center">232.0 px</td>
+        <td class="p-3 text-center">349.0 px</td>
+        <td class="p-3 text-center text-amber-400">-15.56°</td>
+        <td class="p-3">Fundo de Órbita. Máxima deflexão angular da biela motriz.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">180°</td>
+        <td class="p-3 text-center">248.0 px</td>
+        <td class="p-3 text-center">210.0 px</td>
+        <td class="p-3 text-center font-bold text-emerald-400">330.0 px</td>
+        <td class="p-3 text-center">0.0°</td>
+        <td class="p-3">Retração Máxima (PMI). Velocidade linear do pistão $v_p = 0$.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">270°</td>
+        <td class="p-3 text-center">270.0 px</td>
+        <td class="p-3 text-center">188.0 px</td>
+        <td class="p-3 text-center">349.0 px</td>
+        <td class="p-3 text-center text-amber-400">+15.56°</td>
+        <td class="p-3">Topo de Órbita. Máxima deflexão angular ascendente da biela.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

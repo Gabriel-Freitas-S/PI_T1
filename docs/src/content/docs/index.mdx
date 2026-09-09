@@ -1,0 +1,150 @@
+---
+title: Locomotiva a Vapor 2D — Documentação Técnica e Cinemática
+description: Portal de engenharia gráfica, computação visual, física analítica e arquitetura WPF da Locomotiva 2D (.NET 10).
+template: splash
+hero:
+  tagline: Engenharia visual de precisão com transformações afins, física analítica contínua e arquitetura MVVM Zero-Alloc no subsistema vetorial acelerado por hardware do WPF.
+  image:
+    file: ../../../public/favicon.svg
+  actions:
+    - text: Simulador Cinemático
+      link: /PI_T1/fisica-cinematica/simulador-interativo/
+      icon: right-arrow
+      variant: primary
+    - text: Visão Geral & Arquitetura
+      link: /PI_T1/visao-geral/introducao/
+      icon: open-book
+    - text: Repositório GitHub
+      link: https://github.com/Gabriel-Freitas-S/PI_T1
+      icon: external
+      variant: minimal
+---
+
+import KinematicsSimulator from '../../components/KinematicsSimulator.astro';
+import MsLearnCard from '../../components/MsLearnCard.astro';
+import SvgIcon from '../../components/SvgIcon.astro';
+
+<div class="mt-8 mb-12">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 my-6">
+    <div class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-mono text-slate-400">Framework</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan-950/60 text-cyan-400 border border-cyan-500/30">.NET 10</span>
+      </div>
+      <div class="mt-2 text-xl font-bold font-mono text-slate-100">WPF 2D Engine</div>
+      <span class="text-xs text-slate-400 mt-1">DirectX Hardware-Accelerated</span>
+    </div>
+
+    <div class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-mono text-slate-400">Cinemática</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-950/60 text-amber-400 border border-amber-500/30">Analítica</span>
+      </div>
+      <div class="mt-2 text-xl font-bold font-mono text-slate-100">Biela-Manivela</div>
+      <span class="text-xs text-slate-400 mt-1">Trigonometria Pura C1-Contínua</span>
+    </div>
+
+    <div class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-mono text-slate-400">Qualidade</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-500/30">SonarQube</span>
+      </div>
+      <div class="mt-2 text-xl font-bold font-mono text-slate-100">0 Code Smells</div>
+      <span class="text-xs text-slate-400 mt-1">A-Rating em Manutenibilidade</span>
+    </div>
+
+    <div class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-mono text-slate-400">Avaliação</span>
+        <span class="text-xs font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-400 border border-blue-500/30">Nota 10,0</span>
+      </div>
+      <div class="mt-2 text-xl font-bold font-mono text-slate-100">4 de 4 Estágios</div>
+      <span class="text-xs text-slate-400 mt-1">100% dos Requisitos Formais</span>
+    </div>
+  </div>
+</div>
+
+---
+
+## Demonstração do Subsistema Mecânico
+
+O mecanismo cinemático abaixo foi implementado diretamente a partir das equações analíticas em C# de `LocomotivaKinematics.cs`. Você pode manipular interativamente o ângulo $\theta$, ajustar a velocidade angular ou pausar para inspecionar cada componente em repouso:
+
+<KinematicsSimulator initialRpm={25} />
+
+---
+
+## Gravação em Tempo Real da Aplicação
+
+Registro gravado em tempo real da locomotiva trafegando em percurso contínuo de vai-e-volta (Ping-Pong), demonstrando aceleração suave na partida, velocidade de cruzeiro constante, desaceleração suave nas estações, inversão simétrica de sentido e emissão volumétrica de vapor:
+
+<div class="my-6 p-2 rounded-lg bg-[#0f172a] border border-[#1e293b] flex flex-col items-center">
+  <img src="/PI_T1/locomotiva.gif" alt="Locomotiva a Vapor 2D em Execução" class="rounded border border-[#1e293b] max-w-full h-auto" style="max-width: 720px; width: 100%;" />
+  <span class="mt-2 text-xs font-mono text-slate-400">Execução real do aplicativo WPF compilado em Release (.NET 10)</span>
+</div>
+
+---
+
+## Seções do Conhecimento Técnico
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <a href="/PI_T1/visao-geral/introducao/" class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] hover:border-cyan-500/50 transition-colors no-underline block group">
+    <div class="flex items-center gap-2 text-cyan-400 font-mono text-sm font-semibold">
+      <SvgIcon name="layers" size={18} />
+      <span>1. Visão Geral & Arquitetura</span>
+    </div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Princípios de computação gráfica, sistema de coordenadas canônico em (0,0), desacoplamento MVVM e renderização a 60/144 FPS via CompositionTarget.Rendering.
+    </p>
+  </a>
+
+  <a href="/PI_T1/engenharia-grafica/modelagem-vetorial-xaml/" class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] hover:border-cyan-500/50 transition-colors no-underline block group">
+    <div class="flex items-center gap-2 text-cyan-400 font-mono text-sm font-semibold">
+      <SvgIcon name="code" size={18} />
+      <span>2. Engenharia Gráfica & XAML</span>
+    </div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Modelagem de formas primitivas, chassi, caldeira, domo, cabine, ControlTemplate de rodas com 8 raios em cruz e contrapesos balanceados.
+    </p>
+  </a>
+
+  <a href="/PI_T1/fisica-cinematica/equacoes-analiticas/" class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] hover:border-cyan-500/50 transition-colors no-underline block group">
+    <div class="flex items-center gap-2 text-amber-400 font-mono text-sm font-semibold">
+      <SvgIcon name="math" size={18} />
+      <span>3. Física & Cinemática Analítica</span>
+    </div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Fechamento de circuito vetorial da biela-manivela, Teorema de Pitágoras no triângulo da biela motriz e equações do perfil trapezoidal suavizado.
+    </p>
+  </a>
+
+  <a href="/PI_T1/animacao-particulas/storyboards-e-rotacao/" class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] hover:border-cyan-500/50 transition-colors no-underline block group">
+    <div class="flex items-center gap-2 text-emerald-400 font-mono text-sm font-semibold">
+      <SvgIcon name="play" size={18} />
+      <span>4. Animação & Partículas</span>
+    </div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Linhas de tempo contínuas via Storyboard e DoubleAnimation, acoplamento de rotação afim e modelo estocástico de expansão volumétrica de vapor.
+    </p>
+  </a>
+
+  <a href="/PI_T1/qualidade-software/sonarqube-e-regras/" class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] hover:border-cyan-500/50 transition-colors no-underline block group">
+    <div class="flex items-center gap-2 text-purple-400 font-mono text-sm font-semibold">
+      <SvgIcon name="shield" size={18} />
+      <span>5. Qualidade de Código & SonarQube</span>
+    </div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Auditoria estática de código com SonarQube Community Edition, regras C# 12, Clean Code, convenções .editorconfig e zero dívida técnica.
+    </p>
+  </a>
+
+  <a href="/PI_T1/referencias/catalogo-microsoft-learn/" class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b] hover:border-cyan-500/50 transition-colors no-underline block group">
+    <div class="flex items-center gap-2 text-cyan-400 font-mono text-sm font-semibold">
+      <SvgIcon name="book" size={18} />
+      <span>6. Referências Microsoft Learn</span>
+    </div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Compêndio completo de especificações oficiais da Microsoft para todas as APIs WPF/XAML, classes de renderização e transformações 2D utilizadas.
+    </p>
+  </a>
+</div>

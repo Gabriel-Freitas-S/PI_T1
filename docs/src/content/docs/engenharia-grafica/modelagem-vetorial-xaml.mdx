@@ -1,0 +1,158 @@
+---
+title: Modelagem Vetorial 2D em XAML
+description: Engenharia de modelagem em formas primitivas XAML, taxonomia vetorial, tangência física com o trilho e ordenamento em profundidade Z-Order.
+sidebar:
+  order: 1
+---
+
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import CodeInspector from '../../../components/CodeInspector.astro';
+
+Toda a composição visual da locomotiva a vapor foi modelada utilizando primitivas analíticas puras do subsistema vetorial do WPF em `Controls/LocomotivaControl.xaml`. O cenário ferroviário, a iluminação e o leito dos trilhos encontram-se em `MainWindow.xaml`.
+
+A modelagem dispensa qualquer uso de imagens rasterizadas (bitmaps), garantindo renderização nítida em qualquer resolução e fator de escala DPI.
+
+---
+
+## 1. Espaço Euclidiano e Primitivas Vetoriais
+
+No WPF, os objetos visuais são derivados da classe base abstrata `System.Windows.Shapes.Shape` e processados nativamente via pipeline DirectX:
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+  <div class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b]">
+    <div class="font-mono text-sm font-semibold text-cyan-400">Rectangle</div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Utilizado nos elementos ortogonais principais: viga do chassi longitudinal, tanques laterais de água, corpo da cabine, chaminé e hastes dos pistões. Permite arredondamento de cantos com <code>RadiusX</code> e <code>RadiusY</code>.
+    </p>
+  </div>
+
+  <div class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b]">
+    <div class="font-mono text-sm font-semibold text-cyan-400">Ellipse</div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Aplica-se aos cubos e aros das rodas motrizes, cúpula semiesférica do domo de vapor, mancais e ilhós das bielas articuladas.
+    </p>
+  </div>
+
+  <div class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b]">
+    <div class="font-mono text-sm font-semibold text-amber-400">Polygon</div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Modelagem de contornos geométricos fechados definidos por coleção de vértices: cunha frontal do limpa-trilhos (<em>cowcatcher</em>), teto curvo da cabine e o cone translúcido de projeção de luz do farol.
+    </p>
+  </div>
+
+  <div class="p-4 rounded-lg bg-[#0f172a] border border-[#1e293b]">
+    <div class="font-mono text-sm font-semibold text-amber-400">Line</div>
+    <p class="mt-2 mb-0 text-xs text-slate-300 leading-relaxed">
+      Segmentos lineares unindo os pontos $(X_1, Y_1)$ a $(X_2, Y_2)$. Utilizado nos 8 raios radiais de cada roda motriz e nas barras horizontais de guia da cruzeta (<em>slide bars</em>).
+    </p>
+  </div>
+</div>
+
+---
+
+## 2. Tangência Geométrica Roda-Trilho
+
+Para garantir que a composição repouse perfeitamente sobre a via férrea sem flutuar ou penetrar no lastro, as cotas foram sincronizadas analiticamente:
+
+$$
+Y_{\text{contato}} = Y_{\text{origem\_loco}} + Y_{\text{centro\_eixo}} + R_{\text{roda}}
+$$
+
+Substituindo os valores numéricos definidos no modelo:
+- Posição vertical da locomotiva na janela: $Y_{\text{origem\_loco}} = 155.0\text{ px}$
+- Altura do centro dos eixos no Canvas da máquina: $Y_{\text{centro\_eixo}} = 210.0\text{ px}$
+- Raio primitivo externo da roda: $R_{\text{roda}} = 40.0\text{ px}$
+
+$$
+Y_{\text{contato}} = 155.0 + 210.0 + 40.0 = \mathbf{405.0\text{ px}}
+$$
+
+A face superior do boleto do trilho em `MainWindow.xaml` foi posicionada exatamente em $Y = 405.0\text{ px}$, atingindo uma linha de tangência sem descontinuidade visual.
+
+---
+
+## 3. Anatomia da Locomotiva 0-4-0T
+
+A composição reproduz uma clássica locomotiva industrial do tipo **0-4-0T (Tank Engine)**:
+- **0 rodeiros-guia dianteiros**: Foco em esforço de tração e manobra.
+- **4 rodas motrizes acopladas**: Distribuídas em dois eixos paralelos sustentando a totalidade da massa aderente.
+- **T (Tanque Integrado)**: Tanques de reserva de água e carvão fixados diretamente sobre o chassi e laterais da caldeira.
+
+```
+                                [DOMO]  [SINO]     [CHAMINÉ]
+                                 (  )     ||          ||
+         [TETO CABINE]        +-------+-------+----+----+
+        /=============\       |       |       |    |    |
+====|                 |=======|        CALDEIRA    |    |===[>] [FAROL]
+    |     CABINE      |       |                    |    |
+    |                 |       +--------------------+----+
+    |  [PORTA]  [JAN] |       |   TANQUE LATERAL   |      [CILINDRO]
+----+-----------------+-------+--------------------+      [======]
+|=====[RODA 1]=====[BIELA ACOPLAMENTO]=====[RODA 2]=====[CRUZETA] \> [PILOT]
+==================================================================== [TRILHO]
+```
+
+---
+
+## 4. Estruturação em Camadas e Ordenamento Z-Order
+
+Os elementos visuais são organizados em ordem de empilhamento para evitar que bielas fiquem ocultas atrás da caldeira ou que a fumaça cubra a cabine de forma incoerente:
+
+<div class="overflow-x-auto my-6">
+  <table class="w-full text-xs font-mono border-collapse border border-[#1e293b]">
+    <thead>
+      <tr class="bg-[#0f172a] text-slate-200 border-b border-[#1e293b]">
+        <th class="p-3 text-left">Plano de Profundidade</th>
+        <th class="p-3 text-left">Elementos Contidos</th>
+        <th class="p-3 text-left">Função Visual e Mecânica</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-[#1e293b] text-slate-300">
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-slate-400">Plano Fundo (Z = 0 a 1)</td>
+        <td class="p-3">Chassi principal, leito dos trilhos, dormentes de madeira.</td>
+        <td class="p-3">Estrutura de suporte estática.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-slate-400">Plano Intermediário (Z = 2 a 4)</td>
+        <td class="p-3">Caldeira, cabine, tanques laterais, cilindro de vapor e farol.</td>
+        <td class="p-3">Corpo principal sólido da máquina com materiais metálicos escuros.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Plano das Rodas (Z = 5 a 6)</td>
+        <td class="p-3">Instâncias de Roda 1 e Roda 2 via ControlTemplate com RotateTransform.</td>
+        <td class="p-3">Rodeiros motrizes girando sincronizadamente em torno do eixo central.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-amber-400">Plano Frontal Mecânico (Z = 7 a 9)</td>
+        <td class="p-3">Biela de acoplamento, biela motriz, cruzeta, pinos e buchas de manivela.</td>
+        <td class="p-3">Mecanismo dinâmico totalmente visível em primeiro plano.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-emerald-400">Plano Atmosférico (Z = 10)</td>
+        <td class="p-3">Emissor de partículas de vapor e cone de iluminação do farol.</td>
+        <td class="p-3">Efeitos volumétricos translúcidos sobrepostos à cena.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## 5. Referências Oficiais da Microsoft
+
+<MsLearnCard
+  title="Formas e Desenho Básico no WPF"
+  namespace="System.Windows.Shapes.Shape"
+  category="WPF XAML"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/shapes-and-basic-drawing-in-wpf-overview/"
+  description="Guia completo sobre a arquitetura de Shapes no WPF: retângulos, elipses, linhas e polígonos com renderização acelerada por GPU."
+/>
+
+<MsLearnCard
+  title="Pincéis e Operações Gráficas Vetoriais"
+  namespace="System.Windows.Media.LinearGradientBrush"
+  category="WPF XAML"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/wpf-brushes-overview"
+  description="Manipulação de pincéis de preenchimento vetorial: gradientes lineares, paradas de cor e materiais metálicos."
+/>

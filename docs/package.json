@@ -1,0 +1,30 @@
+{
+  "name": "pi-t1-docs",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.1",
+    "@astrojs/starlight": "^0.42.0",
+    "@iconify-json/lucide": "^1.2.66",
+    "@unocss/astro": "^66.10.1",
+    "@unocss/postcss": "^66.10.1",
+    "@unocss/preset-icons": "^66.10.1",
+    "@unocss/preset-uno": "^66.10.1",
+    "astro": "^7.3.2",
+    "katex": "^0.18.7",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
+    "unocss": "^66.10.1"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

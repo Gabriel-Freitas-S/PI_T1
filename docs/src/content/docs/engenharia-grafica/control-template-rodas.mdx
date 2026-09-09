@@ -1,0 +1,125 @@
+---
+title: ControlTemplate & Rodas Desacopladas
+description: Padrão do relógio analógico dos slides teóricos, parametrização do ControlTemplate de rodas, trigonometria dos raios e contrapesos balanceados.
+sidebar:
+  order: 2
+---
+
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import CodeInspector from '../../../components/CodeInspector.astro';
+
+O design das rodas motrizes da locomotiva implementa o padrão arquitetural do **relógio analógico** demonstrado nas aulas de computação gráfica (*Slide 2D, linhas 182 a 299*).
+
+Em vez de codificar cada roda manualmente em coordenadas absolutas, define-se um [`ControlTemplate`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/controltemplates-overview/) reutilizável no dicionário de recursos, encapsulando os aros, os 8 raios em cruz e diagonais, o contrapeso de inércia e o pino de manivela excêntrico.
+
+---
+
+## 1. O Padrão do Relógio (Slide 2D)
+
+Nos slides de computação gráfica 2D, o mostrador e os ponteiros de um relógio são estruturados em um modelo canônico centrado na origem local, permitindo que os ponteiros girem via `RotateTransform` com pivô exatamente no centro da circunferência:
+
+```
+          (40, 0)
+             |
+   (-28, 12) | (28, 12)
+        \    |    /
+         \   |   /
+(-40, 40)-----+-----(40, 40)   <-- Eixo Central (CenterX = 40, CenterY = 40)
+         /   |   \
+        /    |    \
+   (-28, 68) | (28, 68)
+             |
+          (40, 80)
+```
+
+No projeto, a roda possui diâmetro externo de $80\text{ px}$ (raio $R = 40\text{ px}$):
+- **Origem Local Canônica**: O contêiner da roda ocupa o retângulo $[0, 80] \times [0, 80]\text{ px}$.
+- **Pivô de Rotação Central**: Fixado em `CenterX="40"` e `CenterY="40"`.
+- **Raio da Manivela**: $r = 22.0\text{ px}$, posicionado sobre o eixo horizontal na posição de referência $\theta = 0^\circ$.
+
+---
+
+## 2. Geometria dos 8 Raios Radiais a $45^\circ$
+
+Para conferir autenticidade de engenharia mecânica à locomotiva, a roda dispõe de 8 raios modelados com linhas vetoriais convergentes ao centro:
+
+$$
+\begin{cases}
+X_i = 40 + R_{\text{aro}} \cdot \cos\left(\frac{i \cdot \pi}{4}\right) \\
+Y_i = 40 + R_{\text{aro}} \cdot \sin\left(\frac{i \cdot \pi}{4}\right)
+\end{cases} \quad \text{para } i \in \{0, 1, \dots, 7\}
+$$
+
+Com raio interno do aro $R_{\text{aro}} = 36\text{ px}$:
+1. **Cruz Ortogonal ($0^\circ, 90^\circ, 180^\circ, 270^\circ$)**:
+   - Linha horizontal de $(4, 40)$ a $(76, 40)$.
+   - Linha vertical de $(40, 4)$ a $(40, 76)$.
+2. **Cruz Diagonal ($45^\circ, 135^\circ, 225^\circ, 315^\circ$)**:
+   - Segmento diagonal de $(14.5, 14.5)$ a $(65.5, 65.5)$.
+   - Segmento diagonal secundário de $(14.5, 65.5)$ a $(65.5, 14.5)$.
+
+---
+
+## 3. Contrapeso e Manivela Excêntrica
+
+As rodas motrizes reais de locomotivas a vapor incorporam um **contrapeso de fundição em formato de setor circular**, posicionado em oposição angular ao pino da manivela ($180^\circ$ de defasagem), equilibrando a força centrífuga exercida pela massa das bielas.
+
+<CodeInspector
+  title="Template da Roda em Recursos vs Instanciação no Canvas"
+  xamlSnippet={`<!-- LocomotivaResources.xaml: Definição Modular do Template -->
+<ControlTemplate x:Key="RodaLocomotivaTemplate" TargetType="Control">
+    <Canvas Width="80" Height="80" ClipToBounds="False">
+        <!-- Aro Externo de Aço -->
+        <Ellipse Width="80" Height="80" Fill="#1a1a1a" Stroke="#404040" StrokeThickness="2" />
+        <!-- Aro Interno Usinado -->
+        <Ellipse Width="72" Height="72" Canvas.Left="4" Canvas.Top="4" Stroke="#606060" />
+        <!-- Contrapeso de Fundição (Setor Circular Oposto) -->
+        <Path Data="M 14,40 A 28,28 0 0,1 66,40 Z" Fill="#2a2a2a" Opacity="0.8" />
+        <!-- 8 Raios Radiais -->
+        <Line X1="4" Y1="40" X2="76" Y2="40" Stroke="#505050" StrokeThickness="2" />
+        <Line X1="40" Y1="4" X2="40" Y2="76" Stroke="#505050" StrokeThickness="2" />
+        <Line X1="15" Y1="15" X2="65" Y2="65" Stroke="#505050" StrokeThickness="1.5" />
+        <Line X1="15" Y1="65" X2="65" Y2="15" Stroke="#505050" StrokeThickness="1.5" />
+        <!-- Cubo Central e Pino Excêntrico (r = 22 px) -->
+        <Ellipse Width="24" Height="24" Canvas.Left="28" Canvas.Top="28" Fill="#111111" />
+        <Ellipse Width="10" Height="10" Canvas.Left="57" Canvas.Top="35" Fill="#f59e0b" />
+    </Canvas>
+</ControlTemplate>`}
+  csharpSnippet={`// MainWindow.xaml: Instanciação das Duas Rodas com Transformações
+<!-- Roda 1 (Traseira) -->
+<Control Template="{StaticResource RodaLocomotivaTemplate}"
+         Canvas.Left="90" Canvas.Top="170">
+    <Control.RenderTransform>
+        <RotateTransform Angle="{Binding AnguloRodas}" CenterX="40" CenterY="40" />
+    </Control.RenderTransform>
+</Control>
+
+<!-- Roda 2 (Dianteira) -->
+<Control Template="{StaticResource RodaLocomotivaTemplate}"
+         Canvas.Left="230" Canvas.Top="170">
+    <Control.RenderTransform>
+        <RotateTransform Angle="{Binding AnguloRodas}" CenterX="40" CenterY="40" />
+    </Control.RenderTransform>
+</Control>`}
+  explanation="Observe como o ControlTemplate é completamente genérico e centrado na origem (0,0). Cada instância na cena recebe unicamente as coordenadas de posicionamento do eixo e o ângulo observável AnguloRodas."
+/>
+
+---
+
+## 4. Referências Oficiais da Microsoft
+
+<MsLearnCard
+  title="Visão Geral de ControlTemplate"
+  namespace="System.Windows.Controls.ControlTemplate"
+  category="WPF XAML"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/controltemplates-overview/"
+  description="Padrão de separação de aparência e comportamento: como criar e reutilizar estruturas visuais declarativas no WPF."
+/>
+
+<MsLearnCard
+  title="Classe RotateTransform e Pivôs de Rotação"
+  namespace="System.Windows.Media.RotateTransform"
+  category="Transform 2D"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.rotatetransform"
+  description="Rotações bidimensionais no plano cartesiano através de ângulos em graus e pivôs (CenterX, CenterY)."
+/>

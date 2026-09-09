@@ -1,0 +1,136 @@
+---
+title: Equações Analíticas Biela-Manivela
+description: Dedução matemática analítica do mecanismo biela-manivela, fechamento vetorial de circuito, Teorema de Pitágoras e perfil de velocidade trapezoidal C1.
+sidebar:
+  order: 1
+---
+
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import CodeInspector from '../../../components/CodeInspector.astro';
+
+O motor de cinemática em `Models/LocomotivaKinematics.cs` calcula o movimento contínuo da locomotiva através de formulações analíticas exatas da mecânica clássica e trigonometria euclidiana.
+
+Nenhum elemento móvel recorre a interpolações heurísticas ou aproximações numéricas sujeitas a desvios cumulativos: dada uma estampa temporal contínua $t \in \mathbb{R}^+$, o estado geométrico de todas as barras e juntas é rigorosamente determinístico.
+
+---
+
+## 1. Rolamento Puro Sem Deslizamento
+
+Para eliminar qualquer patinagem visual entre a banda de rodagem da roda e o boleto do trilho, a rotação angular $\theta$ é calculada diretamente da distância escalar acumulada $s(t)$:
+
+$$
+s(t) = R_{\text{roda}} \cdot \theta_{\text{rad}}(t) \implies \theta_{\text{graus}}(t) = \left( \frac{s(t)}{R_{\text{roda}}} \right) \cdot \left( \frac{180^\circ}{\pi} \right)
+$$
+
+Com raio de primitivo $R_{\text{roda}} = 40.0\text{ px}$, cada rotação de $360^\circ$ corresponde exatamente ao avanço de:
+
+$$
+\Delta s_{360^\circ} = 2 \cdot \pi \cdot 40.0 \approx 251.327\text{ px}
+$$
+
+Como $s(t)$ cresce monotonicamente com o percurso rolado acumulado, a roda gira continuamente sem descontinuidades mesmo após reversões de sentido de marcha.
+
+---
+
+## 2. Pinos de Manivela em Órbita Circular
+
+As rodas motrizes dianteira e traseira possuem centros de rotação fixos no contêiner da locomotiva:
+- Roda 1 (Traseira): $C_1 = (130.0, 210.0)\text{ px}$
+- Roda 2 (Dianteira): $C_2 = (270.0, 210.0)\text{ px}$
+
+Com raio de manivela excêntrica $r = 22.0\text{ px}$, as coordenadas instantâneas dos pinos $P_1(\theta)$ e $P_2(\theta)$ descrevem trajetórias circulares sincronizadas:
+
+$$
+\begin{cases}
+P_{1x}(\theta) = 130.0 + r \cdot \cos\theta \\
+P_{1y}(\theta) = 210.0 + r \cdot \sin\theta
+\end{cases}
+\qquad
+\begin{cases}
+P_{2x}(\theta) = 270.0 + r \cdot \cos\theta \\
+P_{2y}(\theta) = 210.0 + r \cdot \sin\theta
+\end{cases}
+$$
+
+---
+
+## 3. Biela de Acoplamento (Side Rod)
+
+A biela de acoplamento une rigidamente os pinos $P_1$ e $P_2$. O vetor de ligação entre ambos é:
+
+$$
+\vec{D}_{12} = P_2(\theta) - P_1(\theta) = (270.0 - 130.0, 0) = (140.0, 0)
+$$
+
+Como a componente vertical é nula em todo instante de tempo ($\Delta Y = 0$), a biela de acoplamento realiza um **movimento de translação circular curvilínea pura**:
+- Sua orientação angular é rigorosamente constante ($\phi = 0^\circ$).
+- O comprimento nominal $D = 140.0\text{ px}$ permanece invariável.
+- Cada ponto de sua barra percorre uma circunferência de raio $r = 22.0\text{ px}$ com velocidade angular idêntica à das rodas.
+
+---
+
+## 4. Biela Motriz e Posição da Cruzeta (Slider-Crank)
+
+A biela motriz primária articula-se entre o pino da manivela dianteira $P_2(\theta)$ e o pino da cruzeta $P_c(X_p, Y_c)$.
+
+Como a cruzeta translada exclusivamente sobre a guia horizontal em $Y_c = 210.0\text{ px}$, o cateto vertical do triângulo retângulo formado pela biela é:
+
+$$
+\Delta Y = 210.0 - P_{2y}(\theta) = -r \cdot \sin\theta
+$$
+
+Aplicando o **Teorema de Pitágoras** sobre o comprimento da biela motriz ($L = 82.0\text{ px}$):
+
+$$
+L^2 = (\Delta X)^2 + (\Delta Y)^2 \implies \Delta X = \sqrt{L^2 - (r \cdot \sin\theta)^2}
+$$
+
+A posição horizontal instantânea do pino da cruzeta $X_p(\theta)$ é obtida somando a abscissa do pino motriz ao cateto horizontal:
+
+$$
+\mathbf{X_p(\theta) = 270.0 + r \cdot \cos\theta + \sqrt{L^2 - (r \cdot \sin\theta)^2}}
+$$
+
+### Ângulo de Inclinação da Biela ($\beta$)
+
+A inclinação instantânea $\beta(\theta)$ da biela motriz em relação à linha horizontal do eixo é deduzida via arco seno ou arco tangente de dois argumentos:
+
+$$
+\sin\beta = \frac{-r \cdot \sin\theta}{L} \implies \mathbf{\beta(\theta) = \operatorname{atan2}(210.0 - P_{2y}, X_p - P_{2x}) \cdot \left(\frac{180^\circ}{\pi}\right)}
+$$
+
+---
+
+## 5. Velocidade Linear Instantânea do Pistão
+
+Diferenciando a equação da posição $X_p(\theta)$ em relação ao tempo $t$, com velocidade angular $\omega = \frac{d\theta}{dt}$:
+
+$$
+v_p(\theta) = \frac{dX_p}{dt} = \frac{dX_p}{d\theta} \cdot \frac{d\theta}{dt}
+$$
+
+$$
+\mathbf{v_p(\theta) = -r\omega \left[ \sin\theta + \frac{r \cdot \sin(2\theta)}{2\sqrt{L^2 - r^2\sin^2\theta}} \right]}
+$$
+
+Nos pontos mortos (**Ponto Morto Superior** em $\theta = 0^\circ$ e **Ponto Morto Inferior** em $\theta = 180^\circ$), o termo $\sin\theta = 0$, resultando em velocidade nula $v_p = 0$, enquanto a aceleração atinge seu valor de pico, reproduzindo o comportamento físico de motores alternativos.
+
+---
+
+## 6. Referências Oficiais da Microsoft
+
+<MsLearnCard
+  title="Funções Trigonométricas Analíticas em .NET"
+  namespace="System.Math.Atan2"
+  category="Architecture"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.math.atan2"
+  description="Cálculo analítico de ângulos vetoriais com preservação de quadrante nos quatro quadrantes euclidianos."
+/>
+
+<MsLearnCard
+  title="Estrutura de Alta Resolução Stopwatch"
+  namespace="System.Diagnostics.Stopwatch"
+  category="Architecture"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.diagnostics.stopwatch"
+  description="Medição contínua de alta precisão baseada em contadores de desempenho do hardware do sistema operacional."
+/>

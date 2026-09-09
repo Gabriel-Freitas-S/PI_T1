@@ -1,0 +1,126 @@
+---
+title: Introdução & Especificações Formais
+description: Objetivos, contexto acadêmico, diretrizes normativas do Trabalho C1 e requisitos de execução da Locomotiva 2D em WPF.
+sidebar:
+  order: 1
+---
+
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import SvgIcon from '../../../components/SvgIcon.astro';
+
+A **Locomotiva a Vapor 2D** é um projeto de computação visual e engenharia de software desenvolvido para a disciplina de **Processamento de Imagens (Trabalho C1)**, implementado na linguagem **C# (.NET 10)** sobre o subsistema vetorial acelerado por hardware do **Windows Presentation Foundation (WPF)**.
+
+O trabalho tem como objetivo central aplicar transformações afins 2D (translação, rotação, escala e espelhamento), composição gráfica modular via matrizes de renderização, desacoplamento em coordenadas canônicas $(0,0)$ e modelagem matemática analítica em tempo real de mecanismos acoplados de quatro barras e biela-manivela.
+
+---
+
+## Demonstração Visual do Sistema
+
+O percurso ferroviário é modelado em regime contínuo de **vai-e-volta (Ping-Pong)** nos limites visíveis da janela. A composição desacelera suavemente ao se aproximar de cada terminal, efetua uma pausa técnica de manobra, inverte o sentido de marcha com espelhamento simétrico e acelera suavemente em direção oposta:
+
+<div class="my-6 p-2 rounded-lg bg-[#0f172a] border border-[#1e293b] flex flex-col items-center">
+  <img src="/PI_T1/locomotiva.gif" alt="Locomotiva a Vapor 2D em Execução Contínua" class="rounded border border-[#1e293b] max-w-full h-auto" />
+  <span class="mt-2 text-xs font-mono text-slate-400">Figura 1.1 — Captura animada em tempo real da locomotiva a vapor 2D em execução a 60 FPS</span>
+</div>
+
+---
+
+## Matriz de Conformidade Normativa (Trabalho C1)
+
+A especificação formal do trabalho avalia o desenvolvimento através de **4 estágios incrementais**, cobrindo desde a modelagem estática na origem até o movimento cinemático contínuo com física acoplada:
+
+<div class="overflow-x-auto my-6">
+  <table class="w-full text-xs font-mono border-collapse border border-[#1e293b]">
+    <thead>
+      <tr class="bg-[#0f172a] text-slate-200 border-b border-[#1e293b]">
+        <th class="p-3 text-left">Estágio</th>
+        <th class="p-3 text-center">Pontuação</th>
+        <th class="p-3 text-left">Requisito Formal do Enunciado</th>
+        <th class="p-3 text-left">Solução de Engenharia Implementada</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-[#1e293b] text-slate-300">
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Estágio 1</td>
+        <td class="p-3 text-center">3,0 pts</td>
+        <td class="p-3">Modelagem do corpo da locomotiva na origem (0,0) com RenderTransform e criação de ControlTemplate reutilizável para rodas.</td>
+        <td class="p-3">Chassi, caldeira, cabine, domo, chaminé e cilindro definidos estritamente em (0,0) e posicionados por TranslateTransform. RodaTemplate com 8 raios em cruz e diagonais, contrapeso e manivela excêntrica.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Estágio 2</td>
+        <td class="p-3 text-center">6,0 pts</td>
+        <td class="p-3">Agrupamento em Canvas, aplicação de RotateTransform com animação contínua nas rodas e TranslateTransform no Canvas para translação.</td>
+        <td class="p-3">Composição vetorial encapsulada em LocomotivaCanvas. Rodas animadas com rotação afim pura sem patinagem. Translação global do contêiner sobre o trilho com tangência em Y = 405 px.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Estágio 3</td>
+        <td class="p-3 text-center">8,0 pts</td>
+        <td class="p-3">Modelagem mecânica de bielas conectando as rodas com movimento sincronizado simulando operação real ("combinação de transformações a cada quadro").</td>
+        <td class="p-3">Biela de acoplamento com paralelismo contínuo entre pinos das rodas. Biela motriz e cruzeta calculadas analiticamente quadro a quadro via Teorema de Pitágoras e Math.Atan2 no evento CompositionTarget.Rendering.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Estágio 4</td>
+        <td class="p-3 text-center">10,0 pts</td>
+        <td class="p-3">Movimentação horizontal completa na janela principal, indo e voltando até alcançar os limites visíveis da janela.</td>
+        <td class="p-3">Movimento contínuo Ping-Pong nos limites do cenário com perfil trapezoidal suavizado por integral de curva cosseno (C1-contínua), desaceleração suave nas margens e espelhamento por ScaleTransform (ScaleX = -1 / 1).</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Requisitos de Ambiente e Execução Local
+
+### Pré-requisitos de Sistema
+
+- **Sistema Operacional**: Microsoft Windows 10 ou Windows 11 (requerido para o subsistema nativo WPF e aceleração DirectX).
+- **Runtime e SDK**: [.NET 10 SDK](https://dotnet.microsoft.com/download) ou superior.
+- **Ferramenta de Automação (Opcional)**: FFmpeg para regeneração de vídeos de demonstração via script PowerShell.
+
+### Instruções de Compilação e Execução
+
+Para compilar e executar o projeto diretamente via terminal PowerShell:
+
+```powershell
+# 1. Navegar até o diretório raiz do projeto
+cd d:\ProcessamentoDeImagens\PI_T1
+
+# 2. Restaurar dependências e compilar a solução em modo Release
+dotnet build PI_T1.sln -c Release
+
+# 3. Executar o aplicativo WPF interativo
+dotnet run
+```
+
+### Comandos para Teste Headless e Captura Determinística
+
+A aplicação implementa parâmetros de linha de comando para auditoria automatizada e validação visual de quadros:
+
+```powershell
+# Captura de quadro determinístico no instante t = 3.5 segundos
+dotnet run -- --screenshot 3.5 frame_check.png
+
+# Gravação de quadros brutos em pasta para análise visual (15 segundos a 20 FPS)
+dotnet run -- --record-frames 15.0 20 frames_dir
+```
+
+---
+
+## Referências Oficiais da Microsoft
+
+<MsLearnCard
+  title="Visão Geral de Transformações Afins no WPF"
+  namespace="System.Windows.Media.Transform"
+  category="Transform 2D"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview/"
+  description="Documentação oficial sobre o subsistema de transformações 2D do WPF: RotateTransform, TranslateTransform, ScaleTransform e matrizes de projeção na GPU."
+/>
+
+<MsLearnCard
+  title="Visão Geral de Formas e Desenho Básico no WPF"
+  namespace="System.Windows.Shapes.Shape"
+  category="WPF XAML"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/shapes-and-basic-drawing-in-wpf-overview/"
+  description="Especificação técnica dos objetos de desenho vetorial (Rectangle, Ellipse, Line, Polygon) e propriedades de preenchimento e traçado."
+/>

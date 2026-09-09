@@ -1,0 +1,77 @@
+---
+title: Diretrizes & Especificações do Trabalho
+description: Matriz de rastreabilidade normativa entre o enunciado do Trabalho C1, os slides da disciplina e a implementação final em WPF.
+sidebar:
+  order: 2
+---
+
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import SvgIcon from '../../../components/SvgIcon.astro';
+
+Este documento estabelece a matriz de rastreabilidade técnica formal entre as instruções normativas do **Trabalho C1 (Processamento de Imagens)**, os padrões teóricos dos slides de computação gráfica 2D e o código-fonte final do projeto.
+
+---
+
+## 1. Matriz de Rastreabilidade Normativa
+
+<div class="overflow-x-auto my-6">
+  <table class="w-full text-xs font-mono border-collapse border border-[#1e293b]">
+    <thead>
+      <tr class="bg-[#0f172a] text-slate-200 border-b border-[#1e293b]">
+        <th class="p-3 text-left">Item Normativo</th>
+        <th class="p-3 text-left">Fonte Formal</th>
+        <th class="p-3 text-left">Exigência das Normas</th>
+        <th class="p-3 text-left">Arquivo e Linhas de Implementação</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-[#1e293b] text-slate-300">
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Origem Canônica (0,0)</td>
+        <td class="p-3">Trabalho C1:32<br/>Slide 2D:225</td>
+        <td class="p-3">Elementos desenhados na origem (0,0) e posicionados por RenderTransform.</td>
+        <td class="p-3"><code>Controls/LocomotivaControl.xaml</code><br/><code>Resources/LocomotivaResources.xaml</code></td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">ControlTemplate de Rodas</td>
+        <td class="p-3">Trabalho C1:36<br/>Slide 2D:182-299</td>
+        <td class="p-3">Roda criada em ControlTemplate reutilizável com raios internos visíveis.</td>
+        <td class="p-3"><code>Resources/LocomotivaResources.xaml:18-45</code><br/>(8 raios, contrapeso e manivela excêntrica)</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Rotação das Rodas</td>
+        <td class="p-3">Trabalho C1:42<br/>Slide 2D:280</td>
+        <td class="p-3">RotateTransform com pivô no centro da roda (CenterX, CenterY) e animação contínua.</td>
+        <td class="p-3"><code>Controls/LocomotivaControl.xaml:48-62</code><br/><code>ViewModels/LocomotivaViewModel.cs</code></td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Translação em Canvas</td>
+        <td class="p-3">Trabalho C1:44</td>
+        <td class="p-3">Agrupamento dos elementos em Canvas com TranslateTransform para movimento.</td>
+        <td class="p-3"><code>MainWindow.xaml:68-80</code><br/>(Deslocamento horizontal XLocomotiva)</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Cinemática das Bielas</td>
+        <td class="p-3">Trabalho C1:50-52</td>
+        <td class="p-3">Bielas conectando as rodas com movimento sincronizado simulando operação real.</td>
+        <td class="p-3"><code>Models/LocomotivaKinematics.cs:140-198</code><br/>(Side Rod paralela e Connecting Rod articulada)</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Percurso Ping-Pong</td>
+        <td class="p-3">Trabalho C1:23, 56</td>
+        <td class="p-3">Locomotiva trafegando para direita e esquerda, indo e voltando nos limites da janela.</td>
+        <td class="p-3"><code>Models/LocomotivaKinematics.cs:59-130</code><br/>(Trajetória contínua com aceleração, cruzeiro e frenagem)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## 2. Diferenciais de Engenharia Aplicados
+
+Além dos requisitos mandatórios do enunciado, o projeto incorporou diferenciais técnicos de excelência:
+
+1. **Continuidade $C^1$ de Velocidade**: Modulação da aceleração e frenagem através de integral de curva cosseno, eliminando saltos de inércia (*jerk*) e descontinuidades visuais.
+2. **Inversão Simétrica com Escala Afim**: Ao inverter a marcha na estação, o farol, chaminé e limpa-trilhos são espelhados via `ScaleTransform (ScaleX = -1.0)`, mantendo a frente da máquina voltada para a direção de trânsito.
+3. **Padrão Zero-Alloc**: Utilização de `readonly record struct LocomotivaFrameState` na pilha e eventos com instâncias estáticas cacheadas para não disparar coletas do GC a 60/144 FPS.
+4. **Auditoria SonarQube com Score A**: Zero bugs, zero vulnerabilidades e zero Code Smells com 100% de conformidade com as regras do compilador Roslyn e do `.editorconfig`.

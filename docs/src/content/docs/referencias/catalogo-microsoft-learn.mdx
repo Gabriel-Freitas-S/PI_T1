@@ -1,0 +1,149 @@
+---
+title: Catálogo de APIs & Conceitos Microsoft Learn
+description: Compêndio estruturado de todas as referências oficiais da Microsoft utilizadas no desenvolvimento da Locomotiva 2D em WPF.
+sidebar:
+  order: 1
+---
+
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import SvgIcon from '../../../components/SvgIcon.astro';
+
+Todas as tecnologias de renderização vetorial, transformações lineares homogêneas, temporização por intervalo de quadro, arquitetura MVVM e estilização modular empregadas neste projeto foram concebidas com base na documentação técnica oficial da **Microsoft (Microsoft Learn)**.
+
+Abaixo apresenta-se o catálogo estruturado com cartões inteligentes de referência técnica direta.
+
+---
+
+## 1. Álgebra Linear e Transformações Afins 2D
+
+<MsLearnCard
+  title="Visão Geral de Transformações Afins no WPF"
+  namespace="System.Windows.Media.Transform"
+  category="Transform 2D"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview/"
+  description="Teoria de transformações afins, matrizes homogêneas 3x3 e representação de rotação, escala e translação no plano cartesiano."
+/>
+
+<MsLearnCard
+  title="RenderTransform vs LayoutTransform"
+  namespace="System.Windows.UIElement.RenderTransform"
+  category="Transform 2D"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview/#differences-between-the-rendertransform-and-layouttransform-properties"
+  description="Justificativa técnica para aplicação exclusiva de RenderTransform para aceleração direta por hardware na GPU a 60/144 FPS."
+/>
+
+<MsLearnCard
+  title="Classe RotateTransform"
+  namespace="System.Windows.Media.RotateTransform"
+  category="Transform 2D"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.rotatetransform"
+  description="Rotação afim contínua em torno de pivô customizado (CenterX, CenterY) aplicada às rodas e à inclinação da biela motriz."
+/>
+
+<MsLearnCard
+  title="Classe TranslateTransform"
+  namespace="System.Windows.Media.TranslateTransform"
+  category="Transform 2D"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.translatetransform"
+  description="Translação linear no espaço vetorial para deslocamento da composição e posicionamento de elementos canônicos (0,0)."
+/>
+
+<MsLearnCard
+  title="Classe ScaleTransform"
+  namespace="System.Windows.Media.ScaleTransform"
+  category="Transform 2D"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.scaletransform"
+  description="Inversão simétrica horizontal de orientação visual (ScaleX = -1.0 / 1.0) nas manobras de retorno e expansão volumétrica de vapor."
+/>
+
+<MsLearnCard
+  title="Classe TransformGroup"
+  namespace="System.Windows.Media.TransformGroup"
+  category="Transform 2D"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.transformgroup"
+  description="Composição de matrizes afins concatenadas (escala, rotação e translação) aplicadas simultaneamente a um mesmo nó XAML."
+/>
+
+---
+
+## 2. Layout, Contêineres e Geometria Vetorial
+
+<MsLearnCard
+  title="Elemento Canvas"
+  namespace="System.Windows.Controls.Canvas"
+  category="WPF XAML"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/canvas/"
+  description="Contêiner de posicionamento cartesiano explícito com suporte a coordenadas relativas e propriedades anexadas Canvas.Left e Canvas.Top."
+/>
+
+<MsLearnCard
+  title="Formas e Desenho Básico no WPF"
+  namespace="System.Windows.Shapes.Shape"
+  category="WPF XAML"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/shapes-and-basic-drawing-in-wpf-overview/"
+  description="Primitivas vetoriais Rectangle, Ellipse, Polygon e Line ancoradas em coordenadas canônicas (0,0) com preenchimentos vetoriais."
+/>
+
+<MsLearnCard
+  title="Pincéis e Gradientes Vetoriais"
+  namespace="System.Windows.Media.LinearGradientBrush"
+  category="WPF XAML"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/wpf-brushes-overview"
+  description="Pincéis monocromáticos e gradientes com múltiplas paradas de cor para atmosfera do céu e materiais metálicos."
+/>
+
+---
+
+## 3. Padrões de Arquitetura MVVM & Vinculação de Dados
+
+<MsLearnCard
+  title="Padrão Model-View-ViewModel (MVVM)"
+  namespace="System.ComponentModel.INotifyPropertyChanged"
+  category="Architecture"
+  url="https://learn.microsoft.com/pt-br/dotnet/architecture/maui/mvvm"
+  description="Separação estrita de responsabilidades entre motor físico de domínio, estado de apresentação e controles XAML declarativos."
+/>
+
+<MsLearnCard
+  title="Visão Geral de Vinculação de Dados (Data Binding)"
+  namespace="System.Windows.Data.Binding"
+  category="Architecture"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/data/"
+  description="Ligação de dados declarativa e reativa entre propriedades da ViewModel e transformações afins da camada visual."
+/>
+
+<MsLearnCard
+  title="Modelos de Controle (ControlTemplate)"
+  namespace="System.Windows.Controls.ControlTemplate"
+  category="WPF XAML"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/controltemplates-overview/"
+  description="Separação de aparência e comportamento visual: instanciação modular do modelo de rodas e mancais de bielas."
+/>
+
+---
+
+## 4. Renderização em Tempo Real e Temporização
+
+<MsLearnCard
+  title="Renderização por Intervalo de Quadro (CompositionTarget)"
+  namespace="System.Windows.Media.CompositionTarget.Rendering"
+  category="Animation"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/how-to-render-on-a-per-frame-interval-using-compositiontarget"
+  description="Técnica de alto desempenho para simulação de física analítica contínua sincronizada ao pulso vertical da GPU."
+/>
+
+<MsLearnCard
+  title="Classe Stopwatch e Temporização de Alta Precisão"
+  namespace="System.Diagnostics.Stopwatch"
+  category="Architecture"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.diagnostics.stopwatch"
+  description="Contador de tempo contínuo imune a erros cumulativos de ponto flutuante, baseado em QueryPerformanceCounter do Windows."
+/>
+
+<MsLearnCard
+  title="Visão Geral de Storyboards"
+  namespace="System.Windows.Media.Animation.Storyboard"
+  category="Animation"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/storyboards-overview"
+  description="Orquestração declarativa de linhas do tempo vetoriais, repetição contínua e interpolação de propriedades de dependência."
+/>

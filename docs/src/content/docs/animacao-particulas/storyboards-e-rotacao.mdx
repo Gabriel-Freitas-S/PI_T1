@@ -1,0 +1,111 @@
+---
+title: Storyboards & Rotação Contínua
+description: Linhas de tempo vetoriais do WPF, animação declarativa via Storyboard, DoubleAnimation contínua e propriedades de dependência.
+sidebar:
+  order: 1
+---
+
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import CodeInspector from '../../../components/CodeInspector.astro';
+
+O subsistema de animações declarativas do WPF permite expressar comportamentos dinâmicos diretamente em XAML através da classe [`Storyboard`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/storyboards-overview/) e tipos especializados de interpolação temporal.
+
+No projeto, a animação de rotação contínua das rodas e os ciclos de exaustão gasosa são orquestrados por linhas de tempo declarativas otimizadas para processamento assíncrono na GPU.
+
+---
+
+## 1. O Modelo Declarativo do WPF
+
+Diferente de sistemas que exigem laços manuais de temporização na thread de interface (UI Thread), as animações do WPF operam sobre **Propriedades de Dependência (Dependency Properties)**:
+
+```
+[Marcação XAML]                  [Subsistema de Temporização]            [Pipeline GPU DirectX]
+Storyboard (DoubleAnimation)  -->  Cálculo de Quadros Intermediários  -->  Atualização Matricial
+From=0 To=360 Duration=2s          60 / 120 / 144 Hz                     Sem Bloqueio de Thread
+```
+
+Principais atributos de uma animação declarativa:
+- `From` e `To`: Definem os limites inicial e final do valor interpolado.
+- `Duration`: Intervalo temporal necessário para percorrer o trajeto.
+- `RepeatBehavior="Forever"`: Execução cíclica contínua sem intervenção imperativa de código.
+- `Storyboard.TargetName` e `Storyboard.TargetProperty`: Alvos declarativos da propriedade modificada.
+
+---
+
+## 2. Comparativo: Storyboard Declarativo vs CompositionTarget Imperativo
+
+A aplicação combina intencionalmente duas estratégias complementares de animação:
+
+<div class="overflow-x-auto my-6">
+  <table class="w-full text-xs font-mono border-collapse border border-[#1e293b]">
+    <thead>
+      <tr class="bg-[#0f172a] text-slate-200 border-b border-[#1e293b]">
+        <th class="p-3 text-left">Abordagem de Animação</th>
+        <th class="p-3 text-left">Mecanismo Aplicado no Projeto</th>
+        <th class="p-3 text-left">Vantagem Técnica Arquitetural</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-[#1e293b] text-slate-300">
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Declarativa (Storyboard XAML)</td>
+        <td class="p-3">Rotação autônoma das rodas e dispersão volumétrica da fumaça.</td>
+        <td class="p-3">Zero código em C#, interpolação fluida gerenciada nativamente pelo motor de mídia do Windows.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-amber-400">Imperativa Analítica (CompositionTarget.Rendering)</td>
+        <td class="p-3">Cinemática analítica acoplada de bielas, cruzeta e trajeto Ping-Pong.</td>
+        <td class="p-3">Garante fechamento trigonométrico exato a cada quadro sem defasagens entre roda, biela e pistão.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## 3. Rotação Contínua com Pivô Fixo
+
+Para animar as rodas através de rotação afim contínua em torno de seus respectivos cubos centrais:
+
+<CodeInspector
+  title="Animação de Rotação Declarativa com RotateTransform"
+  xamlSnippet={`<!-- Animação Contínua da Roda no XAML -->
+<Storyboard x:Key="RotacaoRodasStoryboard" RepeatBehavior="Forever">
+    <DoubleAnimation
+        Storyboard.TargetName="RotacaoRoda1"
+        Storyboard.TargetProperty="Angle"
+        From="0" To="360"
+        Duration="0:0:2.0" />
+</Storyboard>
+
+<!-- Instância da Roda no Canvas com Pivô Central (40, 40) -->
+<Canvas Width="80" Height="80" Canvas.Left="90" Canvas.Top="170">
+    <Canvas.RenderTransform>
+        <RotateTransform x:Name="RotacaoRoda1" CenterX="40" CenterY="40" />
+    </Canvas.RenderTransform>
+    <!-- Conteúdo do ControlTemplate da Roda -->
+</Canvas>`}
+  csharpSnippet={`// Acionamento no Code-Behind (quando disparado programaticamente)
+var storyboard = (Storyboard)this.Resources["RotacaoRodasStoryboard"];
+storyboard.Begin(this, isControllable: true);`}
+  explanation="O pivô de rotação (CenterX=40, CenterY=40) garante que o elemento gire perfeitamente sobre seu próprio centro geométrico sem oscilar orbitalmente na tela."
+/>
+
+---
+
+## 4. Referências Oficiais da Microsoft
+
+<MsLearnCard
+  title="Visão Geral de Storyboards"
+  namespace="System.Windows.Media.Animation.Storyboard"
+  category="Animation"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/storyboards-overview"
+  description="Arquitetura de linhas do tempo, gatilhos de eventos e animações de propriedades no WPF."
+/>
+
+<MsLearnCard
+  title="Animações com DoubleAnimation"
+  namespace="System.Windows.Media.Animation.DoubleAnimation"
+  category="Animation"
+  url="https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/animation-overview"
+  description="Interpolação linear de valores de ponto flutuante para transformações afins de ângulo, escala e coordenadas."
+/>

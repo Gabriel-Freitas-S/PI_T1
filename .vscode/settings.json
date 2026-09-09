@@ -121,5 +121,10 @@
             "bold": true,
             "italic": false
         }
-    ]
+    ],
+
+    // Suporte a frameworks CSS utilitários como UnoCSS / Tailwind
+    "css.lint.unknownAtRules": "ignore",
+    "scss.lint.unknownAtRules": "ignore",
+    "less.lint.unknownAtRules": "ignore"
 }

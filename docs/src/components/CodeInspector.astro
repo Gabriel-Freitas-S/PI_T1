@@ -1,0 +1,254 @@
+---
+import { Code } from '@astrojs/starlight/components';
+
+interface Props {
+  title: string;
+  xamlSnippet: string;
+  csharpSnippet: string;
+  explanation: string;
+}
+
+const { title, xamlSnippet, csharpSnippet, explanation } = Astro.props;
+const componentId = `inspector-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<div class="code-inspector-container" id={componentId}>
+  <!-- Header Bar -->
+  <div class="inspector-header">
+    <div class="inspector-title">
+      <svg class="inspector-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="16 18 22 12 16 6"/>
+        <polyline points="8 6 2 12 8 18"/>
+      </svg>
+      <span class="inspector-title-text">{title}</span>
+    </div>
+
+    <!-- Tab Buttons -->
+    <div class="inspector-tabs">
+      <button
+        type="button"
+        class="inspector-tab-btn active"
+        data-tab="xaml"
+      >
+        <svg class="tab-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 18 22 12 16 6"/>
+          <polyline points="8 6 2 12 8 18"/>
+        </svg>
+        <span>XAML (Declarativo)</span>
+      </button>
+      <button
+        type="button"
+        class="inspector-tab-btn"
+        data-tab="csharp"
+      >
+        <svg class="tab-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="4" y="4" width="16" height="16" rx="2"/>
+          <path d="M9 9h6"/>
+          <path d="M9 15h6"/>
+        </svg>
+        <span>C# (Lógica / Cinemática)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Panes -->
+  <div class="inspector-body">
+    <div class="tab-pane xaml-pane">
+      <Code code={xamlSnippet} lang="xml" />
+    </div>
+
+    <div class="tab-pane csharp-pane" style="display: none;">
+      <Code code={csharpSnippet} lang="csharp" />
+    </div>
+
+    <!-- Technical Note -->
+    <div class="inspector-footer">
+      <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+      <p class="footer-text">{explanation}</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .code-inspector-container {
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    background: #0b111e;
+    border: 1px solid #1e293b;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .inspector-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: #0f172a;
+    border-bottom: 1px solid #1e293b;
+    gap: 0.75rem;
+  }
+
+  .inspector-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .inspector-title-icon {
+    width: 15px;
+    height: 15px;
+    color: #00d2ff;
+    flex-shrink: 0;
+  }
+
+  .inspector-title-text {
+    font-family: var(--sl-font-mono, monospace);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+
+  .inspector-tabs {
+    display: inline-flex;
+    align-items: center;
+    background: #06090e;
+    padding: 3px;
+    border-radius: 6px;
+    border: 1px solid #1e293b;
+    gap: 3px;
+  }
+
+  .inspector-tab-btn {
+    all: unset;
+    appearance: none;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 4px;
+    font-family: var(--sl-font-mono, monospace);
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.15s ease;
+    user-select: none;
+    margin: 0;
+    vertical-align: middle;
+    outline: none;
+  }
+
+  .inspector-tab-btn span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+
+  .inspector-tab-btn:hover {
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .inspector-tab-btn.active {
+    color: #00d2ff !important;
+    background: #162032 !important;
+    border: 1px solid rgba(0, 210, 255, 0.35) !important;
+    box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);
+  }
+
+  .tab-icon {
+    flex-shrink: 0;
+    display: block;
+    margin: 0;
+  }
+
+  .inspector-body {
+    padding: 0.85rem;
+  }
+
+  .tab-pane :global(.expressive-code) {
+    margin: 0 !important;
+  }
+
+  .tab-pane :global(.expressive-code figure.frame) {
+    margin: 0 !important;
+    border: 1px solid #1e293b !important;
+    border-radius: 6px !important;
+    background: #06090e !important;
+    box-shadow: none !important;
+  }
+
+  .tab-pane :global(.expressive-code pre) {
+    background: #06090e !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-size: 0.8rem !important;
+    line-height: 1.6 !important;
+  }
+
+  .inspector-footer {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #1e293b;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .footer-icon {
+    width: 14px;
+    height: 14px;
+    color: #f59e0b;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .footer-text {
+    margin: 0 !important;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: #94a3b8;
+  }
+</style>
+
+<script define:vars={{ componentId }}>
+  const container = document.getElementById(componentId);
+  if (container) {
+    const buttons = container.querySelectorAll('.inspector-tab-btn');
+    const xamlPane = container.querySelector('.xaml-pane');
+    const csharpPane = container.querySelector('.csharp-pane');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+
+        buttons.forEach((b) => {
+          b.classList.remove('active');
+        });
+
+        btn.classList.add('active');
+
+        if (targetTab === 'xaml') {
+          if (xamlPane) xamlPane.style.display = 'block';
+          if (csharpPane) csharpPane.style.display = 'none';
+        } else {
+          if (xamlPane) xamlPane.style.display = 'none';
+          if (csharpPane) csharpPane.style.display = 'block';
+        }
+      });
+    });
+  }
+</script>

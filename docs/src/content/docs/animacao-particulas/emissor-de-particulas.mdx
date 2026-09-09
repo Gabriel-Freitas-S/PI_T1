@@ -1,0 +1,143 @@
+---
+title: Emissor de Partículas de Vapor
+description: Modelagem física da pluma de vapor, empuxo térmico ascendente, arrasto aerodinâmico, expansão volumétrica e defasagem temporal (staggering).
+sidebar:
+  order: 2
+---
+
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import CodeInspector from '../../../components/CodeInspector.astro';
+
+A autenticidade visual de uma máquina a vapor depende intrinsecamente da exaustão pulsante de vapor e condensação expelida pela chaminé.
+
+O sistema de partículas de vapor foi implementado puramente em XAML vetorial através de três partículas elípticas desacopladas, moduladas por transformações de translação afim, expansão volumétrica e decaimento contínuo de opacidade.
+
+---
+
+## 1. Fenomenologia Física da Pluma Gasosa
+
+A dispersão do vapor na atmosfera segue quatro vetores de transporte físico:
+
+```
+        (Partícula 3: Volume expandido a 220%, opacidade quase nula)
+             (   )
+           (       )
+             \
+        (Partícula 2: Expansão intermediária, arrasto acentuado)
+           (   )
+             \
+        (Partícula 1: Alta densidade, início de descompressão)
+          (o)
+           ||   <-- Chaminé da Caldeira
+       +--------+
+       | CALDEIRA |  =====> [Sentido de Avanço da Composição]
+```
+
+1. **Empuxo Térmico Ascendente (Convecção)**: O vapor de água em alta temperatura possui densidade inferior à do ar atmosférico circundante, gerando força de empuxo vertical. No sistema de coordenadas do WPF (onde $Y$ cresce para baixo), o movimento ascendente traduz-se em redução da ordenada: $Y = 40.0 \to -40.0\text{ px}$.
+2. **Arrasto Aerodinâmico Relativo**: À medida que a locomotiva avança para a direita, a massa de ar impõe resistência na direção oposta, provocando o deslocamento horizontal regressivo das nuvens: $X = 395.0 \to 320.0\text{ px}$.
+3. **Expansão Volumétrica Radial**: Ao sair do duto confinado da chaminé para a atmosfera aberta, a descompressão física expande o raio da partícula através de `ScaleTransform` ($ScaleX, ScaleY = 0.5 \to 2.2$).
+4. **Dissipação e Atenuação**: O resfriamento e a diluição reduzem gradativamente a opacidade visível de $0.8$ (vapor denso e opaco) até $0.0$ (condensação imperceptível).
+
+---
+
+## 2. Emissão Escalonada por Defasagem Temporal (*Staggering*)
+
+Para evitar que as três partículas sejam expelidas em bloco simultâneo — o que geraria um efeito visual artificial de rajadas espasmódicas —, os ciclos foram configurados com períodos assíncronos e defasagens de disparo:
+
+<div class="overflow-x-auto my-6">
+  <table class="w-full text-xs font-mono border-collapse border border-[#1e293b]">
+    <thead>
+      <tr class="bg-[#0f172a] text-slate-200 border-b border-[#1e293b]">
+        <th class="p-3 text-left">Instância de Partícula</th>
+        <th class="p-3 text-center">Período Cíclico (Duration)</th>
+        <th class="p-3 text-center">Defasagem Inicial (BeginTime)</th>
+        <th class="p-3 text-left">Efeito Dinâmico na Pluma</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-[#1e293b] text-slate-300">
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Partícula 1</td>
+        <td class="p-3 text-center">1.5 segundos</td>
+        <td class="p-3 text-center font-bold">0.0 segundos</td>
+        <td class="p-3">Pulsos rápidos de saída imediata na boca da chaminé.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Partícula 2</td>
+        <td class="p-3 text-center">1.8 segundos</td>
+        <td class="p-3 text-center font-bold">0.5 segundos</td>
+        <td class="p-3">Corpo intermediário da nuvem em altitude média.</td>
+      </tr>
+      <tr class="hover:bg-[#0f172a]/50">
+        <td class="p-3 font-semibold text-cyan-400">Partícula 3</td>
+        <td class="p-3 text-center">2.0 segundos</td>
+        <td class="p-3 text-center font-bold">1.0 segundos</td>
+        <td class="p-3">Domo de cauda da pluma com dissipação suave e ampla.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+A assimetria entre os períodos ($1.5\text{ s}$, $1.8\text{ s}$ e $2.0\text{ s}$) gera um longo intervalo antes de qualquer repetição exata de alinhamento, criando uma sensação visual de fluxo turbulento contínuo.
+
+---
+
+## 3. Implementação XAML das Partículas
+
+<CodeInspector
+  title="Estrutura Vetorial e Interpolação XAML das Partículas"
+  xamlSnippet={`<!-- Partícula 1: Elipse com Pivô Centralizado em (10, 10) -->
+<Ellipse x:Name="Fumaca1" Width="20" Height="20" Fill="#65FFFFFF" Opacity="0.8">
+    <Ellipse.RenderTransform>
+        <TransformGroup>
+            <!-- Centro de escala coincide com o centro geométrico da elipse -->
+            <ScaleTransform x:Name="EscalaFumaca1" CenterX="10" CenterY="10" />
+            <!-- Posição canônica na boca da chaminé -->
+            <TranslateTransform x:Name="TranslacaoFumaca1" X="395" Y="20" />
+        </TransformGroup>
+    </Ellipse.RenderTransform>
+</Ellipse>
+
+<!-- Linha do Tempo Declarativa no Storyboard -->
+<DoubleAnimation Storyboard.TargetName="TranslacaoFumaca1" Storyboard.TargetProperty="Y"
+                 From="40" To="-40" Duration="0:0:1.5" RepeatBehavior="Forever" />
+<DoubleAnimation Storyboard.TargetName="TranslacaoFumaca1" Storyboard.TargetProperty="X"
+                 From="395" To="320" Duration="0:0:1.5" RepeatBehavior="Forever" />
+<DoubleAnimation Storyboard.TargetName="EscalaFumaca1" Storyboard.TargetProperty="ScaleX"
+                 From="0.5" To="2.2" Duration="0:0:1.5" RepeatBehavior="Forever" />
+<DoubleAnimation Storyboard.TargetName="EscalaFumaca1" Storyboard.TargetProperty="ScaleY"
+                 From="0.5" To="2.2" Duration="0:0:1.5" RepeatBehavior="Forever" />
+<DoubleAnimation Storyboard.TargetName="Fumaca1" Storyboard.TargetProperty="Opacity"
+                 From="0.8" To="0.0" Duration="0:0:1.5" RepeatBehavior="Forever" />`}
+  csharpSnippet={`// Exemplo de captura de quadro determinístico para renderização offline
+public static void AmostrarFumaca(double tempo, out double x, out double y, out double escala, out double opacidade)
+{
+    double duracao = 1.5;
+    double progresso = (tempo % duracao) / duracao;
+
+    x = 395.0 + ((320.0 - 395.0) * progresso);
+    y = 40.0 + ((-40.0 - 40.0) * progresso);
+    escala = 0.5 + ((2.2 - 0.5) * progresso);
+    opacidade = 0.8 * (1.0 - progresso);
+}`}
+  explanation="O pivô CenterX=10, CenterY=10 é fundamental: sem ele, a expansão por escala faria a elipse 'fugir' para o canto inferior direito em vez de inflar homogeneamente do seu centro."
+/>
+
+---
+
+## 4. Referências Oficiais da Microsoft
+
+<MsLearnCard
+  title="Transformações de Escala (ScaleTransform)"
+  namespace="System.Windows.Media.ScaleTransform"
+  category="Transform 2D"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.scaletransform"
+  description="Multiplicação vetorial nos eixos horizontal e vertical com preservação de pivôs arbitrários."
+/>
+
+<MsLearnCard
+  title="Propriedades de Opacidade em Elementos Visuais"
+  namespace="System.Windows.UIElement.Opacity"
+  category="WPF XAML"
+  url="https://learn.microsoft.com/pt-br/dotnet/api/system.windows.uielement.opacity"
+  description="Composição de transparência no pipeline de renderização DirectX do WPF."
+/>

@@ -1,0 +1,783 @@
+---
+interface Props {
+  initialRpm?: number;
+}
+
+const { initialRpm = 30 } = Astro.props;
+---
+
+<div class="kinematics-simulator-card" id="kinematics-simulator">
+  <!-- Title & Status Header -->
+  <div class="sim-header">
+    <div class="sim-title-group">
+      <div class="sim-title-icon">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="sim-title-h3">Simulador Cinemático Analítico 2D</div>
+        <p class="sim-title-desc">Modelo matemático de LocomotivaKinematics.cs em SVG</p>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Badges -->
+    <div class="sim-telemetry">
+      <span class="tele-badge cyan">
+        <span class="tele-pulse"></span>
+        θ = <strong id="tele-theta" style="color: #fff;">0.0°</strong>
+      </span>
+      <span class="tele-badge amber">
+        β = <strong id="tele-beta" style="color: #fff;">0.0°</strong>
+      </span>
+      <span class="tele-badge emerald">
+        X_p = <strong id="tele-xp" style="color: #fff;">374.0 px</strong>
+      </span>
+    </div>
+  </div>
+
+  <!-- SVG Viewport -->
+  <div class="sim-viewport">
+    <svg id="sim-svg" viewBox="0 0 540 280">
+      <defs>
+        <!-- Grid pattern for engineering graph paper -->
+        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="20" y2="0" stroke="#162032" stroke-width="0.5"/>
+          <line x1="0" y1="0" x2="0" y2="20" stroke="#162032" stroke-width="0.5"/>
+        </pattern>
+        <!-- Gradients for Rods -->
+        <linearGradient id="rodGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#f59e0b"/>
+          <stop offset="100%" stop-color="#d97706"/>
+        </linearGradient>
+        <linearGradient id="wheelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1e293b"/>
+          <stop offset="100%" stop-color="#0f172a"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Background Grid -->
+      <rect width="540" height="280" fill="url(#grid)" />
+
+      <!-- Centerline / Rails -->
+      <line x1="20" y1="210" x2="520" y2="210" stroke="#334155" stroke-dasharray="4 4" stroke-width="1"/>
+      <line x1="20" y1="250" x2="520" y2="250" stroke="#475569" stroke-width="3"/>
+      <!-- Sleepers / Lastro -->
+      <g stroke="#334155" stroke-width="2">
+        <line x1="40" y1="250" x2="40" y2="256"/>
+        <line x1="80" y1="250" x2="80" y2="256"/>
+        <line x1="120" y1="250" x2="120" y2="256"/>
+        <line x1="160" y1="250" x2="160" y2="256"/>
+        <line x1="200" y1="250" x2="200" y2="256"/>
+        <line x1="240" y1="250" x2="240" y2="256"/>
+        <line x1="280" y1="250" x2="280" y2="256"/>
+        <line x1="320" y1="250" x2="320" y2="256"/>
+        <line x1="360" y1="250" x2="360" y2="256"/>
+        <line x1="400" y1="250" x2="400" y2="256"/>
+        <line x1="440" y1="250" x2="440" y2="256"/>
+        <line x1="480" y1="250" x2="480" y2="256"/>
+      </g>
+
+      <!-- Steam Cylinder / Crosshead Guides (Fixed Machine Body) -->
+      <g id="cylinder-assembly">
+        <!-- Cylinder block -->
+        <rect x="420" y="185" width="75" height="50" rx="3" fill="#0f172a" stroke="#00d2ff" stroke-width="1.5"/>
+        <rect x="425" y="195" width="65" height="30" rx="2" fill="#06090e" stroke="#1e293b" stroke-width="1"/>
+        <text x="457" y="214" fill="#64748b" font-family="monospace" font-size="9" text-anchor="middle">CILINDRO</text>
+
+        <!-- Crosshead Slide Bars (Guias deslizantes) -->
+        <rect x="330" y="200" width="100" height="3" fill="#64748b"/>
+        <rect x="330" y="217" width="100" height="3" fill="#64748b"/>
+      </g>
+
+      <!-- Crank Circles (Orbit traces) -->
+      <g id="crank-orbits" stroke="#00d2ff" stroke-opacity="0.3" stroke-dasharray="2 2" fill="none">
+        <circle cx="130" cy="210" r="22"/>
+        <circle cx="270" cy="210" r="22"/>
+      </g>
+
+      <!-- WHEEL 1 (Rear / Traseira) -->
+      <g id="wheel-1" transform="translate(130, 210)">
+        <circle cx="0" cy="0" r="40" fill="url(#wheelGrad)" stroke="#00d2ff" stroke-width="2"/>
+        <circle cx="0" cy="0" r="36" fill="none" stroke="#334155" stroke-width="1"/>
+        <!-- 8 Spokes -->
+        <g id="spokes-1" stroke="#475569" stroke-width="1.5">
+          <line x1="-36" y1="0" x2="36" y2="0"/>
+          <line x1="0" y1="-36" x2="0" y2="36"/>
+          <line x1="-25.4" y1="-25.4" x2="25.4" y2="25.4"/>
+          <line x1="-25.4" y1="25.4" x2="25.4" y2="-25.4"/>
+        </g>
+        <!-- Counterweight segment (oposto ao pino) -->
+        <path d="M -28 -18 A 36 36 0 0 1 28 -18 Z" fill="#334155" opacity="0.6"/>
+        <!-- Hub -->
+        <circle cx="0" cy="0" r="10" fill="#090d16" stroke="#00d2ff" stroke-width="1.5"/>
+        <circle cx="0" cy="0" r="3" fill="#00d2ff"/>
+      </g>
+
+      <!-- WHEEL 2 (Front / Dianteira - Motriz) -->
+      <g id="wheel-2" transform="translate(270, 210)">
+        <circle cx="0" cy="0" r="40" fill="url(#wheelGrad)" stroke="#00d2ff" stroke-width="2"/>
+        <circle cx="0" cy="0" r="36" fill="none" stroke="#334155" stroke-width="1"/>
+        <!-- 8 Spokes -->
+        <g id="spokes-2" stroke="#475569" stroke-width="1.5">
+          <line x1="-36" y1="0" x2="36" y2="0"/>
+          <line x1="0" y1="-36" x2="0" y2="36"/>
+          <line x1="-25.4" y1="-25.4" x2="25.4" y2="25.4"/>
+          <line x1="-25.4" y1="25.4" x2="25.4" y2="-25.4"/>
+        </g>
+        <!-- Counterweight segment -->
+        <path d="M -28 -18 A 36 36 0 0 1 28 -18 Z" fill="#334155" opacity="0.6"/>
+        <!-- Hub -->
+        <circle cx="0" cy="0" r="10" fill="#090d16" stroke="#00d2ff" stroke-width="1.5"/>
+        <circle cx="0" cy="0" r="3" fill="#00d2ff"/>
+      </g>
+
+      <!-- Piston Rod & Crosshead Slider -->
+      <g id="slider-assembly">
+        <!-- Piston Shaft (horizontal) -->
+        <rect id="piston-shaft" x="374" y="208" width="60" height="4" fill="#94a3b8" rx="1"/>
+        <!-- Piston Head inside cylinder -->
+        <rect id="piston-head" x="430" y="196" width="10" height="28" fill="#38bdf8" rx="1"/>
+        <!-- Crosshead block (cruzeta) -->
+        <rect id="crosshead-block" x="365" y="201" width="18" height="18" rx="2" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+        <!-- Crosshead pin -->
+        <circle id="crosshead-pin" cx="374" cy="210" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+      </g>
+
+      <!-- COUPLING ROD (Biela de Acoplamento entre P1 e P2) -->
+      <g id="coupling-rod-assembly">
+        <line id="coupling-rod-bar" x1="152" y1="210" x2="292" y2="210" stroke="url(#rodGrad)" stroke-width="6" stroke-linecap="round"/>
+        <circle id="coupling-p1" cx="152" cy="210" r="6" fill="#090d16" stroke="#f59e0b" stroke-width="2"/>
+        <circle id="coupling-p2" cx="292" cy="210" r="6" fill="#090d16" stroke="#f59e0b" stroke-width="2"/>
+      </g>
+
+      <!-- CONNECTING ROD (Biela Motriz Primária entre P2 e Cruzeta) -->
+      <g id="connecting-rod-assembly">
+        <line id="connecting-rod-bar" x1="292" y1="210" x2="374" y2="210" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+        <circle id="connecting-pin-wheel" cx="292" cy="210" r="4.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+      </g>
+
+      <!-- Vector & Math Overlay Annotations (Toggleable) -->
+      <g id="overlay-vectors" opacity="1">
+        <!-- Crank vector from wheel 2 center (270, 210) to P2 -->
+        <line id="vec-crank" x1="270" y1="210" x2="292" y2="210" stroke="#00d2ff" stroke-width="1.5" stroke-dasharray="2 2"/>
+        <text id="label-theta" x="280" y="195" fill="#00d2ff" font-family="monospace" font-size="9">θ</text>
+
+        <!-- Connecting rod vector -->
+        <text id="label-L" x="330" y="200" fill="#f59e0b" font-family="monospace" font-size="9">L = 82</text>
+        <text id="label-r" x="250" y="195" fill="#00d2ff" font-family="monospace" font-size="9">r = 22</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Interactive Controls Toolbar -->
+  <div class="sim-toolbar">
+    <!-- Play/Pause & Speed -->
+    <div class="sim-control-col">
+      <label class="sim-label">
+        <span>Controle de Movimento</span>
+        <span id="rpm-display" class="sim-label-val">{initialRpm} RPM</span>
+      </label>
+      <div class="sim-btn-group">
+        <button
+          id="btn-play-pause"
+          type="button"
+          class="sim-btn sim-btn-play"
+        >
+          <svg id="icon-play" class="sim-icon hidden" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <svg id="icon-pause" class="sim-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+          </svg>
+          <span id="text-play" class="sim-btn-text">Pausar</span>
+        </button>
+
+        <button
+          id="btn-reset"
+          type="button"
+          class="sim-btn sim-btn-reset"
+          title="Reiniciar para 0 graus"
+        >
+          <svg class="sim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+        </button>
+      </div>
+
+      <input
+        type="range"
+        id="slider-rpm"
+        min="5"
+        max="90"
+        value={initialRpm}
+        class="sim-slider"
+      />
+    </div>
+
+    <!-- Theta Angle Scrubber Slider -->
+    <div class="sim-control-col">
+      <label class="sim-label">
+        <span>Ângulo da Roda (θ)</span>
+        <span id="angle-scrub-val" class="sim-label-val">0.0°</span>
+      </label>
+      <input
+        type="range"
+        id="slider-theta"
+        min="0"
+        max="360"
+        step="0.5"
+        value="0"
+        class="sim-slider"
+      />
+      <div class="sim-ticks">
+        <span>0° (PMI)</span>
+        <span>90°</span>
+        <span>180° (PMS)</span>
+        <span>270°</span>
+        <span>360°</span>
+      </div>
+    </div>
+
+    <!-- Options & Overlays -->
+    <div class="sim-control-col" style="justify-content: center; gap: 0.75rem;">
+      <label class="sim-checkbox-label">
+        <input type="checkbox" id="chk-vectors" checked />
+        <span>Exibir cotas & vetores (r, L)</span>
+      </label>
+      <label class="sim-checkbox-label">
+        <input type="checkbox" id="chk-orbits" checked />
+        <span>Trajetória orbital dos pinos</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Analytical Mathematics Reference Box -->
+  <div class="sim-formula-box">
+    <div>
+      <span class="formula-highlight">Fórmula Analítica:</span>
+      <span style="color: #e2e8f0; margin-left: 4px;">X_p(θ) = X_c + r·cos(θ) + √(L² - (r·sin(θ))²)</span>
+    </div>
+    <div style="color: #64748b; font-size: 0.7rem;">
+      R = 40 px | r = 22 px | L = 82 px
+    </div>
+  </div>
+</div>
+
+<style>
+  .kinematics-simulator-card {
+    margin: 1.75rem 0;
+    border-radius: 10px;
+    background: #090d16;
+    border: 1px solid #1e293b;
+    padding: 1.25rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .sim-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.85rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #1e293b;
+    gap: 0.75rem;
+  }
+
+  .sim-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .sim-title-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(0, 210, 255, 0.1);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00d2ff;
+    flex-shrink: 0;
+  }
+
+  .sim-title-h3 {
+    margin: 0 !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    color: #f1f5f9 !important;
+    font-family: var(--sl-font-mono, monospace) !important;
+    letter-spacing: -0.01em;
+  }
+
+  .sim-title-desc {
+    margin: 0.15rem 0 0 0 !important;
+    font-size: 0.72rem !important;
+    color: #94a3b8 !important;
+    font-family: var(--sl-font-mono, monospace) !important;
+  }
+
+  .sim-telemetry {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tele-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    font-family: var(--sl-font-mono, monospace);
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1;
+  }
+
+  .tele-badge.cyan {
+    color: #00d2ff;
+    border-color: rgba(0, 210, 255, 0.3);
+  }
+
+  .tele-badge.amber {
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .tele-badge.emerald {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .tele-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00d2ff;
+    box-shadow: 0 0 6px #00d2ff;
+    animation: pulse-glow 1.5s infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .sim-viewport {
+    position: relative;
+    background: #06090e;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #sim-svg {
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .sim-toolbar {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    background: #0f172a;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #1e293b;
+  }
+
+  .sim-control-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .sim-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-family: var(--sl-font-mono, monospace);
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 0.2rem;
+  }
+
+  .sim-label-val {
+    color: #00d2ff;
+    font-weight: 700;
+  }
+
+  .sim-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 32px;
+  }
+
+  .sim-btn {
+    all: unset;
+    appearance: none;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    border-radius: 6px;
+    font-family: var(--sl-font-mono, monospace);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+    vertical-align: middle;
+    margin: 0;
+    outline: none;
+  }
+
+  .sim-btn-play {
+    padding: 0 14px;
+    background: #00d2ff;
+    color: #06090e;
+    border: 1px solid #00d2ff;
+    box-shadow: 0 2px 10px rgba(0, 210, 255, 0.25);
+    gap: 6px;
+  }
+
+  .sim-btn-play:hover {
+    background: #38bdf8;
+    border-color: #38bdf8;
+  }
+
+  .sim-btn-reset {
+    width: 32px;
+    min-width: 32px;
+    padding: 0;
+    background: #162032;
+    color: #94a3b8;
+    border: 1px solid #1e293b;
+  }
+
+  .sim-btn-reset:hover {
+    background: #1e293b;
+    color: #f1f5f9;
+    border-color: #334155;
+  }
+
+  .sim-icon {
+    width: 14px;
+    height: 14px;
+    display: block;
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .sim-icon.hidden {
+    display: none !important;
+  }
+
+  .sim-btn-text {
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .sim-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #162032;
+    border-radius: 3px;
+    border: 1px solid #1e293b;
+    outline: none;
+    margin: 6px 0 2px 0;
+    cursor: pointer;
+  }
+
+  .sim-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #00d2ff;
+    border: 2px solid #06090e;
+    box-shadow: 0 0 6px rgba(0, 210, 255, 0.7);
+    cursor: pointer;
+  }
+
+  .sim-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #00d2ff;
+    border: 2px solid #06090e;
+    box-shadow: 0 0 6px rgba(0, 210, 255, 0.7);
+    cursor: pointer;
+  }
+
+  .sim-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    font-family: var(--sl-font-mono, monospace);
+    color: #64748b;
+  }
+
+  .sim-checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-family: var(--sl-font-mono, monospace);
+    color: #cbd5e1;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .sim-checkbox-label input {
+    accent-color: #00d2ff;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .sim-formula-box {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: 6px;
+    background: #06090e;
+    border: 1px solid #1e293b;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-family: var(--sl-font-mono, monospace);
+    font-size: 0.73rem;
+    color: #94a3b8;
+  }
+
+  .formula-highlight {
+    color: #00d2ff;
+    font-weight: 700;
+  }
+</style>
+
+<script>
+  // Dynamic Kinematics Simulator Engine
+  const R_CRANK = 22.0;
+  const L_ROD = 82.0;
+  const WHEEL1_X = 130.0;
+  const WHEEL2_X = 270.0;
+  const WHEEL_Y = 210.0;
+
+  let thetaDeg = 0.0;
+  let isPlaying = true;
+  let rpm = 30;
+  let lastTimestamp = 0;
+
+  // DOM Elements
+  const teleTheta = document.getElementById('tele-theta');
+  const teleBeta = document.getElementById('tele-beta');
+  const teleXp = document.getElementById('tele-xp');
+  const sliderTheta = document.getElementById('slider-theta') as HTMLInputElement;
+  const angleScrubVal = document.getElementById('angle-scrub-val');
+  const sliderRpm = document.getElementById('slider-rpm') as HTMLInputElement;
+  const rpmDisplay = document.getElementById('rpm-display');
+  const btnPlayPause = document.getElementById('btn-play-pause');
+  const btnReset = document.getElementById('btn-reset');
+  const iconPlay = document.getElementById('icon-play');
+  const iconPause = document.getElementById('icon-pause');
+  const textPlay = document.getElementById('text-play');
+  const chkVectors = document.getElementById('chk-vectors') as HTMLInputElement;
+  const chkOrbits = document.getElementById('chk-orbits') as HTMLInputElement;
+
+  // SVG Entities
+  const wheel1 = document.getElementById('wheel-1');
+  const wheel2 = document.getElementById('wheel-2');
+  const couplingBar = document.getElementById('coupling-rod-bar');
+  const couplingP1 = document.getElementById('coupling-p1');
+  const couplingP2 = document.getElementById('coupling-p2');
+  const connectingBar = document.getElementById('connecting-rod-bar');
+  const connectingPinWheel = document.getElementById('connecting-pin-wheel');
+  const pistonShaft = document.getElementById('piston-shaft');
+  const pistonHead = document.getElementById('piston-head');
+  const crossheadBlock = document.getElementById('crosshead-block');
+  const crossheadPin = document.getElementById('crosshead-pin');
+  const vecCrank = document.getElementById('vec-crank');
+  const overlayVectors = document.getElementById('overlay-vectors');
+  const crankOrbits = document.getElementById('crank-orbits');
+
+  function updateKinematics(angle: number) {
+    thetaDeg = ((angle % 360) + 360) % 360;
+    const rad = (thetaDeg * Math.PI) / 180.0;
+
+    // Pin coordinates
+    const dx = R_CRANK * Math.cos(rad);
+    const dy = R_CRANK * Math.sin(rad);
+
+    const p1x = WHEEL1_X + dx;
+    const p1y = WHEEL_Y + dy;
+    const p2x = WHEEL2_X + dx;
+    const p2y = WHEEL_Y + dy;
+
+    // Piston horizontal displacement:
+    const dyBiela = WHEEL_Y - p2y;
+    const catetoHoriz = Math.sqrt(Math.max(0, (L_ROD * L_ROD) - (dyBiela * dyBiela)));
+    const xPiston = p2x + catetoHoriz;
+    const betaDeg = (Math.atan2(WHEEL_Y - p2y, xPiston - p2x) * 180.0) / Math.PI;
+
+    // Update Wheel Rotations
+    if (wheel1) wheel1.setAttribute('transform', `translate(${WHEEL1_X}, ${WHEEL_Y}) rotate(${thetaDeg})`);
+    if (wheel2) wheel2.setAttribute('transform', `translate(${WHEEL2_X}, ${WHEEL_Y}) rotate(${thetaDeg})`);
+
+    // Update Coupling Rod
+    if (couplingBar) {
+      couplingBar.setAttribute('x1', p1x.toString());
+      couplingBar.setAttribute('y1', p1y.toString());
+      couplingBar.setAttribute('x2', p2x.toString());
+      couplingBar.setAttribute('y2', p2y.toString());
+    }
+    if (couplingP1) {
+      couplingP1.setAttribute('cx', p1x.toString());
+      couplingP1.setAttribute('cy', p1y.toString());
+    }
+    if (couplingP2) {
+      couplingP2.setAttribute('cx', p2x.toString());
+      couplingP2.setAttribute('cy', p2y.toString());
+    }
+
+    // Update Connecting Rod (Biela Primária)
+    if (connectingBar) {
+      connectingBar.setAttribute('x1', p2x.toString());
+      connectingBar.setAttribute('y1', p2y.toString());
+      connectingBar.setAttribute('x2', xPiston.toString());
+      connectingBar.setAttribute('y2', WHEEL_Y.toString());
+    }
+    if (connectingPinWheel) {
+      connectingPinWheel.setAttribute('cx', p2x.toString());
+      connectingPinWheel.setAttribute('cy', p2y.toString());
+    }
+
+    // Update Crosshead & Piston
+    if (crossheadBlock) crossheadBlock.setAttribute('x', (xPiston - 9).toString());
+    if (crossheadPin) crossheadPin.setAttribute('cx', xPiston.toString());
+    if (pistonShaft) {
+      pistonShaft.setAttribute('x', xPiston.toString());
+      const shaftWidth = Math.max(20, 440 - xPiston);
+      pistonShaft.setAttribute('width', shaftWidth.toString());
+    }
+    if (pistonHead) {
+      pistonHead.setAttribute('x', (xPiston + 56).toString());
+    }
+
+    // Vector crank overlay
+    if (vecCrank) {
+      vecCrank.setAttribute('x2', p2x.toString());
+      vecCrank.setAttribute('y2', p2y.toString());
+    }
+
+    // Update Telemetry Displays
+    if (teleTheta) teleTheta.textContent = `${thetaDeg.toFixed(1)}°`;
+    if (teleBeta) teleBeta.textContent = `${betaDeg.toFixed(1)}°`;
+    if (teleXp) teleXp.textContent = `${xPiston.toFixed(1)} px`;
+    if (angleScrubVal) angleScrubVal.textContent = `${thetaDeg.toFixed(1)}°`;
+    if (sliderTheta && document.activeElement !== sliderTheta) {
+      sliderTheta.value = thetaDeg.toString();
+    }
+  }
+
+  function animationLoop(timestamp: number) {
+    if (!lastTimestamp) lastTimestamp = timestamp;
+    const dt = (timestamp - lastTimestamp) / 1000.0;
+    lastTimestamp = timestamp;
+
+    if (isPlaying) {
+      const dTheta = rpm * 6.0 * dt;
+      updateKinematics(thetaDeg + dTheta);
+    }
+
+    requestAnimationFrame(animationLoop);
+  }
+
+  // Event Listeners
+  if (sliderTheta) {
+    sliderTheta.addEventListener('input', (e) => {
+      isPlaying = false;
+      togglePlayState(false);
+      const val = parseFloat((e.target as HTMLInputElement).value);
+      updateKinematics(val);
+    });
+  }
+
+  if (sliderRpm) {
+    sliderRpm.addEventListener('input', (e) => {
+      rpm = parseInt((e.target as HTMLInputElement).value, 10);
+      if (rpmDisplay) rpmDisplay.textContent = `${rpm} RPM`;
+    });
+  }
+
+  function togglePlayState(play: boolean) {
+    isPlaying = play;
+    if (isPlaying) {
+      iconPlay?.classList.add('hidden');
+      iconPause?.classList.remove('hidden');
+      if (textPlay) textPlay.textContent = 'Pausar';
+    } else {
+      iconPlay?.classList.remove('hidden');
+      iconPause?.classList.add('hidden');
+      if (textPlay) textPlay.textContent = 'Executar';
+    }
+  }
+
+  if (btnPlayPause) {
+    btnPlayPause.addEventListener('click', () => {
+      togglePlayState(!isPlaying);
+    });
+  }
+
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      updateKinematics(0);
+    });
+  }
+
+  if (chkVectors && overlayVectors) {
+    chkVectors.addEventListener('change', () => {
+      overlayVectors.style.display = chkVectors.checked ? 'inline' : 'none';
+    });
+  }
+
+  if (chkOrbits && crankOrbits) {
+    chkOrbits.addEventListener('change', () => {
+      crankOrbits.style.display = chkOrbits.checked ? 'inline' : 'none';
+    });
+  }
+
+  // Initial draw and start loop
+  updateKinematics(0);
+  requestAnimationFrame(animationLoop);
+</script>

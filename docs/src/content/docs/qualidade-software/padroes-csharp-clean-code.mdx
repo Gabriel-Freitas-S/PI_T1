@@ -1,0 +1,81 @@
+---
+title: Clean Code & Padrões C#
+description: Padrões de codificação limpa, recursos modernos do C# 12 / .NET 10, configuração uniforme via .editorconfig e comentários semânticos.
+sidebar:
+  order: 2
+---
+
+import MsLearnCard from '../../../components/MsLearnCard.astro';
+import CodeInspector from '../../../components/CodeInspector.astro';
+
+A base de código do projeto foi construída seguindo as diretrizes de **Clean Code** e as práticas modernas das especificações do **C# 12 e .NET 10**.
+
+---
+
+## 1. Recursos Modernos de Engenharia em C#
+
+1. **File-Scoped Namespaces**: Redução de aninhamento desnecessário de chaves em todos os arquivos de código-fonte (`namespace PI_T1.Models;`).
+2. **Readonly Record Struct**: O estado de cada quadro (`LocomotivaFrameState`) é alocado por valor na pilha de execução do processador (stack), garantindo imutabilidade thread-safe e eliminando alocações dinâmicas no heap gerenciado.
+3. **Padrão Zero-Alloc em INotifyPropertyChanged**: O método `SetProperty` em `ViewModelBase` realiza checagem de igualdade com `EqualityComparer<T>.Default.Equals` antes de emitir notificações de alteração de propriedade.
+4. **Desacoplamento em Ponto Flutuante Puro**: Todos os métodos cinemáticos operam com o tipo primitivo de 64 bits `double`, sem converter prematuramente para coordenadas inteiras de tela.
+
+---
+
+## 2. Padronização Global com `.editorconfig`
+
+Para assegurar formatação uniforme entre múltiplos editores e pipelines de CI/CD:
+
+```ini
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs,xaml}]
+indent_style = space
+indent_size = 4
+
+[*.{json,md,mdx,yml,yaml}]
+indent_style = space
+indent_size = 2
+```
+
+### Regras Estabelecidas
+- **C# e XAML**: Indentação estrita com 4 espaços por nível hierárquico, facilitando a leitura de árvores vetoriais profundas.
+- **Configurações e Documentação (JSON, MDX, YAML)**: Recuo compacto de 2 espaços.
+- **Quebras de Linha e Codificação**: Formato `CRLF` (padrão Windows) e codificação `UTF-8` com garantia de terminação de linha única.
+
+---
+
+## 3. Taxonomia Semântica de Comentários
+
+Todos os comentários nos arquivos C# e XAML seguem a convenção semântica padronizada:
+
+| Marcador | Função Semântica | Exemplo no Código do Projeto |
+| :---: | :--- | :--- |
+| **`#`** | Divisória / Seção Estrutural | `//# ETAPA 5: CRUZETA E MECANISMO DO PISTÃO` |
+| **`*`** | Detalhe Técnico de Implementação | `//* Distância entre centros dos olhais (L = 82px)` |
+| **`!`** | Restrição Crítica ou Invariante | `//! Manter tangência estrita com Y = 405.0 px` |
+
+---
+
+## 4. Referências Oficiais da Microsoft
+
+<MsLearnCard
+  title="Tipos de Estrutura de Registro (record struct)"
+  namespace="System.ValueType"
+  category="Architecture"
+  url="https://learn.microsoft.com/pt-br/dotnet/csharp/language-reference/builtin-types/record#record-structs"
+  description="Semântica de valor imutável com alocação na stack e comparação de igualdade estrutural automática."
+/>
+
+<MsLearnCard
+  title="Convenções de Codificação do C# (Diretrizes Oficiais)"
+  namespace="Microsoft.CSharp"
+  category="Quality"
+  url="https://learn.microsoft.com/pt-br/dotnet/csharp/fundamentals/coding-style/coding-conventions"
+  description="Práticas recomendadas para nomenclatura, formatação, uso de tipos e organização de classes no .NET."
+/>
