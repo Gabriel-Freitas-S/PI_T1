@@ -1,78 +1,69 @@
-# 📐 Cinemática Analítica do Mecanismo Biela-Manivela: A Física do Trem Explicada sem Complicação
+# 📐 Cinemática Analítica do Mecanismo Biela-Manivela
 
-Você já olhou para uma Maria-Fumaça antiga e se perguntou: *como é que um vapor saindo de uma chaleira gigante consegue fazer aquelas barras de ferro pesadas girarem rodas gigantescas sem travar nem entortar?*
-
-Neste capítulo, explicamos de forma **mastigada e intuitiva** (com analogias do dia a dia e análise detalhada de código) como programamos o movimento mecânico perfeito da nossa locomotiva no arquivo [`Models/LocomotivaKinematics.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaKinematics.cs), atendendo a todos os requisitos de acoplamento do **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md#L48)**.
+Neste capítulo, aborda-se a modelagem cinemática analítica e a física mecânica do projeto, implementadas no motor desacoplado [`Models/LocomotivaKinematics.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Models/LocomotivaKinematics.cs) e orquestradas em [`MainWindow.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml.cs), atendendo integralmente às normas do **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md#L48)** (Etapa 3 - 8,0 pontos e Etapa 4 - 10,0 pontos).
 
 ---
 
-## 1. O Que É o Mecanismo Biela-Manivela? (A Analogia da Bicicleta e da Máquina de Costura)
+## 1. Fundamentos do Mecanismo Biela-Manivela-Pistão (*Slider-Crank*)
 
-Pense em duas máquinas muito comuns:
-1. **A Bicicleta**: As suas pernas sobem e descem (movimento em linha reta) nos pedais, e as correntes transformam isso no giro circular da roda.
-2. **A Máquina de Costura Antiga**: O pé da costureira fica balançando uma prancha para frente e para trás, e uma haste de ferro faz a roda pesada girar.
-
-Numa **locomotiva a vapor**, o processo é idêntico:
-- O vapor entra com muita força no **cilindro** e empurra um pistão reto para frente e para trás.
-- A **cruzeta** segura a haste do pistão e desliza em linha reta sobre dois trilhos de aço.
-- A **biela motriz** é uma barra de metal articulada que liga a cruzeta ao pino da roda.
-- Conforme a cruzeta vai e volta em linha reta, a biela empurra e puxa a manivela, fazendo a roda girar em círculos!
+O mecanismo biela-manivela (*slider-crank*) é o fundamento mecânico clássico da propulsão ferroviária a vapor:
+- O vapor sob alta pressão expande-se dentro do **cilindro**, forçando o pistão a executar um movimento linear alternativo horizontal.
+- A **cruzeta** (*crosshead*) atua como guia rígida, ancorando a extremidade da haste e deslizando estritamente entre duas barras paralelas de aço (*slide bars*).
+- A **biela motriz** (*connecting rod*) conecta articuladamente a cruzeta móvel ao pino de manivela da roda motriz.
+- Esse acoplamento converte a translação retilínea do êmbolo na rotação contínua dos eixos do trem.
 
 ```
 [Pistão no Cilindro] <======> [Cruzeta] \
-(Vai e vem em linha reta)               \   [Biela Motriz Inclinada]
-                                         \
-                                          O [Pino na Roda Gira em Círculo!]
+ (Movimento Linear Alternativo)          \   [Biela Motriz Inclinada]
+                                          \
+                                           O [Pino de Manivela: Rotação Circular]
 ```
 
 ---
 
-## 2. O Maestro da Animação: `CompositionTarget.Rendering` (60 Vezes por Segundo)
+## 2. Temporização em Tempo Real via `CompositionTarget.Rendering`
 
-Para que a animação fique lisa como um filme de cinema, não podemos usar relógios comuns de computador (que engasgam quando o processador fica ocupado).
+Para garantir taxas de atualização estáveis e renderização suave sem *jitter* ou engasgos, a temporização da aplicação é sincronizada diretamente com o pipeline gráfico do monitor:
 
-Usamos o evento especial do WPF chamado [`CompositionTarget.Rendering`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.compositiontarget.rendering):
-- Ele funciona como o **projetor de uma sala de cinema**.
-- Toda vez que a sua tela (monitor) está prestes a exibir uma nova imagem (normalmente 60 vezes por segundo), o WPF chama nosso método `AtualizarQuadroMecanico`.
-- Nós medimos o tempo exato com um cronômetro de precisão atômica ([`System.Diagnostics.Stopwatch`](https://learn.microsoft.com/pt-br/dotnet/api/system.diagnostics.stopwatch)), calculamos a nova posição de todas as peças e atualizamos a tela em milissegundos.
-
----
-
-## 3. O Trem Andando sem Fim: O Circuito do "Túnel Infinito"
-
-Para o trem se movimentar continuamente sem parar nunca:
-1. **Largada**: Ele começa completamente escondido fora da tela, à esquerda ($X = -560\text{ px}$).
-2. **Travessia**: Ele cruza a janela inteira da esquerda para a direita, soltando fumaça e girando as rodas.
-3. **Saída e Reentrada**: Assim que o último milímetro da traseira do trem cruza a borda direita da janela, ele reaparece instantaneamente na esquerda, como se estivesse saindo de um túnel ferroviário que dá a volta no mundo!
-
-Como calculamos isso a cada fração de segundo?
-- Sabendo o tempo $t$ e a velocidade $v$, sabemos a distância percorrida:
-  $$s(t) = v \times t$$
-- As rodas giram sempre continuamente para a frente, sem nenhum tranco ou salto quando o trem reentra na tela.
+O projeto utiliza o manipulador nativo [`CompositionTarget.Rendering`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.compositiontarget.rendering):
+- O evento é disparado pelo WPF a cada intervalo de quadro de tela (60 Hz, 120 Hz ou 144 Hz conforme o hardware do usuário), imediatamente antes da composição na GPU.
+- A medição de tempo decorrido é realizada com precisão de nanossegundos através da classe [`System.Diagnostics.Stopwatch`](https://learn.microsoft.com/pt-br/dotnet/api/system.diagnostics.stopwatch).
+- A classe `MainWindow` obtém o estado físico calculado de `LocomotivaKinematics` e delega as atualizações diretamente ao controle visual.
 
 ---
 
-## 4. Rolamento Puro: Como Fazer a Roda Girar sem Derrapar?
+## 3. Dinâmica de Travessia em Circuito Contínuo (Túnel Ferroviário)
 
-Imagine que você coloca uma moeda de R$ 1 em pé sobre a mesa e faz ela dar uma volta completa:
-- A distância que a moeda percorreu na mesa é rigorosamente igual ao comprimento da borda redonda dela ($2 \times \pi \times \text{Raio}$).
-- Se o trem andar para a frente mas a roda girar devagar demais, parece que o trem está patinando no sabão. Se girar rápido demais, parece que está cantando pneu no asfalto!
+O motor físico opera exclusivamente no modo de **Loop Contínuo em Circuito Fechado**:
+1. **Ponto de Partida**: O trem inicia sua trajetória completamente fora da área de visualização à esquerda ($X_{\text{start}} = -560\text{ px}$, correspondendo à largura total do corpo).
+2. **Travessia Completa**: Percorre o cenário em velocidade escalar uniforme sobre os trilhos.
+3. **Ponto de Saída e Reentrada**: Assim que a extremidade traseira do chassi cruza a margem direita da janela ($X_{\text{end}} = \text{larguraCenario}$), a locomotiva reaparece na extrema esquerda, simulando uma travessia ininterrupta de túnel.
 
-Para que o contato com o trilho seja **100% realista (rolamento puro)**, conectamos o ângulo de rotação da roda $\theta$ ao deslocamento horizontal $\Delta X$:
+A posição horizontal instantânea $x_{\text{loco}}(t)$ é regida pela relação linear:
+$$s(t) = v \times t$$
+$$x_{\text{loco}}(t) = X_{\text{start}} + (s(t) \pmod{\text{distanciaTotal}})$$
+
+As rodas mantêm rotação contínua progressiva sem qualquer descontinuidade de fase ou inversão no instante da reentrada.
+
+---
+
+## 4. Dinâmica de Rolamento Puro das Rodas (*Pure Rolling*)
+
+Para assegurar aderência mecânica realista entre as rodas e os trilhos (eliminando deslizamentos ou patinagem), o deslocamento linear horizontal $\Delta X$ é acoplado rigorosamente à velocidade angular $\Delta\theta$:
 
 ```math
 \Delta\theta_{\text{graus}} = \left(\frac{\Delta X}{R_{\text{roda}}}\right) \times \left(\frac{180}{\pi}\right)
 ```
 
-Como o raio da nossa roda é $R = 40\text{ px}$:
-- Cada pixel que a locomotiva avança para a direita faz as duas rodas girarem no sentido horário no ângulo exato.
+Com o raio primitivo da roda calibrado em $R_{\text{roda}} = 40\text{ px}$:
+- Cada incremento infinitesimal de deslocamento linear resulta na rotação horária precisa da roda, estabelecendo tangência contínua com a superfície do trilho em $Y = 405\text{ px}$.
 
 ---
 
-## 5. A Biela de Acoplamento: Por Que a Barra entre as Rodas Não Entorta?
+## 5. Biela de Acoplamento Horizontal (*Side Rod*): Translação Circular Pura
 
-A locomotiva possui duas rodas de tração: a **Roda 1 (Traseira)** e a **Roda 2 (Dianteira)**.  
-Entre elas, existe uma barra horizontal de aço chamada **Biela de Acoplamento (*Side Rod*)**:
+A locomotiva possui dois conjuntos de eixos motrizes: a **Roda 1 (Traseira)** e a **Roda 2 (Dianteira)**.  
+A sincronização do torque entre ambos é realizada pela **Biela de Acoplamento (*Side Rod*)**:
 
 ```
         (Pino 1)                      (Pino 2)
@@ -82,24 +73,20 @@ Entre elas, existe uma barra horizontal de aço chamada **Biela de Acoplamento (
     [RODA 1]                              [RODA 2]
 ```
 
-### A Analogia de Dois Amigos Carregando um Sofá
-Pense em duas pessoas com a mesma altura, caminhando lado a lado com os mesmos passos:
-- A distância entre as mãos dos dois nunca muda.
-- O sofá que eles carregam permanece sempre nivelado na horizontal!
+### Cinemática do Paralelogramo Articulado:
+1. Ambas as rodas possuem raio primitivo idêntico ($R = 40\text{ px}$).
+2. Ambas as manivelas possuem excentricidade idêntica ($r = 22\text{ px}$) e giram na mesma velocidade angular $\omega(t)$.
+3. A distância entre os eixos das rodas é fixa e invariante: $D = 270 - 130 = \mathbf{140\text{ pixels}}$.
 
-Com as nossas rodas acontece a mesma mágica da geometria:
-1. As duas rodas têm o mesmo tamanho ($80\text{ px}$).
-2. Os dois pinos ficam na mesma distância de manivela ($r = 22\text{ px}$).
-3. A distância entre os centros das rodas é fixa: $270 - 130 = \mathbf{140\text{ pixels}}$.
-
-Portanto, **a distância entre o Pino 1 e o Pino 2 é SEMPRE 140 pixels**, e a barra está **SEMPRE perfeitamente deitada (horizontal)**!  
-Ela não precisa girar sobre si mesma: ela apenas passeia em círculos junto com as manivelas, mantendo as duas rodas conectadas com força total.
+Como os vetores posição de ambos os pinos diferem unicamente por uma constante horizontal fixa $\vec{D} = (140, 0)$:
+- O segmento que une os dois pinos mantém módulo constante ($140\text{ px}$) e inclinação estritamente horizontal em todos os pontos da órbita de $360^\circ$.
+- A biela de acoplamento não necessita de rotação sobre seu próprio eixo local ($\omega_{\text{biela}} = 0$); ela executa **translação circular pura**, transladando com precisão de sub-pixel para a coordenada instantânea do Pino 1.
 
 ---
 
-## 6. A Biela Motriz e o Teorema de Pitágoras (A Analogia da Escada na Parede)
+## 6. Cinemática da Biela Motriz e Teorema de Pitágoras
 
-Aqui entra a parte mais engenhosa da matemática do projeto: como calcular onde a **cruzeta** e o **pistão** estão a cada milissegundo?
+A biela motriz conecta o pino da Roda 2 à cruzeta deslizante do pistão:
 
 ```
        (pino2X, pino2Y)
@@ -111,117 +98,114 @@ Aqui entra a parte mais engenhosa da matemática do projeto: como calcular onde 
    (270, 210)       Distância Horizontal (ΔX)
 ```
 
-### A Analogia da Escada Encostada na Parede
-Imagine que você tem uma escada de ferro de comprimento fixo de $82\text{ cm}$ ($L = 82$):
-- A ponta de trás da escada está apoiada no pino da Roda 2, que fica subindo e descendo conforme a roda gira.
-- A ponta da frente da escada está presa dentro de uma canaleta horizontal no chão (a altura $Y$ nunca muda, é sempre $210\text{ px}$).
-- Conforme o pino da roda sobe, a escada fica inclinada e puxa a ponta da frente para trás.
-- Quando o pino da roda fica reto no meio, a escada deita e empurra a ponta da frente para o mais longe possível!
+### Formulação Analítica da Posição da Cruzeta:
+A cruzeta está mecanicamente restrita a deslizar sobre as guias lineares horizontais, fixando sua coordenada vertical estritamente em:
+$$Y_{\text{cruzeta}} = 210\text{ px}$$
 
-### Usando o Teorema de Pitágoras da Escola ($a^2 + b^2 = c^2$):
-A biela forma a hipotenusa de um triângulo retângulo com a altura e a distância horizontal:
+A biela motriz possui comprimento indeformável entre centros de olhais $L = 82\text{ px}$. Aplicando o Teorema de Pitágoras no triângulo retângulo formado pelo pino excêntrico e a cruzeta:
 $$(\Delta X)^2 + (\Delta Y)^2 = L^2$$
 
-Como sabemos o comprimento da biela ($L = 82$) e sabemos a altura do pino ($\Delta Y = 210 - pino2Y$), basta isolar a distância horizontal:
+Substituindo a diferença vertical $\Delta Y = 210 - pino2Y$:
+$$(x_{\text{cruzeta}} - pino2X)^2 + (\Delta Y)^2 = L^2$$
 
+Isolando a coordenada horizontal $x_{\text{cruzeta}}$:
 ```math
 x_{\text{cruzeta}} = pino2X + \sqrt{L^2 - (\Delta Y)^2}
 ```
 
-No código C#, calculamos isso em apenas 3 linhas:
+No código C#, essa dedução analítica é executada com três operações fundamentais:
 ```csharp
 double catetoVertical = CentroRodasY - pino2Y;
-double catetoHorizontal = Math.Sqrt((ComprimentoBielaMotriz * ComprimentoBielaMotriz) - (catetoVertical * catetoVertical));
+double catetoHorizontal = Math.Sqrt(Math.Max(0.0, (ComprimentoBielaMotriz * ComprimentoBielaMotriz) - (catetoVertical * catetoVertical)));
 double xCruzeta = pino2X + catetoHorizontal;
 ```
-Pronto! Sem adivinhações nem números inventados: a cruzeta desliza no trilho com **precisão matemática absoluta**!
+Essa formulação garante precisão matemática absoluta na posição da cruzeta em 100% dos quadros.
 
 ---
 
-## 7. A Bússola da Biela: Calculando a Inclinação com `Math.Atan2`
+## 7. Orientação Angular da Biela Motriz (`Math.Atan2`)
 
-Agora só falta um detalhe: a barra da biela motriz precisa se inclinar para que sua ponta da frente encaixe perfeitamente no pino da cruzeta.
+Para que o olhal dianteiro da biela motriz coincida rigorosamente com o pino da cruzeta a cada instante, o braço rígido deve ser rotacionado sobre seu olhal traseiro no ângulo analítico $\alpha$:
 
-Para descobrir quantos graus inclinar a barra a cada momento, usamos a função matemática [`Math.Atan2`](https://learn.microsoft.com/pt-br/dotnet/api/system.math.atan2):
-- Ela funciona como uma bússola mágica: você informa a diferença de altura ($\Delta Y$) e a distância ($\Delta X$), e ela devolve o ângulo exato em graus!
+Utiliza-se a função trigonométrica [`Math.Atan2`](https://learn.microsoft.com/pt-br/dotnet/api/system.math.atan2):
+$$\alpha = \text{atan2}(210 - pino2Y, x_{\text{cruzeta}} - pino2X) \times \left(\frac{180}{\pi}\right)$$
 
 ```csharp
 double anguloBielaMotriz = Math.Atan2(CentroRodasY - pino2Y, xCruzeta - pino2X) * (180.0 / Math.PI);
 RotacaoBielaMotriz.Angle = anguloBielaMotriz;
 ```
 
-Com isso, a biela motriz fica perfeitamente esticada entre a roda e a cruzeta em todos os 60 quadros por segundo, sem nunca escapar nem um décimo de milímetro!
+Essa operação assegura o fechamento geométrico perfeito da cadeia cinemática sem folgas ou desvios perceptíveis.
 
 ---
 
 ## 8. 📖 Análise Linha a Linha do Código C#
 
-Vamos agora inspecionar cada um dos 4 arquivos de código C# que formam esse mecanismo:
+Abaixo é detalhada a implementação dos quatro componentes de software que estruturam esse sistema:
 
-### 8.1 `Models/LocomotivaFrameState.cs` (O Envelope com os Dados do Quadro)
+### 8.1 `Models/LocomotivaFrameState.cs` (DTO de Transporte Cinemático)
 
-Este arquivo é um DTO (*Data Transfer Object*). Ele funciona como uma carta que o motor de física preenche e envia para a tela:
+Estrutura imutável de dados responsável por transportar as coordenadas calculadas pelo motor físico para a camada de apresentação:
 
 ```csharp
 namespace PI_T1.Models;
 
 public readonly record struct LocomotivaFrameState(
-    double LocomotivaX,          //* Onde o trem inteiro está na tela (horizontal)
-    double AnguloRodas,          //* Quantos graus as rodas giraram (ex: 720° = 2 voltas)
-    double BielaAcoplamentoX,    //* Posição X da barra que une as duas rodas
-    double BielaAcoplamentoY,    //* Posição Y da barra que une as duas rodas
-    double CruzetaX,             //* Posição X do bloco de ferro que guia o pistão
-    double CruzetaY,             //* Posição Y da cruzeta (fixo em 201px)
-    double PinoCruzetaX,         //* Posição X do pino de articulação da cruzeta
-    double PinoCruzetaY,         //* Posição Y do pino de articulação
-    double HastePistaoX,         //* Posição X da barra prateada que entra no cilindro
-    double HastePistaoY,         //* Posição Y da haste prateada
-    double BielaMotrizX,         //* Onde a biela inclinada se apoia na roda dianteira
-    double BielaMotrizY,         //* Posição Y do apoio na roda dianteira
-    double BielaMotrizAngulo     //* Inclinação da biela motriz em graus
+    double LocomotivaX,          //* Deslocamento horizontal global da locomotiva no cenário
+    double AnguloRodas,          //* Ângulo acumulado de rotação das rodas motrizes (graus)
+    double BielaAcoplamentoX,    //* Coordenada X da biela de acoplamento (side rod)
+    double BielaAcoplamentoY,    //* Coordenada Y da biela de acoplamento
+    double CruzetaX,             //* Coordenada X do bloco da cruzeta deslizante
+    double CruzetaY,             //* Coordenada Y da cruzeta (fixo em Y=201)
+    double PinoCruzetaX,         //* Coordenada X do pino de articulação da cruzeta
+    double PinoCruzetaY,         //* Coordenada Y do pino de articulação
+    double HastePistaoX,         //* Coordenada X da haste cromada do pistão
+    double HastePistaoY,         //* Coordenada Y da haste do pistão
+    double BielaMotrizX,         //* Coordenada X de ancoragem da biela motriz na Roda 2
+    double BielaMotrizY,         //* Coordenada Y de ancoragem da biela motriz
+    double BielaMotrizAngulo     //* Ângulo horário de inclinação da biela motriz (graus)
 );
 ```
-- **Por que `readonly record struct`?**  
-  Em C#, classes normais criam lixo na memória (*Garbage Collector*) quando são criadas 60 vezes por segundo, o que causaria pequenos engasgos na tela. Uma `readonly record struct` é alocada diretamente na pilha rápida de memória (*Stack*), com **custo de memória ZERO**!
+- **Alocação Eficiente em Memória**: Por ser definida como `readonly record struct`, a instância é alocada diretamente na pilha (*Stack*) de execução do .NET. Isso elimina completamente a pressão sobre o coletor de lixo (*Garbage Collector*), garantindo taxa constante de 60 quadros por segundo sem pausas por desalocação.
 
 ---
 
-### 8.2 `Models/LocomotivaKinematics.cs` (O Motor de Física Pura)
+### 8.2 `Models/LocomotivaKinematics.cs` (Motor Físico e Cinemático)
 
-Este é o cérebro matemático. Ele não sabe o que é cor, botão ou desenho: ele só calcula números puros!
+Módulo desacoplado de qualquer dependência visual ou controle de interface do WPF:
 
-#### 1. Constantes Mecânicas:
+#### 1. Constantes Físicas e Geométricas:
 ```csharp
-public const double RaioRoda = 40.0;               //* Raio primitivo da roda (diâmetro 80px)
-public const double RaioManivela = 22.0;           //* Distância do centro ao pino excêntrico
-public const double ComprimentoBielaMotriz = 82.0; //* Distância fixa entre olhais da biela (L=82px)
-public const double LarguraLocomotiva = 560.0;     //* Tamanho do trem para saber quando sumiu da tela
-public const double CentroRoda1X = 130.0;          //* Posição do eixo da Roda Traseira
-public const double CentroRoda2X = 270.0;          //* Posição do eixo da Roda Dianteira
-public const double CentroRodasY = 210.0;          //* Altura do eixo e da canaleta do pistão
-public const double DuracaoLoopContinuo = 11.0;     //* Duração da travessia completa (em segundos)
+public const double RaioRoda = 40.0;               //* Raio primitivo das rodas motrizes
+public const double RaioManivela = 22.0;           //* Excentricidade radial dos pinos de tração
+public const double ComprimentoBielaMotriz = 82.0; //* Distância fixa entre eixos dos olhais (L)
+public const double LarguraLocomotiva = 560.0;     //* Extensão total da composição com buffers
+public const double CentroRoda1X = 130.0;          //* Posição do eixo da Roda Traseira no Canvas
+public const double CentroRoda2X = 270.0;          //* Posição do eixo da Roda Dianteira no Canvas
+public const double CentroRodasY = 210.0;          //* Ordenada comum dos eixos e da guia da cruzeta
+public const double DuracaoLoopContinuo = 11.0;     //* Tempo de travessia em segundos (~150 px/s)
 ```
 
-#### 2. O Método `CalcularQuadro`:
+#### 2. Implementação de `CalcularQuadro`:
 ```csharp
 public LocomotivaFrameState CalcularQuadro(double segundos, double larguraCenario = 1100.0)
 {
-    // 1. Largada na extrema esquerda oculta (X = -560)
+    // 1. Definição dos limites de entrada e saída
     double xEntrada = -LarguraLocomotiva;
     double xSaida = larguraCenario > 0 ? larguraCenario : 1100.0;
     double distanciaTotal = xSaida - xEntrada;
     double velocidade = distanciaTotal / DuracaoLoopContinuo;
 
-    // 2. Progresso do trem no ciclo contínuo
+    // 2. Cálculo do progresso no ciclo contínuo
     double distanciaPercorrida = velocidade * segundos;
     double progressoNoCiclo = distanciaPercorrida % distanciaTotal;
     double xLocoAtual = xEntrada + progressoNoCiclo;
 
-    // 3. Giro contínuo da roda sem derrapar (s = R * theta)
+    // 3. Rotação puramente monotônica sem escorregamento
     double theta = (distanciaPercorrida / RaioRoda) * (180.0 / Math.PI);
     double rad = theta * (Math.PI / 180.0);
 
-    // 4. Posição circular dos pinos das manivelas
+    // 4. Posições instantâneas dos pinos de manivela
     double dxManivela = RaioManivela * Math.Cos(rad);
     double dyManivela = RaioManivela * Math.Sin(rad);
 
@@ -230,13 +214,13 @@ public LocomotivaFrameState CalcularQuadro(double segundos, double larguraCenari
     double pino2X = CentroRoda2X + dxManivela;
     double pino2Y = CentroRodasY + dyManivela;
 
-    // 5. Teorema de Pitágoras para achar a cruzeta
+    // 5. Equacionamento da cruzeta via Pitágoras
     double catetoVertical = CentroRodasY - pino2Y;
     double termoRadical = Math.Max(0.0, (ComprimentoBielaMotriz * ComprimentoBielaMotriz) - (catetoVertical * catetoVertical));
     double catetoHorizontal = Math.Sqrt(termoRadical);
     double xCruzeta = pino2X + catetoHorizontal;
 
-    // 6. Inclinação da biela motriz em graus
+    // 6. Determinação angular da biela motriz
     double anguloBielaMotriz = Math.Atan2(CentroRodasY - pino2Y, xCruzeta - pino2X) * (180.0 / Math.PI);
 
     return new LocomotivaFrameState(
@@ -256,30 +240,30 @@ public LocomotivaFrameState CalcularQuadro(double segundos, double larguraCenari
     );
 }
 ```
-- Repare no `Math.Max(0.0, ...)` na linha 27: se por um erro minúsculo de arredondamento o número ficasse negativo (tipo `-0.0000001`), a raiz quadrada daria erro (`NaN`). O `Math.Max` é nosso cinto de segurança numérico!
+- **Salvaguarda Numérica**: A expressão `Math.Max(0.0, ...)` atua como salvaguarda matemática contra eventuais imprecisões infinitesimais de ponto flutuante, prevenindo a ocorrência de indeterminações numéricas (`NaN`) na radiciação.
 
 ---
 
-### 8.3 `MainWindow.xaml.cs` (O Maestro)
+### 8.3 `MainWindow.xaml.cs` (Orquestração do Pipeline Gráfico)
 
-Aqui conectamos o cronômetro com a taxa de atualização do monitor:
+A janela principal gerencia o ciclo de vida da execução e a ponte entre o temporizador e a visão:
 
 ```csharp
 public MainWindow()
 {
     InitializeComponent();
 
-    // Quando a janela aparece na tela:
+    // Associação ao manipulador de renderização no carregamento da janela
     Loaded += (_, _) =>
     {
         _cronometro.Restart();
-        CompositionTarget.Rendering += AtualizarQuadroMecanico; // Começa a tocar a orquestra!
+        CompositionTarget.Rendering += AtualizarQuadroMecanico;
     };
 
-    // Quando o usuário fecha a janela:
+    // Desvinculação no fechamento para evitar vazamentos de memória
     Unloaded += (_, _) =>
     {
-        CompositionTarget.Rendering -= AtualizarQuadroMecanico; // Desliga tudo para não gastar bateria
+        CompositionTarget.Rendering -= AtualizarQuadroMecanico;
         _cronometro.Stop();
     };
 }
@@ -288,32 +272,30 @@ private void AtualizarQuadroMecanico(object? sender, EventArgs e)
 {
     double largura = CenarioCanvas.ActualWidth > 0 ? CenarioCanvas.ActualWidth : 1100.0;
     
-    // 1. Pede ao motor de física para calcular o instante atual
+    // Consulta o motor físico e delega o estado calculado ao componente visual
     LocomotivaFrameState estado = _kinematics.CalcularQuadro(_cronometro.Elapsed.TotalSeconds, largura);
-    
-    // 2. Entrega o resultado para a locomotiva se mover
     Locomotiva.AtualizarEstado(estado);
 }
 ```
 
 ---
 
-### 8.4 `Controls/LocomotivaControl.xaml.cs` (O Coreógrafo da Locomotiva)
+### 8.4 `Controls/LocomotivaControl.xaml.cs` (Aplicação das Transformações Afins)
 
-Por fim, este arquivo pega os números que o maestro mandou e aplica nas 9 peças correspondentes:
+Encapsula os elementos visuais internos da composição, atualizando suas matrizes de transformação afim:
 
 ```csharp
 public void AtualizarEstado(in LocomotivaFrameState estado)
 {
-    // 1. Gira as duas rodas
+    // 1. Rotação das rodas sob o chassi
     RotacaoRoda1.Angle = estado.AnguloRodas;
     RotacaoRoda2.Angle = estado.AnguloRodas;
 
-    // 2. Translada a barra que une as rodas
+    // 2. Translação da biela de acoplamento horizontal
     TranslacaoBielaAcoplamento.X = estado.BielaAcoplamentoX;
     TranslacaoBielaAcoplamento.Y = estado.BielaAcoplamentoY;
 
-    // 3. Move a cruzeta e a haste do pistão
+    // 3. Posicionamento da cruzeta e haste do pistão
     TranslacaoCruzeta.X = estado.CruzetaX;
     TranslacaoCruzeta.Y = estado.CruzetaY;
     TranslacaoPinoCruzeta.X = estado.PinoCruzetaX;
@@ -321,16 +303,15 @@ public void AtualizarEstado(in LocomotivaFrameState estado)
     TranslacaoHastePistao.X = estado.HastePistaoX;
     TranslacaoHastePistao.Y = estado.HastePistaoY;
 
-    // 4. Move e inclina a biela motriz
+    // 4. Ancoragem e rotação da biela motriz
     TranslacaoBielaMotriz.X = estado.BielaMotrizX;
     TranslacaoBielaMotriz.Y = estado.BielaMotrizY;
     RotacaoBielaMotriz.Angle = estado.BielaMotrizAngulo;
 
-    // 5. Move a locomotiva inteira pelo cenário
+    // 5. Translação global do Canvas da locomotiva pelo cenário
     TranslacaoLocomotiva.X = estado.LocomotivaX;
 }
 ```
-- Veja como o código é limpo e direto: cada propriedade do estado vai direto para o seu respectivo `TranslateTransform` ou `RotateTransform`. Simples, rápido e 100% livre de bugs!
 
 ---
 

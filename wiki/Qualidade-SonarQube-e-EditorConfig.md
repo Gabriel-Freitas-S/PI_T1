@@ -29,7 +29,7 @@ sonar.exclusions=bin/**,obj/**,.gemini/**,.agents/**,.vscode/**,Slide/**,Trabalh
 ```
 
 ### 1.2 Resultados da Análise de Qualidade (Quality Gate)
-A auditoria executada retornou **apvação total (PASSED)** em todas as métricas:
+A auditoria executada retornou **aprovação total (PASSED)** em todas as métricas:
 
 | Dimensão de Qualidade | Resultado Obtido | Classificação |
 | :--- | :---: | :---: |

@@ -1,14 +1,14 @@
 # 🚂 Wiki: Locomotiva a Vapor 2D em WPF (.NET 10)
 
-Bem-vindo à documentação oficial da **Locomotiva a Vapor 2D**, desenvolvida para a disciplina de **Processamento de Imagens (Trabalho 1)** utilizando **C# / .NET 10** e o subsistema de renderização vetorial do **Windows Presentation Foundation (WPF)**.
+Bem-vindo à documentação técnica oficial da **Locomotiva a Vapor 2D**, projeto desenvolvido para a disciplina de **Processamento de Imagens (Trabalho 1)** utilizando **C# / .NET 10** e o subsistema de renderização vetorial do **Windows Presentation Foundation (WPF)**.
 
-Esta documentação foi elaborada no padrão **GitHub Wiki** e escrita com um cuidado especial: **explicar conceitos de computação gráfica e física de forma "mastigada" e intuitiva**, usando analogias do cotidiano (blocos de Lego, carimbos de biscoito, bicicletas, máquinas de costura e folhas de celofane). Assim, **qualquer pessoa**, mesmo sem conhecimento prévio em programação gráfica ou processamento de imagens, consegue entender como o trem foi desenhado e animado!
+Esta documentação foi elaborada no padrão **GitHub Wiki**, apresentando a engenharia do projeto de forma estruturada, didática e aprofundada: desde os conceitos fundamentais de computação gráfica 2D até a análise minuciosa de cada trecho de código XAML e C#, tornando a arquitetura perfeitamente compreensível tanto para iniciantes quanto para revisores técnicos.
 
 ---
 
 ## 📸 Demonstração do Projeto em Tempo Real
 
-Abaixo está a demonstração visual do trem em movimento com as bielas articuladas com perfeição matemática, oclusão no cilindro de vapor e baforadas contínuas de fumaça:
+Abaixo está a demonstração visual do trem em movimento com as bielas articuladas com precisão analítica, oclusão dinâmica no bloco do cilindro de vapor e emissão contínua de partículas de fumaça:
 
 ![Locomotiva a Vapor 2D em Execução](locomotiva.gif)
 
@@ -16,28 +16,28 @@ Abaixo está a demonstração visual do trem em movimento com as bielas articula
 
 ## 📑 Sumário da Documentação
 
-A documentação está dividida em 7 capítulos técnicos e didáticos:
+A documentação está dividida em 7 capítulos técnicos especializados:
 
 1. **[Arquitetura e Princípios Gráficos](Arquitetura-e-Visao-Geral)**  
-   *Como o computador desenha na tela, a "Regra de Ouro do Lego" (o invariante $(0,0)$), por que usamos a placa de vídeo com `RenderTransform` e o mapa de responsabilidade de cada arquivo.*
+   *O sistema de coordenadas do WPF, o invariante de projeto $(0,0)$, aceleração gráfica por hardware via `RenderTransform` e a separação de responsabilidades em camadas (SRP).*
 2. **[Modelagem Visual e Geometria XAML](Modelagem-Visual-MainWindow-XAML)**  
-   *O desenho da locomotiva 0-4-0T (com a frente voltada para a direita), o que cada peça faz na vida real (domo, caldeira, limpa-trilhos, cabine) e o truque das camadas visuais (Z-Index).*
+   *A decomposição estrutural da locomotiva 0-4-0T (orientada para a direita), análise funcional dos componentes (caldeira, cabine, cilindro, cowcatcher) e a pilha de renderização em camadas ($Z\text{-Index}$).*
 3. **[ControlTemplate e Rodas Reutilizáveis](ControlTemplate-e-Rodas)**  
-   *A analogia da "Forma de Bolo / Carimbo" (`ControlTemplate`), o ponteiro de relógio dos slides da aula e o segredo da tachinha no centro (`CenterX="40" CenterY="40"`).*
+   *O padrão de template modular (`ControlTemplate`), o modelo circular inspirado no relógio analógico dos slides e a parametrização do centro pivô de rotação (`CenterX="40"` e `CenterY="40"`).*
 4. **[Cinemática Analítica do Mecanismo Biela-Manivela](Cinematica-Analitica-e-Bielas)**  
-   *A física do trem explicada com o pedal da bicicleta, a escada na parede (Teorema de Pitágoras) e a bússola (`Math.Atan2`) para guiar a biela motriz sem derrapar.*
+   *A cinemática física no motor desacoplado `LocomotivaKinematics.cs`: rolamento puro sem deslizamento, órbita circular síncrona, Teorema de Pitágoras e cálculo angular via `Math.Atan2`.*
 5. **[Animações Declarativas e Efeito de Vapor](Animacoes-Storyboard-e-Particulas)**  
-   *O "Diretor de Cinema" do WPF (`Storyboard`), a física do vento empurrando a fumaça para trás e a técnica das bolhas de sabão descompassadas.*
+   *O subsistema de animações declarativas em XAML (`Storyboard`), a modelagem física de arrasto aerodinâmico e expansão gasosa, e o escalonamento temporal contínuo.*
 6. **[Padrões de Qualidade, SonarQube e EditorConfig](Qualidade-SonarQube-e-EditorConfig)**  
-   *Auditoria de código limpo com SonarQube (0 bugs, 0 vulnerabilidades, 0 code smells, nota máxima A) e formatação uniforme com `.editorconfig`.*
+   *Auditoria de código limpo com SonarQube Community (0 bugs, 0 vulnerabilidades, 0 code smells, nota máxima A) e formatação uniforme com `.editorconfig`.*
 7. **[Referências Oficiais do Microsoft Learn](Referencias-Oficiais-Microsoft-Learn)**  
-   *Catálogo de links oficiais da Microsoft em português (`pt-br`) documentando todas as ferramentas, formas geométricas e classes utilizadas.*
+   *Catálogo de links oficiais da Microsoft em português (`pt-br`) documentando as classes, transformações afins e subsistemas utilizados.*
 
 ---
 
 ## 🎯 Atendimento Integral aos Critérios do Trabalho
 
-O projeto atende com nota máxima (10,0 / 10,0) a todos os requisitos normativos do **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md)** e do material teórico **[Slide 2D:182-299](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Slide/2D.md#L182-L299)**:
+O projeto atende integralmente a todos os requisitos normativos do **[Trabalho C1 (Normas)](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Trabalho/Trabalho%20C1.md)** e do material teórico **[Slide 2D:182-299](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Slide/2D.md#L182-L299)**:
 
 | Etapa | Pontuação | Requisito Normativo | Implementação Técnica no Projeto |
 | :---: | :---: | :--- | :--- |

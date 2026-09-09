@@ -1,59 +1,56 @@
-# 💨 Animações Declarativas e Efeito de Vapor: O Diretor de Cinema do WPF
+# 💨 Animações Declarativas e Efeito de Vapor em XAML
 
-Quando vemos uma locomotiva antiga em movimento, a primeira coisa que chama a atenção é aquela fumaça branca e volumosa saindo da chaminé em baforadas ritmadas.
+A representação visual de uma locomotiva a vapor clássica requer a reprodução dos fenômenos de exaustão gasosa expelidos periodicamente pela chaminé.
 
-Neste capítulo, explicamos de forma **mastigada e acessível** como usamos a ferramenta [`Storyboard`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/storyboards-overview/) do WPF para criar esse efeito visual orgânico e realista sem sobrecarregar a memória do seu computador.
-
----
-
-## 1. O que é um `Storyboard`? (A Analogia do Diretor de Cinema)
-
-Nos estúdios de animação e cinema, um *Storyboard* é o roteiro desenhado quadro a quadro que o diretor usa para dar ordens aos atores e desenhistas.
-
-No WPF, o [`Storyboard`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/storyboards-overview/) funciona exatamente como esse **diretor de animação automático**:
-- Em vez de você ter que programar na mão cada milímetro que a fumaça sobe a cada fração de segundo, você só dá a ordem inicial em XAML:
-  > *"Atenção bolha de fumaça: comece bem pequenininha e opaca em cima da chaminé, suba 80 pixels para o céu, aumente de tamanho em 2 vezes e vá ficando transparente até sumir. E faça isso durar 1 segundo e meio!"*
-- E o melhor: com o comando `RepeatBehavior="Forever"`, o diretor repete essa cena sem parar enquanto o programa estiver aberto!
+Neste capítulo, detalha-se a implementação do subsistema de partículas e animações declarativas utilizando a classe [`Storyboard`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/storyboards-overview/) do WPF, garantindo simulação fluida e eficiente em termos de consumo computacional.
 
 ---
 
-## 2. A Física da Fumaça Explicada com o Vento
+## 1. Fundamentos da Animação Declarativa via `Storyboard`
 
-Para que a fumaça pareça de verdade (e não um círculo estático colado no trem), reproduzimos os 4 comportamentos físicos que acontecem na natureza:
+No ecossistema WPF, um [`Storyboard`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/storyboards-overview/) atua como um orquestrador de linhas do tempo para animação de propriedades de dependência (*Dependency Properties*).
 
-1. **O Vapor é Quente e Sobe**: O ar quente é mais leve que o ar frio, então a fumaça sobe em direção ao céu. No sistema de coordenadas do computador, subir significa que o valor de $Y$ diminui ($Y = 40 \to -40$).
-2. **O Trem Anda para a Frente, o Vento Empurra para Trás**: Como a locomotiva está correndo para a **direita**, o vento relativo empurra a fumaça para a **esquerda** (para trás do trem). Por isso, o valor de $X$ diminui ($X = 395 \to 320$).
-3. **A Fumaça se Espalha (Expansão)**: Assim que o vapor sai do cano apertado da chaminé, ele se expande no ar livre. Usamos [`ScaleTransform`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.scaletransform/) para fazê-la crescer de metade do tamanho ($0.5$) até mais do que o dobro ($2.2$).
-4. **Ela se Mistura com o Ar (Dissipação)**: Conforme o vapor esfria e se dispersa na noite, ele vai ficando transparente até sumir completamente (a propriedade `Opacity` vai de $0.8$ até $0.0$).
+Em vez de manipular imperativamente coordenadas quadro a quadro via código procedural, a interface declara regras de interpolação matemática temporal diretamente em XAML:
+- Especifica-se o valor inicial (`From`), o valor terminal (`To`) e a duração do ciclo (`Duration`).
+- O subsistema de temporização da GPU/WPF calcula as posições intermediárias e aplica a interpolação sem bloquear a thread de UI principal.
+- Com a propriedade `RepeatBehavior="Forever"`, a linha do tempo reinicia ciclicamente de forma contínua e autônoma.
+
+---
+
+## 2. Modelagem Cinemática e Fenomenologia do Efeito de Vapor
+
+Para reproduzir a dispersão de partículas gasosas de forma verossímil, modelou-se a evolução das coordenadas considerando quatro variáveis físicas fundamentais:
+
+1. **Convecção Térmica Ascendente**: O vapor aquecido possui menor densidade em relação ao ar ambiente, gerando empuxo vertical. No sistema de coordenadas do WPF (onde a ordenada $Y$ cresce para baixo), a ascensão vertical é descrita por variação negativa em $Y$ ($Y = 40 \to -40$).
+2. **Arrasto Aerodinâmico Relativo**: Com o deslocamento da composição ferroviária no sentido positivo do eixo horizontal (para a direita), a resistência do ar induz um vetor de arraste no sentido oposto (para a esquerda). Consequentemente, o deslocamento horizontal $X$ decresce ao longo do ciclo ($X = 395 \to 320$).
+3. **Expansão Volumétrica e Difusão**: Ao despressurizar na saída do duto da chaminé, o volume gasoso expande-se progressivamente. Essa variação dimensional é implementada via transformações afins de escala ([`ScaleTransform`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.scaletransform/)), modulando os fatores de escala de $0.5$ até $2.2$.
+4. **Dissipação e Atenuação de Opacidade**: O decaimento térmico e a mistura convectiva reduzem progressivamente a concentração visível da nuvem, representada pela atenuação linear da propriedade `Opacity` de $0.8$ a $0.0$.
 
 ```
-        (Fumaça 3: Enorme e quase invisível)
+        (Partícula 3: Raio expandido e opacidade atenuada)
              ( )
            (     )
              \
-        (Fumaça 2: Média e subindo)
+        (Partícula 2: Expansão intermediária em ascensão)
            (   )
              \
-        (Fumaça 1: Pequena e branca saindo agora)
+        (Partícula 1: Dimensão inicial e opacidade máxima)
           (o)
-           ||   <-- Chaminé
+           ||   <-- Duto da Chaminé
        +--------+
-       | CALDEIRA |  ====> [Trem Correndo para a Direita]
+       | CALDEIRA |  ====> [Vetor de Deslocamento para a Direita]
 ```
 
 ---
 
-## 3. A Analogia das Bolhas de Sabão: Por Que Criamos 3 Baforadas?
+## 3. Emissão Contínua Escalonada por Defasagem Temporal (*Staggering*)
 
-Se você assoprar uma única bolha de sabão e esperar ela estourar para assoprar outra, o ar vai ficar vazio a maior parte do tempo.  
-Para criar um rastro contínuo e volumoso, você assopra várias bolhas uma atrás da outra!
+Para garantir emissão ininterrupta de vapor sem descontinuidades temporais (*gaps* entre ciclos individuais), implementou-se um sistema com **três partículas circulares independentes** (`Fumaca1`, `Fumaca2` e `Fumaca3`) operando com defasagem de fase e períodos assimétricos:
+- **Partícula 1**: Ciclo base de $1.5\text{ s}$, iniciado em $t_0 = 0.0\text{ s}$.
+- **Partícula 2**: Ciclo de $1.8\text{ s}$, defasado em $0.5\text{ s}$ (`BeginTime="0:0:0.5"`).
+- **Partícula 3**: Ciclo de $2.0\text{ s}$, defasado em $1.0\text{ s}$ (`BeginTime="0:0:1.0"`).
 
-No nosso código, criamos **três elipses translúcidas** (`Fumaca1`, `Fumaca2` e `Fumaca3`) e usamos uma técnica chamada **escalonamento temporal (*staggering*)**:
-- **Baforada 1**: Começa imediatamente no segundo `0.0s`.
-- **Baforada 2**: Começa com um atraso de meio segundo (`BeginTime="0:0:0.5"`).
-- **Baforada 3**: Começa com um atraso de um segundo (`BeginTime="0:0:1.0"`).
-
-Como cada uma delas tem durações ligeiramente diferentes ($1.5\text{ s}$, $1.8\text{ s}$ e $2.0\text{ s}$), elas nunca sobem exatamente juntas. Isso cria uma ilusão visual maravilhosa de vapor constante, vivo e fofinho saindo da chaminé!
+A assimetria entre os períodos temporais ($1.5\text{ s}$, $1.8\text{ s}$ e $2.0\text{ s}$) produz um longo mínimo múltiplo comum, impedindo a sincronização em fase e conferindo aspecto orgânico contínuo à pluma de vapor.
 
 ---
 
@@ -81,9 +78,9 @@ Antes de animar, precisamos criar os círculos translúcidos no topo da chaminé
 
 ---
 
-### 4.2 O Bloco do `Storyboard` em XAML
+### 4.2 Definição Declarativa do `Storyboard` em XAML
 
-Veja como o diretor de animação comanda a cena:
+A orquestração temporal das partículas é configurada declarativamente no bloco de gatilhos do contêiner:
 
 ```xml
 <Canvas.Triggers>
@@ -139,27 +136,26 @@ Veja como o diretor de animação comanda a cena:
     </EventTrigger>
 </Canvas.Triggers>
 ```
-- Repare no escalonamento de `BeginTime`: `0:0:0.0` $\to$ `0:0:0.5` $\to$ `0:0:1.0`. Cada baforada surge em um momento diferente e dura um pouco mais, enchendo o céu de vapor natural!
+- O escalonamento temporal via `BeginTime` (`0:0:0.0` $\to$ `0:0:0.5` $\to$ `0:0:1.0`) desfaz o alinhamento de fase entre as três instâncias, mantendo a densidade volumétrica contínua ao longo do tempo.
 
 ---
 
-### 4.3 O Método C# `AtualizarFumaca`: Para Gerar o GIF e Tirar Fotos
+### 4.3 Renderização Procedural em C# (`AtualizarFumaca`)
 
-Você sabia que o projeto também tem um método em C# para controlar a fumaça?  
-No arquivo [`Controls/LocomotivaControl.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml.cs):
+Para possibilitar a renderização determinística de quadros estáticos na exportação do GIF animado (`dotnet run -- --record-frames`), a evolução temporal da pluma de vapor também foi formulada analiticamente em C# no arquivo [`Controls/LocomotivaControl.xaml.cs`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml.cs):
 
 ```csharp
 public void AtualizarFumaca(double tempo)
 {
-    // Baforada 1 (Ciclo de 1.5s): p1 vai suavemente de 0.0 até 1.0
+    // Partícula 1 (Período: 1.5s): progresso normalizado p1 in [0.0, 1.0)
     double p1 = (tempo % 1.5) / 1.5;
-    TranslacaoFumaca1.Y = 40.0 - 80.0 * p1;           // Sobe de 40 até -40
-    TranslacaoFumaca1.X = 395.0 - 75.0 * p1;          // Vai de 395 para trás até 320
-    EscalaFumaca1.ScaleX = 0.5 + 1.7 * p1;            // Infla de 0.5 até 2.2
+    TranslacaoFumaca1.Y = 40.0 - 80.0 * p1;           // Ascensão de 40 a -40 px
+    TranslacaoFumaca1.X = 395.0 - 75.0 * p1;          // Arrasto relativo de 395 a 320 px
+    EscalaFumaca1.ScaleX = 0.5 + 1.7 * p1;            // Fator de escala de 0.5 a 2.2
     EscalaFumaca1.ScaleY = 0.5 + 1.7 * p1;
-    Fumaca1.Opacity = 0.8 * (1.0 - p1);               // Dissipa até 0.0
+    Fumaca1.Opacity = 0.8 * (1.0 - p1);               // Atenuação de opacidade de 0.8 a 0.0
 
-    // Baforada 2 (Ciclo de 1.8s com defasagem de 0.5s)
+    // Partícula 2 (Período: 1.8s com defasagem de fase)
     double p2 = ((tempo + 1.0) % 1.8) / 1.8;
     TranslacaoFumaca2.Y = 40.0 - 90.0 * p2;
     TranslacaoFumaca2.X = 395.0 - 95.0 * p2;
@@ -167,7 +163,7 @@ public void AtualizarFumaca(double tempo)
     EscalaFumaca2.ScaleY = 0.4 + 2.1 * p2;
     Fumaca2.Opacity = 0.7 * (1.0 - p2);
 
-    // Baforada 3 (Ciclo de 2.0s com defasagem de 1.0s)
+    // Partícula 3 (Período: 2.0s com defasagem de fase)
     double p3 = ((tempo + 0.5) % 2.0) / 2.0;
     TranslacaoFumaca3.Y = 40.0 - 100.0 * p3;
     TranslacaoFumaca3.X = 395.0 - 120.0 * p3;
@@ -177,9 +173,9 @@ public void AtualizarFumaca(double tempo)
 }
 ```
 
-#### Por que esse método C# foi criado?
-Quando geramos o GIF animado em linha de comando (`dotnet run -- --record-frames`), o programa roda em modo automático e precisa capturar 275 fotos estáticas da tela uma por uma.  
-Como o `Storyboard` do XAML depende do relógio de tempo real do Windows, esse método matemático garante que cada fotograma gravado no disco tenha as bolhas de fumaça exatamente no milímetro certo para o GIF ficar perfeito!
+#### Justificativa da Parametrização Procedural
+Durante a geração automatizada de fotogramas em modo *headless* ou *offscreen* (`dotnet run -- --record-frames`), o sistema captura 275 passos discretizados ao longo de um ciclo espacial fechado ($550\text{ px}$).  
+Como as linhas do tempo do `Storyboard` em XAML operam atreladas ao relógio de tempo real do sistema operacional (*wall-clock time*), o método procedural `AtualizarFumaca(tempo)` garante determinismo estrito e independência de eventuais flutuações na taxa de escrita em disco.
 
 ---
 

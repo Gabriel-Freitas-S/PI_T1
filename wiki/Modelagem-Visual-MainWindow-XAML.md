@@ -23,53 +23,53 @@ Imagine uma folha de papel milimetrado ou a tela do seu celular:
 Eixo Y (Cresce para Baixo)
 ```
 
-### As 4 Ferramentas Básicas de Desenho do WPF
+### Primitivas Gráficas Vetoriais do WPF
 
-Para não precisar de imagens pesadas da internet, desenhamos tudo com **cálculos matemáticos vetoriais puros**. O WPF nos dá quatro "canetas" mágicas derivadas da classe [`Shape`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/shapes-and-basic-drawing-in-wpf-overview/):
+Para evitar o carregamento de bitmaps e assegurar escalabilidade com independência de resolução gráfica, a modelagem foi integralmente desenvolvida por meio de **primitivas vetoriais analíticas**. O subsistema gráfico do WPF provê quatro classes fundamentais derivadas da classe base [`Shape`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/shapes-and-basic-drawing-in-wpf-overview/):
 
-1. [`Rectangle`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.rectangle) (**Retângulos e Quadrados**): Nossos blocos de construção tipo Lego. Usamos para o chassi comprido, as caixas de água laterais, a cabine do maquinista e as hastes de aço. Podemos até arredondar as bordas (`RadiusX` e `RadiusY`) para parecer metal polido.
-2. [`Ellipse`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.ellipse) (**Círculos e Elipses**): Usadas para as rodas do trem, rebites, os miolos das bielas, a cúpula do domo de vapor e as bolhas de fumaça que saem da chaminé.
-3. [`Polygon`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.polygon) (**Polígonos com Vários Lados**): Funciona como um jogo de "ligar os pontos". Usamos quando a peça tem formato inclinado especial, como o teto curvado da cabine, o limpa-trilhos triangular da frente e o feixe amarelo brilhante do farol.
-4. [`Line`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.line) (**Linhas Retas**): Fios de aço de alta precisão. Usamos para os 8 raios que sustentam cada roda, os corrimãos de subida do maquinista e os trilhos horizontais onde o pistão desliza.
+1. [`Rectangle`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.rectangle) (**Retângulos**): Utilizado na estruturação dos componentes ortogonais, como a viga principal do chassi, caixas de água laterais, cabine de comando e hastes lineares. Permite bordas arredondadas pelas propriedades `RadiusX` e `RadiusY`.
+2. [`Ellipse`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.ellipse) (**Círculos e Elipses**): Aplicado aos cubos e aros das rodas, mancais das bielas, domo de vapor e esferas de exaustão de vapor da chaminé.
+3. [`Polygon`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.polygon) (**Polígonos Fechados Arbitrários**): Define geometrias complexas a partir de uma lista ordenada de vértices (`Points`), tais como o perfil do teto da cabine, a cunha do limpa-trilhos (*cowcatcher*) e a projeção cônica do farol.
+4. [`Line`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.line) (**Segmentos de Reta**): Elementos com coordenadas extremas $(X_1, Y_1)$ e $(X_2, Y_2)$. Empregado nos 8 raios de cada roda, corrimãos de acesso e barras de guia horizontal (*slide bars*) da cruzeta.
 
 ---
 
-## 2. O Cenário: Céu da Noite e a Linha Férrea
+## 2. O Cenário: Céu Noturno e Traçado Ferroviário
 
-Antes de colocar o trem no mundo, precisamos de um chão firme e de um céu bonito para compor a atmosfera.
+A composição visual da cena requer o estabelecimento de um plano de fundo contínuo e da linha de referência do traçado ferroviário.
 
-### 2.1 O Céu Noturno com Gradiente
-Em vez de um fundo preto chapado e sem graça, usamos um [`LinearGradientBrush`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.lineargradientbrush). Ele mistura quatro tons de azul e cinza escuro de cima para baixo, criando a ilusão de uma noite fresca e enluarada no pátio ferroviário:
+### 2.1 Céu Noturno com Gradiente Linear
+Para evitar superfícies monocromáticas estáticas, aplicou-se um [`LinearGradientBrush`](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.media.lineargradientbrush). O pincel interpola quatro patamares tonais de azul e cinza escuro na direção vertical:
 - Topo: Azul noite profundo (`#0B1319`).
 - Meio: Azul ardósia industrial (`#284659`).
 - Base: Carvão escuro (`#17202A`).
 
-### 2.2 O Trilho e a Matemática do Contato Perfeito
-Um erro muito comum em jogos e animações é a roda "afundar" no trilho ou "flutuar no ar". Para evitar isso, fizemos uma conta exata:
-- O topo do trilho prateado foi cravado na altura $Y = 405\text{ px}$.
-- A locomotiva fica na altura global $Y = 155\text{ px}$.
-- O centro do eixo da roda fica a $210\text{ px}$ do topo da locomotiva.
-- O raio da roda é de exatamente $40\text{ px}$ (diâmetro de $80\text{ px}$).
+### 2.2 Alinhamento do Trilho e Tangência das Rodas
+Para evitar descontinuidades visuais ou interpenetrações de malha (*mesh penetration*), a geometria de contato foi calculada analiticamente:
+- Topo da superfície do trilho: $Y = 405\text{ px}$.
+- Origem global da locomotiva: $Y = 155\text{ px}$.
+- Centro do eixo de rotação das rodas: $Y = 210\text{ px}$ relativo ao contêiner.
+- Raio externo da roda: $R = 40\text{ px}$ (diâmetro de $80\text{ px}$).
 
 ```math
-Y_{\text{base da roda}} = 155\text{ (altura do trem)} + 210\text{ (eixo)} + 40\text{ (raio)} = \mathbf{405\text{ px}}
+Y_{\text{base da roda}} = 155\text{ (origem do contêiner)} + 210\text{ (eixo)} + 40\text{ (raio)} = \mathbf{405\text{ px}}
 ```
 
-Como $405 = 405$, a roda toca o trilho com **tangência matemática perfeita**! Não sobra nem um milímetro de ar nem entra no aço.
+Como o ponto inferior das rodas coincide exatamente com a cota superior do trilho ($405\text{ px}$), obtém-se **tangência matemática exata**, garantindo rolamento sem penetração de malha.
 
 ---
 
 ## 3. Decomposição Estrutural da Locomotiva (0-4-0T)
 
-Nossa locomotiva é do modelo histórico **0-4-0T (Tank Engine)**. O que significa esse código estranho?
-- **0**: Nenhuma roda pequena guia na frente.
-- **4**: Quatro rodas motrizes grandes acopladas que puxam o peso (duas de cada lado).
-- **0**: Nenhuma roda de apoio na traseira.
-- **T (*Tank*)**: Ela carrega a água em tanques nas suas próprias laterais e o carvão em um compartimento atrás da cabine. Ou seja, ela é compacta e não precisa de um vagão separado (*tender*) puxado atrás dela!
+A locomotiva segue a classificação técnica **0-4-0T (Tank Engine)** segundo o sistema de notação Whyte:
+- **0**: Ausência de rodeiros guia dianteiros (*leading truck*).
+- **4**: Quatro rodas motrizes acopladas sustentando o peso aderente (duas por lado).
+- **0**: Ausência de rodeiros de apoio traseiros (*trailing truck*).
+- **T (*Tank*)**: Armazenamento de água em tanques montados lateralmente à caldeira e de carvão em compartimento posterior à cabine, dispensando veículo de suprimento separado (*tender*).
 
-### Diagrama Estrutural da Locomotiva (Frente Voltada para a Direita $\to$)
+### Diagrama Estrutural da Locomotiva (Orientação Frontal à Direita $\to$)
 
-Abaixo está o mapa esquemático da locomotiva no mesmo sentido em que ela foi programada no código (da traseira à esquerda para a frente à direita):
+Abaixo apresenta-se o esquema dimensional da locomotiva na convenção adotada no código-fonte (da traseira em $X=0$ até a proa em $X \approx 520$):
 
 ```
                                       [DOMO]  [SINO]     [CHAMINÉ]
@@ -88,81 +88,79 @@ Abaixo está o mapa esquemático da locomotiva no mesmo sentido em que ela foi p
 
 ---
 
-### O Que É Cada Peça? (Explicado em Detalhes)
+### Decomposição Detalhada dos Componentes
 
-#### Seção 1: Chassi Inferior e Para-Choque Traseiro (Extrema Esquerda)
-- **Viga Principal do Chassi**: Uma longa barra de aço carbono grafite (`#1C2833`) de $500\text{ px}$ que sustenta todo o peso da máquina. Fica em $(15, 190)$.
-- **Para-choque de Madeira e Prato Amortecedor Traseiro**: Uma viga vermelha em $(8, 188)$ com um prato circular em $(2, 192)$ para amortecer impactos caso outro vagão engate atrás.
+#### Seção 1: Chassi Inferior e Para-Choque Traseiro
+- **Viga Principal do Chassi**: Perfil estrutural em aço carbono (`#1C2833`) de $500\text{ px}$ de comprimento, transladado para $(15, 190)$, responsável pela sustentação de toda a superestrutura.
+- **Para-choque e Prato Amortecedor Posterior**: Viga de amortecimento em $(8, 188)$ com batente circular em $(2, 192)$ para dissipação de impacto em manobras de acoplamento.
 
-#### Seção 2: Para-Choque Dianteiro e Limpa-Trilhos (*Cowcatcher*) (Extrema Direita)
-- **Viga Dianteira (*Buffer Beam*)**: Bloco vermelho vibrante em $(496, 187)$.
-- **Gancho e Elo de Corrente**: Engate ferroviário forjado em $(506, 203)$ para puxar composições.
-- **Limpa-Trilhos em Cunha (*Cowcatcher*)**: Aquela grade triangular clássica na frente do trem em $(496, 208)$. Sua função histórica é empurrar pedras, galhos ou animais para fora da linha férrea, impedindo descarrilamentos. Possui faixas amarelas de alerta visual.
+#### Seção 2: Para-Choque Dianteiro e Limpa-Trilhos (*Cowcatcher*)
+- **Viga Dianteira (*Buffer Beam*)**: Elemento transversal de fixação em $(496, 187)$.
+- **Gancho e Manilha de Tração**: Conjunto forjado em $(506, 203)$ para reboque de material rodante.
+- **Limpa-Trilhos em Cunha (*Cowcatcher*)**: Estrutura deflectora triangular montada em $(496, 208)$ com o objetivo de desobstruir a via de corpos estranhos. Possui ranhuras diagonais de advertência visual em esmalte amarelo.
 
 #### Seção 3: Depósito Traseiro de Carvão (*Bunker*)
-- Fica logo atrás da cabine em $(20, 95)$. É um cofre metálico cheio de pedras de carvão mineral texturizadas (`Polygon`). O foguista pega o carvão dali para alimentar a fornalha.
-- Inclui uma lanterna de cauda com luz vermelha em $(12, 110)$ para segurança na via.
+- Compartimento volumétrico situado imediatamente atrás da cabine em $(20, 95)$, modelado com polígonos texturizados para representar o leito de combustível sólido mineral.
+- Lanterna de cauda em $(12, 110)$ com emissão luminosa em tom rubro para sinalização de fim de composição.
 
-#### Seção 4: Cabine do Maquinista
-- O abrigo da tripulação em azul prussiano industrial (`#21618C`), posicionado em $(55, 65)$.
-- **Teto Protetor Curvo**: Evita que a chuva e as fagulhas entrem na cabine.
-- **Porta com Maçaneta Dourada**: Em $(62, 95)$, por onde o maquinista entra.
-- **Estribos de Subida**: Escada de ferro de dois degraus em $(66, 192)$, posicionada estrategicamente bem embaixo da porta.
-- **Janela Panorâmica**: Janela com vidro azul claro e moldura reforçada em $(112, 88)$ para enxergar os sinais da via.
+#### Seção 4: Cabine de Comando
+- Estrutura habitável da tripulação em esmalte azul prussiano (`#21618C`), posicionada em $(55, 65)$.
+- **Teto Curvo de Cobertura**: Projeção aerodinâmica superior com abaulamento e drenagem lateral.
+- **Porta de Acesso com Maçaneta de Bronze**: Posicionada em $(62, 95)$.
+- **Estribos de Acesso**: Conjunto de dois degraus em ferro forjado em $(66, 192)$, alinhado ao vão de entrada.
+- **Janela Panorâmica de Observação**: Abertura envidraçada em $(112, 88)$ com montante divisório central.
 
-#### Seção 5: Caldeira Cilíndrica e Cintas de Bronze
-- O grande "tanque" horizontal de alta pressão em $(175, 95)$. É onde a água ferve a centenas de graus para gerar o vapor comprimido.
-- **Cintas de Fixação**: Fitas douradas verticais em $(235, 95)$ e $(300, 95)$. Na vida real, elas prendem uma camada isolante térmica de madeira e amianto para que a caldeira não perca calor.
+#### Seção 5: Caldeira Cilíndrica e Cintas de Fixação
+- Reservatório pressurizado horizontal centrado em $(175, 95)$, onde ocorre a vaporização contínua de água sob alta pressão.
+- **Cintas de Fixação Térmica**: Abraçadeiras em liga de bronze em $(235, 95)$ e $(300, 95)$, representando as cintas de contenção do isolamento térmico externo.
 
 #### Seção 6: Tanques Laterais de Água (*Side Tanks*)
-- Caixas retangulares montadas dos lados da caldeira em $(175, 135)$. Armazenam a água fria que abastece continuamente a caldeira através de válvulas no topo.
+- Reservatórios retangulares de suprimento instalados nas laterais da caldeira em $(175, 135)$, destinados ao fornecimento contínuo de água de alimentação.
 
 #### Seção 7: Domo de Vapor, Sino, Chaminé e Farol
-- **Domo de Vapor**: Cúpula arredondada em $(220, 70)$. Fica no ponto mais alto da caldeira para capturar apenas o "vapor seco" (sem respingos de água fervente) e mandá-lo para os pistões.
-- **Sino de Latão**: Em $(295, 80)$, usado para alertar pedestres e trabalhadores nas estações.
-- **Chaminé Cônica**: Tubo em $(383, 46)$ por onde sai a fumaça da fornalha e o vapor gasto do motor.
-- **Farol de Proa e Feixe de Luz**: Uma grande lanterna em $(428, 102)$ com lente amarela que projeta um cone de luz brilhante e translúcido para a frente na escuridão.
+- **Domo de Vapor**: Câmara esférica superior em $(220, 70)$, concebida para reter vapor seco saturado e minimizar arraste de condensado para a tubulação do motor.
+- **Sino de Latão**: Dispositivo de sinalização acústica em $(295, 80)$.
+- **Chaminé Cônica de Exaustão**: Duto de dispersão em $(383, 46)$ para liberação dos gases de combustão e exaustão dos cilindros.
+- **Farol de Proa e Refletor**: Lanterna frontal montada em $(428, 102)$, dotada de cone de projeção volumétrica translúcida.
 
-#### Seção 8: Bloco do Cilindro de Vapor e Guias da Cruzeta
-- **Bloco do Cilindro**: A "caixa de força" em ferro fundido cinza em $(390, 192)$. É onde o vapor entra com força absurda para empurrar o êmbolo.
-- **Guias da Cruzeta (*Slide Bars*)**: Dois trilhos horizontais cromados em $Y = 200$ e $Y = 220$. Eles forçam a cruzeta a andar rigorosamente em linha reta, sem desviar para cima nem para baixo.
-
----
-
-## 4. Camadas Visuais (Z-Index): A Analogia das Folhas de Celofane
-
-Como o computador sabe o que desenhar na frente e o que desenhar atrás?  
-Imagine que estamos montando um quadro colando **folhas transparentes de acetato** uma em cima da outra. Quem for desenhado primeiro fica no fundo; quem for desenhado por último fica por cima de tudo:
-
-```
-[Camada 11]  Fumaça e Vapor saindo da chaminé       (Na frente de tudo)
-[Camada 10]  Bloco de Ferro do Cilindro             (Tapa a ponta da haste)
-[Camada 9]   Cruzeta e Pino Frontal                 (Segura a haste e a biela)
-[Camada 8]   Biela Motriz Inclinada                 (Encaixa atrás da cruzeta)
-[Camada 7]   Biela de Acoplamento Horizontal        (Une as duas rodas)
-[Camada 6]   Rodas da Locomotiva com Raios          (Giram com as manivelas)
-[Camada 5]   Haste Cromada do Pistão                (Entra e sai do cilindro)
-[Camada 4]   Guias da Cruzeta (Slide Bars)          (Trilhos horizontais)
-[Camada 3]   Corpo da Locomotiva                    (Caldeira, cabine, chassi)
-[Camada 2]   Trilhos e Lastro de Brita              (Onde as rodas apoiam)
-[Camada 1]   Céu Noturno com Estrelas               (Fundo estático)
-```
-
-### O Segredo da Ilusão do Pistão
-Observe a mágica visual entre as **Camadas 5, 9 e 10**:
-1. A haste do pistão é uma barra de metal de $75\text{ px}$.
-2. A cruzeta (Camada 9) agarra a ponta esquerda da haste.
-3. O bloco do cilindro (Camada 10) é desenhado **por cima da ponta direita da haste**.
-4. Conforme o trem anda, a haste vai para a frente e para trás. Quando ela vai para a frente, ela entra debaixo do desenho do cilindro, ficando invisível! Quando volta, ela reaparece.  
-Isso cria a ilusão mecânica perfeita de que o pistão está realmente penetrando no motor a vapor, sem precisar recortar a imagem ou fazer cálculos complicados de corte 3D!
+#### Seção 8: Bloco do Cilindro e Guias da Cruzeta
+- **Bloco do Cilindro**: Câmara de ferro fundido em $(390, 192)$, atuando como invólucro de expansão de vapor onde a energia térmica é convertida em movimento linear alternativo.
+- **Barras de Guia da Cruzeta (*Slide Bars*)**: Perfis prismáticos cromados dispostos em $Y = 200$ e $Y = 220$, restringindo o deslocamento da cruzeta estritamente ao eixo axial horizontal.
 
 ---
 
-## 5. 📖 Análise Linha a Linha do Código XAML
+## 4. Ordem de Renderização e Profundidade (Z-Order)
 
-Agora vamos olhar os arquivos reais do projeto e entender exatamente cada linha escrita!
+No WPF, a ordenação em profundidade é determinada pela sequência de nós declarados no contêiner XAML. Elementos declarados previamente situam-se nos planos de fundo, enquanto os nós subsequentes são sobrepostos:
 
-### 5.1 O Cenário e os Trilhos em `MainWindow.xaml`
+```
+[Camada 11]  Vapor e Partículas de Exaustão           (Primeiro plano superior)
+[Camada 10]  Bloco de Ferro do Cilindro             (Oclusão da haste)
+[Camada 9]   Cruzeta e Mancal Frontal               (Acoplamento articular)
+[Camada 8]   Biela Motriz Inclinada                 (Transmissão intermediária)
+[Camada 7]   Biela de Acoplamento Horizontal        (Sincronização dos eixos)
+[Camada 6]   Conjuntos de Rodas e Raios             (Rodeiros acoplados)
+[Camada 5]   Haste Cromada do Pistão                (Translação alternativa)
+[Camada 4]   Barras de Guia da Cruzeta (Slide Bars) (Guiamento mecânico)
+[Camada 3]   Superestrutura da Locomotiva           (Caldeira, cabine, chassi)
+[Camada 2]   Infraestrutura de Linha Férrea         (Trilhos e lastro de brita)
+[Camada 1]   Céu Noturno e Gradiente Atmosférico    (Plano de fundo estático)
+```
+
+### Dinâmica de Oclusão do Êmbolo e Cilindro
+A interação visual entre as **Camadas 5, 9 e 10** exemplifica o uso eficiente do Z-Order:
+1. A haste do pistão é definida como um elemento retangular com comprimento de $75\text{ px}$.
+2. A cruzeta (Camada 9) articula-se à extremidade esquerda da haste.
+3. O bloco do cilindro (Camada 10) é renderizado em sobreposição direta à extremidade direita da haste.
+4. No curso de avanço, a porção distal da haste é encoberta pelo corpo opaco do cilindro; no recuo, a haste reaparece progressivamente. Essa alternância dinâmica produz o efeito de inserção volumétrica contínua no motor a vapor com custo computacional mínimo, sem necessidade de algoritmos de corte booleano (*CSG*) ou máscara de recorte (*clip path*).
+
+---
+
+## 5. 📖 Análise Detalhada da Estrutura XAML
+
+Abaixo examina-se a especificação formal de cada trecho de marcação presente no projeto:
+
+### 5.1 Cenário e Infraestrutura em `MainWindow.xaml`
 
 No arquivo [`MainWindow.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/MainWindow.xaml), dividimos a tela com um `<Grid>` em três linhas:
 - Linha 0: Barra superior escura com o título.
@@ -344,12 +342,12 @@ Agora abrimos o coração do trem: [`Controls/LocomotivaControl.xaml`](https://g
     </Polygon.RenderTransform>
 </Polygon>
 ```
-- A cor `#18FFF59D` possui apenas `18` no canal alfa (transparência de cerca de $10\%$). Isso permite enxergar o céu da noite por trás da luz, criando uma atmosfera cinematográfica linda!
+- A cor `#18FFF59D` possui o canal alfa definido como `0x18` (aproximadamente $9.4\%$ de opacidade). Essa transparência permite a visualização translúcida do plano de fundo e dos trilhos sob o cone de iluminação.
 
 ---
 
 ## 🔗 Referências Oficiais da Microsoft
-Para quem quiser conferir como essas funções existem oficialmente na linguagem:
+Para aprofundamento nas classes e subsistemas gráficos do WPF:
 - [Microsoft Learn — Formas e Desenho Básico no WPF](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/shapes-and-basic-drawing-in-wpf-overview/)
 - [Microsoft Learn — Classe Rectangle (Retângulo)](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.rectangle/)
 - [Microsoft Learn — Classe Ellipse (Elipse e Círculo)](https://learn.microsoft.com/pt-br/dotnet/api/system.windows.shapes.ellipse/)
