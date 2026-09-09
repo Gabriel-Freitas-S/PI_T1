@@ -156,7 +156,7 @@ graph LR
     MVM -->|"1. Calcula t"| KIN
     KIN -->|"2. Retorna DTO"| STATE
     MVM -->|"3. Atualiza propriedades"| LVM
-    LVM ==="4. Data Binding {Binding}"===> LC
+    LVM ==>|"4. Data Binding (Binding)"| LC
 ```
 
 ### Análise Detalhada dos Componentes
