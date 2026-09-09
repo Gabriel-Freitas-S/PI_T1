@@ -1,4 +1,7 @@
+/* stylelint-disable at-rule-no-unknown */
+/* sonar-disable-next-line css:S4662 */
 @unocss all;
+/* stylelint-enable at-rule-no-unknown */
 
 /* Custom Industrial / High-Tech Theme for Starlight */
 :root {

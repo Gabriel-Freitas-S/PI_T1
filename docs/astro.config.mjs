@@ -31,49 +31,16 @@ export default defineConfig({
         },
       ],
       sidebar: [
-        {
-          label: 'Visão Geral & Arquitetura',
-          items: [
-            { label: 'Introdução & Especificações', slug: 'visao-geral/introducao' },
-            { label: 'Arquitetura MVVM & Desacoplamento', slug: 'visao-geral/arquitetura-mvvm' },
-          ],
-        },
-        {
-          label: 'Engenharia Gráfica & XAML',
-          items: [
-            { label: 'Modelagem Vetorial 2D', slug: 'engenharia-grafica/modelagem-vetorial-xaml' },
-            { label: 'ControlTemplate & Rodas Desacopladas', slug: 'engenharia-grafica/control-template-rodas' },
-          ],
-        },
-        {
-          label: 'Física & Cinemática Analítica',
-          items: [
-            { label: 'Equações Analíticas Biela-Manivela', slug: 'fisica-cinematica/equacoes-analiticas' },
-            { label: 'Simulador Cinemático Interativo', slug: 'fisica-cinematica/simulador-interativo' },
-          ],
-        },
-        {
-          label: 'Animação & Partículas',
-          items: [
-            { label: 'Storyboards & Rotação Contínua', slug: 'animacao-particulas/storyboards-e-rotacao' },
-            { label: 'Emissor de Partículas de Vapor', slug: 'animacao-particulas/emissor-de-particulas' },
-          ],
-        },
-        {
-          label: 'Qualidade de Código & SonarQube',
-          items: [
-            { label: 'Métricas SonarQube & Auditoria', slug: 'qualidade-software/sonarqube-e-regras' },
-            { label: 'Clean Code & Padrões C#', slug: 'qualidade-software/padroes-csharp-clean-code' },
-          ],
-        },
-        {
-          label: 'Referências Oficiais Microsoft Learn',
-          items: [
-            { label: 'Catálogo de APIs & Conceitos', slug: 'referencias/catalogo-microsoft-learn' },
-            { label: 'Diretrizes & Especificações do Trabalho', slug: 'referencias/especificacoes-trabalho' },
-          ],
-        },
-      ],
+        ['Visão Geral & Arquitetura', 'visao-geral'],
+        ['Engenharia Gráfica & XAML', 'engenharia-grafica'],
+        ['Física & Cinemática Analítica', 'fisica-cinematica'],
+        ['Animação & Partículas', 'animacao-particulas'],
+        ['Qualidade de Código & SonarQube', 'qualidade-software'],
+        ['Referências Oficiais Microsoft Learn', 'referencias'],
+      ].map(([label, directory]) => ({
+        label,
+        items: [{ autogenerate: { directory } }],
+      })),
     }),
   ],
 });
