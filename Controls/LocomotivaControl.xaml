@@ -10,7 +10,7 @@
     <!--# ========================================================================= -->
     <Canvas x:Name="LocomotivaCanvas" Width="560" Height="300">
         <Canvas.RenderTransform>
-            <TranslateTransform x:Name="TranslacaoLocomotiva" X="-100" Y="155"/>
+            <TranslateTransform x:Name="TranslacaoLocomotiva" X="{Binding LocomotivaX, FallbackValue=-100}" Y="155"/>
         </Canvas.RenderTransform>
 
         <!--* Feixe de luz volumétrico do farol dianteiro -->
@@ -301,7 +301,7 @@
         <!--* Penetra no cilindro e sua extensão visível diminui e aumenta naturalmente com o curso da cruzeta -->
         <Rectangle Width="75" Height="6" Fill="{StaticResource BrancoGeloBrush}" Stroke="{StaticResource AcoEscovadoBrush}" StrokeThickness="1">
             <Rectangle.RenderTransform>
-                <TranslateTransform x:Name="TranslacaoHastePistao" X="330" Y="207"/>
+                <TranslateTransform x:Name="TranslacaoHastePistao" X="{Binding HastePistaoX, FallbackValue=330}" Y="{Binding HastePistaoY, FallbackValue=207}"/>
             </Rectangle.RenderTransform>
         </Rectangle>
 
@@ -312,7 +312,7 @@
         <Control Template="{StaticResource RodaTemplate}" Width="80" Height="80">
             <Control.RenderTransform>
                 <TransformGroup>
-                    <RotateTransform x:Name="RotacaoRoda1" Angle="0" CenterX="40" CenterY="40"/>
+                    <RotateTransform x:Name="RotacaoRoda1" Angle="{Binding AnguloRodas, FallbackValue=0}" CenterX="40" CenterY="40"/>
                     <TranslateTransform X="90" Y="170"/>
                 </TransformGroup>
             </Control.RenderTransform>
@@ -322,7 +322,7 @@
         <Control Template="{StaticResource RodaTemplate}" Width="80" Height="80">
             <Control.RenderTransform>
                 <TransformGroup>
-                    <RotateTransform x:Name="RotacaoRoda2" Angle="0" CenterX="40" CenterY="40"/>
+                    <RotateTransform x:Name="RotacaoRoda2" Angle="{Binding AnguloRodas, FallbackValue=0}" CenterX="40" CenterY="40"/>
                     <TranslateTransform X="230" Y="170"/>
                 </TransformGroup>
             </Control.RenderTransform>
@@ -335,7 +335,7 @@
         <!--# BIELA A: BARRA DE ACOPLAMENTO HORIZONTAL (SIDE ROD) -->
         <Canvas x:Name="BielaAcoplamentoCanvas" Width="160" Height="20">
             <Canvas.RenderTransform>
-                <TranslateTransform x:Name="TranslacaoBielaAcoplamento" X="152" Y="210"/>
+                <TranslateTransform x:Name="TranslacaoBielaAcoplamento" X="{Binding BielaAcoplamentoX, FallbackValue=152}" Y="{Binding BielaAcoplamentoY, FallbackValue=210}"/>
             </Canvas.RenderTransform>
 
             <!--* Corpo de aço usinado com perfil I-Beam -->
@@ -367,8 +367,8 @@
         <Canvas x:Name="BielaMotrizCanvas" Width="92" Height="16">
             <Canvas.RenderTransform>
                 <TransformGroup>
-                    <RotateTransform x:Name="RotacaoBielaMotriz" Angle="0" CenterX="0" CenterY="0"/>
-                    <TranslateTransform x:Name="TranslacaoBielaMotriz" X="292" Y="210"/>
+                    <RotateTransform x:Name="RotacaoBielaMotriz" Angle="{Binding BielaMotrizAngulo, FallbackValue=0}" CenterX="0" CenterY="0"/>
+                    <TranslateTransform x:Name="TranslacaoBielaMotriz" X="{Binding BielaMotrizX, FallbackValue=292}" Y="{Binding BielaMotrizY, FallbackValue=210}"/>
                 </TransformGroup>
             </Canvas.RenderTransform>
 
@@ -405,12 +405,12 @@
         <!--* Desenhada sobre a biela motriz e sobre a haste do pistão -->
         <Rectangle Width="18" Height="18" Fill="{StaticResource AcoEscovadoBrush}" Stroke="{StaticResource AcoTemperadoBrush}" StrokeThickness="1.5" RadiusX="3" RadiusY="3">
             <Rectangle.RenderTransform>
-                <TranslateTransform x:Name="TranslacaoCruzeta" X="321" Y="201"/>
+                <TranslateTransform x:Name="TranslacaoCruzeta" X="{Binding CruzetaX, FallbackValue=321}" Y="{Binding CruzetaY, FallbackValue=201}"/>
             </Rectangle.RenderTransform>
         </Rectangle>
         <Ellipse Width="8" Height="8" Fill="#F1C40F" Stroke="{StaticResource BordaOleoBrush}" StrokeThickness="1">
             <Ellipse.RenderTransform>
-                <TranslateTransform x:Name="TranslacaoPinoCruzeta" X="326" Y="206"/>
+                <TranslateTransform x:Name="TranslacaoPinoCruzeta" X="{Binding PinoCruzetaX, FallbackValue=326}" Y="{Binding PinoCruzetaY, FallbackValue=206}"/>
             </Ellipse.RenderTransform>
         </Ellipse>
 

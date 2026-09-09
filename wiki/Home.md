@@ -18,8 +18,8 @@ Abaixo está a demonstração visual do trem em movimento com as bielas articula
 
 A documentação está dividida em 7 capítulos técnicos especializados:
 
-1. **[Arquitetura e Princípios Gráficos](Arquitetura-e-Visao-Geral)**  
-   *O sistema de coordenadas do WPF, o invariante de projeto $(0,0)$, aceleração gráfica por hardware via `RenderTransform` e a separação de responsabilidades em camadas (SRP).*
+1. **[Arquitetura, Padrão MVVM e Princípios Gráficos](Arquitetura-e-Visao-Geral)**  
+   *O sistema de coordenadas do WPF, o invariante de projeto $(0,0)$, aceleração gráfica por hardware via `RenderTransform` e a arquitetura MVVM (Model-View-ViewModel) com Data Binding reativo.*
 2. **[Modelagem Visual e Geometria XAML](Modelagem-Visual-MainWindow-XAML)**  
    *A decomposição estrutural da locomotiva 0-4-0T (orientada para a direita), análise funcional dos componentes (caldeira, cabine, cilindro, cowcatcher) e a pilha de renderização em camadas ($Z\text{-Index}$).*
 3. **[ControlTemplate e Rodas Reutilizáveis](ControlTemplate-e-Rodas)**  

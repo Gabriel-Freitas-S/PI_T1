@@ -25,9 +25,7 @@ public partial class App : Application
             window.UpdateLayout();
 
             double t = e.Args.Length > 1 && double.TryParse(e.Args[1], System.Globalization.CultureInfo.InvariantCulture, out double customT) ? customT : 3.5;
-            var kin = new Models.LocomotivaKinematics();
-            var st = kin.CalcularQuadro(t);
-            window.Locomotiva.AtualizarEstado(st);
+            window.ViewModel.AtualizarQuadro(t, 1100.0);
             window.Locomotiva.AtualizarFumaca(t);
             window.UpdateLayout();
 
@@ -59,14 +57,12 @@ public partial class App : Application
             string outDir = e.Args.Length > 3 ? e.Args[3] : "frames";
 
             System.IO.Directory.CreateDirectory(outDir);
-            var kin = new Models.LocomotivaKinematics();
             int totalFrames = (int)(duration * fps);
 
             for (int i = 0; i < totalFrames; i++)
             {
                 double t = (double)i / fps;
-                var st = kin.CalcularQuadro(t, 1100.0);
-                window.Locomotiva.AtualizarEstado(st);
+                window.ViewModel.AtualizarQuadro(t, 1100.0);
                 window.Locomotiva.AtualizarFumaca(t);
                 window.UpdateLayout();
 

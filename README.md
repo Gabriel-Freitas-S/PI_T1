@@ -33,19 +33,20 @@ O projeto atende a 100% dos critérios avaliativos estipulados no enunciado acad
 ## ⚙️ Arquitetura e Engenharia de Software
 
 1. **Origem Analítica (0,0)**: Todas as primitivas geométricas (`Rectangle`, `Ellipse`, `Polygon`, `Line`) foram desenhadas com vértices ou posições relativas à origem `(0,0)`, sendo transladadas, rotacionadas e escaladas exclusivamente por `RenderTransform`.
-2. **Controle Parametrizado de Rodas (`ControlTemplate`)**: Inspirado no exemplo do relógio dos slides (`Slide 2D.md:258`), o `RodaTemplate` centraliza aro externo, pneu de aço, contrapeso de meia-lua, 8 raios ortogonais/diagonais convergentes em $(40,40)$ e manivela sólida com pino excêntrico em $(62,40)$ ($r=22\text{ px}$).
-3. **Separação de Responsabilidades e Arquitetura Limpa (SRP)**:
-   - **Camada de Controles Autônomos (`Controls/`)**:
-     - `LocomotivaControl.xaml`: `UserControl` autônomo que encapsula toda a modelagem gráfica vetorial da locomotiva (chassi, cabine, caldeira, cilindros, bielas e animação de vapor).
-     - `LocomotivaControl.xaml.cs`: Code-behind que expõe o método `AtualizarEstado(in LocomotivaFrameState estado)` e atualiza suas próprias transformações afins internas.
-   - **Camada de Modelo/Física (`Models/`)**:
+2. **Controle Parametrizado de Rodas (`ControlTemplate`)**: Inspirado no exemplo do relógio dos slides (`Slide 2D.md:258`), o `RodaTemplate` centraliza aro externo, pneu de aço, contrapeso de meia-lua, 8 raios ortogonais/diagonais convergentes.
+3. **Padrão Arquitetural MVVM (Model-View-ViewModel)**:
+   - **Camada Model (`Models/`)**:
      - `LocomotivaKinematics.cs`: Motor analítico em C# puro, desacoplado da UI do WPF, responsável pelo cálculo cinemático do loop contínuo, rolamento monotônico sem deslizamento das rodas e equações analíticas da cruzeta/bielas.
      - `LocomotivaFrameState.cs`: DTO imutável (`record struct`) contendo as coordenadas e rotações calculadas para cada quadro.
+   - **Camada ViewModel (`ViewModels/`)**:
+     - `ViewModelBase.cs`: Classe base com implementação de `INotifyPropertyChanged` e método `SetProperty`.
+     - `LocomotivaViewModel.cs`: ViewModel observável com as propriedades das 9 transformações afins da locomotiva vinculadas via Data Binding declarativo.
+     - `MainViewModel.cs`: ViewModel raiz que gerencia o estado da simulação, os textos da interface e orquestra a comunicação com o motor cinemático.
+   - **Camada View (`MainWindow` e `Controls/`)**:
+     - `MainWindow.xaml` / `MainWindow.xaml.cs`: View principal desacoplada que associa seu DataContext ao `MainViewModel` e acopla o ciclo de simulação ao V-Sync da GPU (`CompositionTarget.Rendering`).
+     - `LocomotivaControl.xaml` / `LocomotivaControl.xaml.cs`: Controle de apresentação vetorial conectado ao `LocomotivaViewModel` via Data Binding, com método de compatibilidade direta para renderização offline.
    - **Camada de Recursos (`Resources/`)**:
      - `LocomotivaResources.xaml`: `ResourceDictionary` que isola o `ControlTemplate` da roda (`RodaTemplate`), o template dos mancais (`MancalBielaTemplate`) e a paleta de materiais metálicos (`SolidColorBrush`).
-   - **Camada de Apresentação/View (`MainWindow`)**:
-     - `MainWindow.xaml`: Casca enxuta (~70 linhas) com o cabeçalho, rodapé e o cenário com trilhos onde `<controls:LocomotivaControl/>` é instanciado.
-     - `MainWindow.xaml.cs`: Orquestrador ultra-minimalista (~40 linhas) que escuta `CompositionTarget.Rendering`, consulta o motor físico e delega para `Locomotiva.AtualizarEstado(estado)`.
 4. **Mecanismo Biela-Manivela-Pistão (Cinemática Analítica)**:
    - **Biela de Acoplamento**: Transladada circularmente para $(pino1X, pino1Y)$, conectando os eixos das duas rodas com $140\text{ px}$ de distância.
    - **Cruzeta do Pistão**: Desliza no eixo horizontal $Y = 210\text{ px}$ entre as guias de aço, com coordenada calculada analiticamente por:
@@ -64,20 +65,23 @@ x_{\text{cruzeta}} = pino2X + \sqrt{L^2 - (210 - pino2Y)^2} \quad (L = 82\text{ 
 
 ```text
 PI_T1/
-├── .editorconfig              # Diretrizes de formatação (4 espaços C#/XAML, 2 espaços JSON/MD, CRLF)
-├── .gitignore                 # Exclusões completas para .NET, WPF, VS Code e SonarQube
-├── .vscode/
+├── .editorconfig              # Padrões tipográficos e convenções de formatação C#/XAML
+├── .vscode/                   # Configurações do VS Code
 │   └── settings.json          # Configuração do Better Comments Next e SonarLint
 ├── App.xaml                   # Definição do aplicativo WPF e MergedDictionaries
 ├── App.xaml.cs                # Code-behind do ciclo de vida e comandos CLI (--record-frames, --screenshot)
-├── Controls/                  # Controles Visuais Autônomos e Reutilizáveis
-│   ├── LocomotivaControl.xaml # UserControl com a modelagem vetorial e fumaça da locomotiva
-│   └── LocomotivaControl.xaml.cs # Code-behind com o método AtualizarEstado(estado) e AtualizarFumaca(t)
-├── MainWindow.xaml            # Janela principal enxuta (~68 linhas), cabeçalho minimalista e trilhos
-├── MainWindow.xaml.cs         # View orquestradora ultra-minimalista (~40 linhas, CompositionTarget.Rendering)
-├── Models/                    # Camada de Modelo e Cinemática Analítica Pura
+├── Controls/                  # Controles Visuais Autônomos (Views)
+│   ├── LocomotivaControl.xaml # UserControl vetorial com Data Binding e fumaça da locomotiva
+│   └── LocomotivaControl.xaml.cs # Code-behind da View com suporte a LocomotivaViewModel
+├── MainWindow.xaml            # Janela principal: cabeçalho, cenário e DataContext="{Binding Locomotiva}"
+├── MainWindow.xaml.cs         # View principal orquestradora acoplada ao V-Sync (CompositionTarget.Rendering)
+├── Models/                    # Camada Model (M): Cinemática Analítica Pura (sem dependências de UI)
 │   ├── LocomotivaFrameState.cs # DTO/Record imutável com as coordenadas e rotações do quadro
 │   └── LocomotivaKinematics.cs # Motor analítico de física, rolamento monotônico e circuito contínuo
+├── ViewModels/                # Camada ViewModel (VM): Padrão MVVM com INotifyPropertyChanged
+│   ├── ViewModelBase.cs       # Classe base com implementação de INotifyPropertyChanged e SetProperty
+│   ├── LocomotivaViewModel.cs # Propriedades observáveis das 9 transformações afins da locomotiva
+│   └── MainViewModel.cs       # ViewModel raiz orquestrador de estado global, títulos e simulação
 ├── Resources/                 # Dicionários de Recursos e Templates XAML
 │   └── LocomotivaResources.xaml # ResourceDictionary com RodaTemplate, MancalBielaTemplate e Brushes
 ├── PI_T1.csproj               # Arquivo de projeto SDK .NET 10 (net10.0-windows, UseWPF=true)

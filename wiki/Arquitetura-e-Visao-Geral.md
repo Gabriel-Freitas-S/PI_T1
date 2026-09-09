@@ -79,18 +79,45 @@ Ao estruturar todas as peças estruturais sob o nó pai `LocomotivaCanvas`, o de
 
 ---
 
-## 5. Separação de Responsabilidades e Arquitetura em Camadas (SRP)
+## 5. Arquitetura MVVM (Model-View-ViewModel) e Separação de Responsabilidades (SRP)
 
-O projeto adota o **Princípio da Responsabilidade Única (Single Responsibility Principle - SRP)**, decompondo as atribuições em camadas desacopladas:
+O projeto adota o padrão oficial do WPF **MVVM (Model-View-ViewModel)**, desacoplando o modelo de domínio matemático, o estado de apresentação observável e a árvore gráfica vetorial:
 
-| Componente | Papel Arquitetural | Atribuição Técnica |
-| :--- | :--- | :--- |
-| **`MainWindow.xaml`** | **Camada de Apresentação (View Shell)** | Estruturação da casca visual da janela, painéis informativos e cenário contínuo dos trilhos. |
-| **`MainWindow.xaml.cs`** | **Orquestrador de Ciclo de Vida** | Gerenciamento do cronômetro de alta precisão e ponte entre `CompositionTarget.Rendering` e a visão. |
-| **`LocomotivaControl.xaml`** | **Composição Vetorial do Trem** | Declaração geométrica completa da locomotiva, instâncias de rodas, bielas e disparadores de fumaça. |
-| **`LocomotivaControl.xaml.cs`** | **Controlador de Transformações Visuais** | Interface que recebe o estado do motor analítico e atualiza as 9 matrizes de transformação afim internas. |
-| **`LocomotivaKinematics.cs`** | **Motor Físico e Cinemático** | Módulo em C# puro (sem dependências de UI) responsável pelo cálculo trigonométrico analítico da máquina. |
-| **`LocomotivaResources.xaml`** | **Dicionário Compartilhado de Recursos** | Repositório centralizado de modelos de controle (`RodaTemplate`, `MancalBielaTemplate`) e paleta semântica de materiais. |
+```mermaid
+graph LR
+    subgraph Model ["Model (M)"]
+        KIN["LocomotivaKinematics.cs<br/>(Cálculo Físico Puro)"]
+        STATE["LocomotivaFrameState.cs<br/>(Estado Imutável do Quadro)"]
+    end
+
+    subgraph ViewModel ["ViewModel (VM)"]
+        BASE["ViewModelBase.cs<br/>(INotifyPropertyChanged)"]
+        MVM["MainViewModel.cs<br/>(Orquestrador do Ciclo)"]
+        LVM["LocomotivaViewModel.cs<br/>(Propriedades das 9 Transforms)"]
+    end
+
+    subgraph View ["View (V)"]
+        MW["MainWindow.xaml / .cs<br/>(Janela & V-Sync Hook)"]
+        LC["LocomotivaControl.xaml / .cs<br/>(UserControl Vetorial)"]
+    end
+
+    MW -.->|"CompositionTarget.Rendering"| MVM
+    MVM -->|"1. Calcula t"| KIN
+    KIN -->|"2. Retorna DTO"| STATE
+    MVM -->|"3. Atualiza propriedades"| LVM
+    LVM ==="4. Data Binding {Binding}"===> LC
+```
+
+| Camada | Componente | Papel Arquitetural | Atribuição Técnica |
+| :--- | :--- | :--- | :--- |
+| **Model** | **`LocomotivaKinematics.cs`** | **Motor Físico e Cinemático** | Módulo em C# puro (sem dependências de UI) responsável pelo cálculo trigonométrico analítico da máquina. |
+| **Model** | **`LocomotivaFrameState.cs`** | **Objeto de Transferência de Estado (DTO)** | Registro imutável (`record struct`) contendo as 13 coordenadas e ângulos do quadro instantâneo. |
+| **ViewModel** | **`ViewModelBase.cs`** | **Infraestrutura Reativa** | Implementação canônica de `INotifyPropertyChanged` com método tipado `SetProperty<T>`. |
+| **ViewModel** | **`MainViewModel.cs`** | **ViewModel Raiz da Aplicação** | Centraliza dados globais da interface (título, autor, status) e orquestra o ciclo cinemático. |
+| **ViewModel** | **`LocomotivaViewModel.cs`** | **ViewModel da Locomotiva** | Expõe propriedades observáveis para as 9 transformações afins vinculadas ao XAML via `{Binding}`. |
+| **View** | **`MainWindow.xaml / .cs`** | **Casca da Janela Principal** | Apresentação do cenário ferroviário, associação do `DataContext` e gancho no V-Sync da GPU. |
+| **View** | **`LocomotivaControl.xaml / .cs`** | **Controle Vetorial da Locomotiva** | Modelagem gráfica vetorial 2D, instâncias de rodas, bielas e disparadores declarativos de vapor. |
+| **Resources** | **`LocomotivaResources.xaml`** | **Dicionário Compartilhado** | Modelos de controle (`RodaTemplate`, `MancalBielaTemplate`) e paleta semântica de materiais metálicos. |
 
 ---
 

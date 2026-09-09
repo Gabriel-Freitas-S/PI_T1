@@ -1,13 +1,15 @@
 using System.Windows.Controls;
 using PI_T1.Models;
+using PI_T1.ViewModels;
 
 namespace PI_T1.Controls;
 
 /// <summary>
 /// Interação lógica para LocomotivaControl.xaml
 ///
-/// Encapsula a árvore visual vetorial da locomotiva 2D e atualiza suas matrizes
-/// de transformação afim a partir do LocomotivaFrameState fornecido pelo motor cinemático.
+/// Encapsula a árvore visual vetorial da locomotiva 2D e atua como a View no padrão MVVM.
+/// Suporta associação de dados reativa (Data Binding) via LocomotivaViewModel
+/// e mantém método de compatibilidade direta para renderização offline de quadros.
 /// </summary>
 public partial class LocomotivaControl : UserControl
 {
@@ -17,10 +19,26 @@ public partial class LocomotivaControl : UserControl
     }
 
     /// <summary>
-    /// Aplica o estado cinemático calculado às matrizes de transformação afim internas do trem.
+    /// Aplica o estado cinemático calculado.
+    /// Se o DataContext for um LocomotivaViewModel, delega ao ViewModel para notificação reativa;
+    /// caso contrário, atualiza diretamente as matrizes de hardware de transformação afim.
     /// </summary>
     /// <param name="estado">Estado imutável contendo coordenadas e rotações do quadro atual.</param>
     public void AtualizarEstado(in LocomotivaFrameState estado)
+    {
+        if (DataContext is LocomotivaViewModel vm)
+        {
+            vm.AtualizarEstado(estado);
+            return;
+        }
+
+        AplicarTransformacoesDiretas(estado);
+    }
+
+    /// <summary>
+    /// Atribuição direta às transformações afins (utilizada quando o DataContext não está associado).
+    /// </summary>
+    private void AplicarTransformacoesDiretas(in LocomotivaFrameState estado)
     {
         //* 1. Rotação das rodas sob o chassi
         RotacaoRoda1.Angle = estado.AnguloRodas;
