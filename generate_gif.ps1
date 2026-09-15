@@ -80,11 +80,15 @@ if (-not (Test-Path $OutputFile)) {
     exit 1
 }
 
-# 4. Sincronizacao com a pasta wiki/ e limpeza
-Write-Host "[4/4] Sincronizando com a pasta wiki/ e finalizando..." -ForegroundColor Cyan
+# 4. Sincronizacao com as pastas wiki/ e docs/public/ e limpeza
+Write-Host "[4/4] Sincronizando com as pastas wiki/ e docs/public/ e finalizando..." -ForegroundColor Cyan
 if (Test-Path "wiki") {
     Copy-Item -Path $OutputFile -Destination "wiki\$OutputFile" -Force
     Write-Host "   -> Copiado para wiki\$OutputFile" -ForegroundColor Green
+}
+if (Test-Path "docs\public") {
+    Copy-Item -Path $OutputFile -Destination "docs\public\$OutputFile" -Force
+    Write-Host "   -> Copiado para docs\public\$OutputFile" -ForegroundColor Green
 }
 
 Remove-Item $tempFramesDir -Recurse -Force

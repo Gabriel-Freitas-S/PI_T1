@@ -13,7 +13,7 @@ namespace PI_T1.Models;
 /// - Trabalho C1.md:40-56 (Cinemática contínua e bielas sincronizadas)
 /// - Slide 2D.md:225-299 (Transformações afins 2D e padrão do relógio)
 /// </summary>
-public class LocomotivaKinematics
+public static class LocomotivaKinematics
 {
     //# =======================================================================
     //# PARÂMETROS GEOMÉTRICOS E MECÂNICOS DA LOCOMOTIVA
@@ -35,14 +35,6 @@ public class LocomotivaKinematics
     public const double TempoFrenagem = 1.5;           //* Frenagem suave até repouso (s)
     public const double TempoPausaManobra = 1.0;       //* Parada na estação para manobra e inversão (s)
     public const double DuracaoMeioCiclo = TempoAceleracao + TempoCruzeiro + TempoFrenagem + TempoPausaManobra; // 7.5s
-
-    /// <summary>
-    /// Reinicia o estado dinâmico da locomotiva (se necessário).
-    /// </summary>
-    public void Reset()
-    {
-        //* Estado puramente determinístico baseado em tempo contínuo
-    }
 
     /// <summary>
     /// Calcula a cinemática física analítica para o instante de tempo informado.

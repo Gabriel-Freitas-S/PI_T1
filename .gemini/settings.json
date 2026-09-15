@@ -10,6 +10,14 @@
       ],
       "timeout": 30000,
       "trust": false
+    },
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": [
+        "serve",
+        "--mcp"
+      ]
     }
   }
 }

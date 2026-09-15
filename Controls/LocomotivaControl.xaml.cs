@@ -1,33 +1,19 @@
 using System.Windows.Controls;
-using PI_T1.Models;
-using PI_T1.ViewModels;
 
 namespace PI_T1.Controls;
 
 /// <summary>
 /// Interação lógica para LocomotivaControl.xaml
 ///
-/// Encapsula a árvore visual vetorial da locomotiva 2D e atua como a View no padrão MVVM.
-/// Suporta associação de dados reativa (Data Binding) via LocomotivaViewModel
-/// e mantém método de compatibilidade direta para renderização offline de quadros.
+/// Encapsula a árvore visual vetorial da locomotiva 2D e atua estritamente como a View no padrão MVVM.
+/// Todas as propriedades geométricas e cinemáticas são vinculadas de forma reativa via Data Binding
+/// ao LocomotivaViewModel declarado no DataContext.
 /// </summary>
 public partial class LocomotivaControl : UserControl
 {
     public LocomotivaControl()
     {
         InitializeComponent();
-    }
-
-    /// <summary>
-    /// Aplica o estado cinemático calculado delegando diretamente ao LocomotivaViewModel via Data Binding (MVVM puro).
-    /// </summary>
-    /// <param name="estado">Estado imutável contendo coordenadas e rotações do quadro atual.</param>
-    public void AtualizarEstado(in LocomotivaFrameState estado)
-    {
-        if (DataContext is LocomotivaViewModel vm)
-        {
-            vm.AtualizarEstado(estado);
-        }
     }
 
     /// <summary>

@@ -14,15 +14,8 @@ namespace PI_T1.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     //# =======================================================================
-    //# DEPENDÊNCIAS DE DOMÍNIO E SUB-VIEWMODELS
+    //# SUB-VIEWMODELS DE APRESENTAÇÃO
     //# =======================================================================
-
-    private readonly LocomotivaKinematics _kinematics = new();
-
-    /// <summary>
-    /// Instância do motor de cinemática analítica (Model puro).
-    /// </summary>
-    public LocomotivaKinematics Kinematics => _kinematics;
 
     /// <summary>
     /// ViewModel filha responsável pelo estado geométrico da locomotiva.
@@ -36,7 +29,7 @@ public class MainViewModel : ViewModelBase
     private string _titulo = "PROCESSO DE IMAGENS — TRABALHO C1: LOCOMOTIVA A VAPOR 2D";
     private string _subtitulo = " | Cinemática Analítica & Mecanismo Biela-Manivela";
     private string _statusTrajetoria = "Trajetória contínua nos limites da janela (vai-e-volta com inversão e física analítica biela-manivela).";
-    private string _autor = "Gabriel Freitas Souza";
+    private string _autor = "Gabriel Freitas Souza • Indyanny Rodrigues Peixinho • Kauan Araujo Moreira";
 
     /// <summary>
     /// Título informativo exibido no cabeçalho.
@@ -66,7 +59,7 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Identificação do autor do projeto.
+    /// Identificação dos autores do projeto.
     /// </summary>
     public string Autor
     {
@@ -95,10 +88,10 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Reinicia o estado do motor cinemático para as condições iniciais.
+    /// Reinicia o estado de apresentação para as condições iniciais da simulação.
     /// </summary>
     public void Reset()
     {
-        _kinematics.Reset();
+        StatusTrajetoria = "Trajetória contínua nos limites da janela (vai-e-volta com inversão e física analítica biela-manivela).";
     }
 }

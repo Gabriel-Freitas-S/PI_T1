@@ -138,6 +138,12 @@ Para uma explicação exaustiva e detalhada de cada linha de código, fórmulas 
 
 ---
 
-## 7. Licença e Créditos
+## 7. Equipe e Autores
 
-Trabalho prático desenvolvido para a disciplina de **Processamento de Imagens**. Todos os direitos reservados aos autores acadêmicos.
+Trabalho prático desenvolvido para a disciplina de **Processamento de Imagens**:
+
+- **Gabriel Freitas Souza**
+- **Indyanny Rodrigues Peixinho**
+- **Kauan Araujo Moreira**
+
+Todos os direitos reservados aos autores acadêmicos.

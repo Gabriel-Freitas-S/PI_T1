@@ -90,6 +90,16 @@ dotnet run -- --record-frames 15.0 20 frames_dir
 
 ---
 
+## Equipe e Autores
+
+Trabalho prático desenvolvido para a disciplina de **Processamento de Imagens**:
+
+- **Gabriel Freitas Souza**
+- **Indyanny Rodrigues Peixinho**
+- **Kauan Araujo Moreira**
+
+---
+
 ## Referências Oficiais da Microsoft
 
 - [Microsoft Learn — Visão Geral de Transformações Afins no WPF](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/graphics-multimedia/transforms-overview/)
