@@ -4,6 +4,7 @@ import starlight from '@astrojs/starlight';
 import { unified } from '@astrojs/markdown-remark';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import mermaid from 'astro-mermaid';
 
 export default defineConfig({
   site: 'https://gabriel-freitas-s.github.io',
@@ -15,6 +16,7 @@ export default defineConfig({
     }),
   },
   integrations: [
+    mermaid(),
     starlight({
       title: 'PI_T1 — Locomotiva 2D WPF',
       description: 'Documentação técnica de engenharia gráfica, cinemática analítica e WPF/XAML da Locomotiva 2D.',
