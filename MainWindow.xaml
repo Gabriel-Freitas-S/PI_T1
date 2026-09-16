@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:PI_T1.Controls"
         Title="Processamento de Imagens - Trabalho 1 - Locomotiva a Vapor 2D (WPF)"
+        Icon="Resources/icon.ico"
         Width="1100" Height="620"
         MinWidth="900" MinHeight="550"
         WindowStartupLocation="CenterScreen"

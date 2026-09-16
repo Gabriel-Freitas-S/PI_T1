@@ -28,7 +28,7 @@ O projeto atende a 100% dos critérios avaliativos estipulados no enunciado acad
 
 | Etapa | Pontuação | Requisito Normativo | Implementação no Projeto |
 | :---: | :---: | :--- | :--- |
-| **1** | **3,0 pts** | Corpo estático (`Rectangle`, `Polygon`, `Ellipse`) desenhado em `(0,0)` com `RenderTransform` + `ControlTemplate` de roda com raios visíveis e $\ge 2$ instâncias sob o chassi. | Chassi, cabine com porta e estribos, caldeira, domo, chaminé e cilindro desenhados em `(0,0)` com `TranslateTransform`. `RodaTemplate` com aro, 8 raios, contrapeso e manivela excêntrica instanciado nas Rodas 1 e 2. |
+| **1** | **3,0 pts** | Corpo estático (`Rectangle`, `Polygon`, `Ellipse`) desenhado em `(0,0)` com `RenderTransform` + `ControlTemplate` de roda com raios visíveis e $\ge 2$ instâncias sob o chassi. | Chassi, cabine com porta e estribos, caldeira, domo, chaminé e cilindro desenhados em `(0,0)` com `TranslateTransform`. `RodaTemplate` com aro, 8 raios em cruz e diagonais e manivela excêntrica instanciado nas Rodas 1 e 2. |
 | **2** | **6,0 pts** | Objeto completo agrupado em `Canvas`, `RotateTransform` com rotação contínua nas rodas e `TranslateTransform` para movimentação horizontal da locomotiva. | Todo o trem agrupado em `LocomotivaCanvas`. `RotateTransform` acoplado nas instâncias das rodas. Movimentação horizontal contínua através do cenário com trilhos e brita. |
 | **3** | **8,0 pts** | Bielas conectando as rodas com movimento mecânico sincronizado simulando o acoplamento real ("combinação de transformações a cada quadro"). | **Biela de Acoplamento** (*Side Rod*) mantida horizontal em órbita circular síncrona. **Biela Motriz** (*Connecting Rod*) e **Cruzeta** (*Crosshead*) calculadas com cinemática analítica exata via Teorema de Pitágoras e `Math.Atan2` em `CompositionTarget.Rendering`. |
 | **4** | **10,0 pts** | Locomotiva completa em movimento contínuo nos limites da janela do aplicativo. | **Movimento Vai-e-Volta (Ping-Pong)**: A locomotiva percorre o cenário em perfil ferroviário trapezoidal com suavização (aceleração gradual, cruzeiro constante, frenagem realista até repouso e pausa de 1s para manobra), virando 180° com `ScaleTransform` (`ScaleX = -1 / 1`) e retornando infinitamente, com a composição 100% visível na tela e margem segura de 20px dos limites da janela. |
@@ -38,7 +38,8 @@ O projeto atende a 100% dos critérios avaliativos estipulados no enunciado acad
 ## 3. Arquitetura e Engenharia de Software
 
 1. **Origem Analítica (0,0)**: Todas as primitivas geométricas (`Rectangle`, `Ellipse`, `Polygon`, `Line`) foram desenhadas com vértices ou posições relativas à origem `(0,0)`, sendo transladadas, rotacionadas e escaladas exclusivamente por `RenderTransform`.
-2. **Controle Parametrizado de Rodas (`ControlTemplate`)**: Inspirado no exemplo do relógio dos slides (`Slide 2D.md:258`), o `RodaTemplate` centraliza aro externo, pneu de aço, contrapeso de meia-lua, 8 raios ortogonais/diagonais convergentes.
+2. **Controle Parametrizado de Rodas (`ControlTemplate`)**: Inspirado no exemplo do relógio dos slides (`Slide 2D.md:258`), o `RodaTemplate` centraliza aro externo, pneu de aço, 8 raios ortogonais e diagonais perfeitamente simétricos convergindo ao centro analítico `(40,40)` e manivela sólida com pino excêntrico.
+3. **Identidade Visual e Ícone da Aplicação**: Ícone vetorial da locomotiva estilizada em ciano elétrico e âmbar (mesmo padrão do Astro Starlight e favicon da documentação), integrado à janela via `Window.Icon`, ao cabeçalho superior e embutido no `.exe` via `<ApplicationIcon>`.
 3. **Padrão Arquitetural MVVM de Alta Performance (Zero-Alloc)**:
    - **Camada Model (`Models/`)**: `LocomotivaKinematics.cs` (motor analítico puro sem UI) e `LocomotivaFrameState.cs` (DTO imutável alocado na Stack).
    - **Camada ViewModel (`ViewModels/`)**: `ViewModelBase.cs` (infraestrutura com cache estático), `LocomotivaViewModel.cs` (Data Binding das 9 transformações afins) e `MainViewModel.cs` (orquestrador de estado e status descritivo).
@@ -74,8 +75,10 @@ PI_T1/
 │   ├── ViewModelBase.cs       # Classe base com implementação de INotifyPropertyChanged e SetProperty
 │   ├── LocomotivaViewModel.cs # Propriedades observáveis das 9 transformações afins da locomotiva
 │   └── MainViewModel.cs       # ViewModel raiz orquestrador de estado global, títulos e simulação
-├── Resources/                 # Dicionários de Recursos e Templates XAML
-│   └── LocomotivaResources.xaml # ResourceDictionary com RodaTemplate, MancalBielaTemplate e Brushes
+├── Resources/                 # Dicionários de Recursos, Templates XAML e Ícones
+│   ├── LocomotivaResources.xaml # ResourceDictionary com RodaTemplate, MancalBielaTemplate e Brushes
+│   ├── icon.png               # Ícone oficial em alta resolução (256x256)
+│   └── icon.ico               # Ícone nativo Windows para o executável e janela
 ├── PI_T1.csproj               # Arquivo de projeto SDK .NET 10 (net10.0-windows, UseWPF=true)
 ├── sonar-project.properties   # Configuração de análise estática SonarQube
 ├── generate_gif.ps1           # Script PowerShell para geração automática do GIF animado com FFmpeg

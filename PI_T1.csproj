@@ -12,7 +12,16 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>PI_T1</RootNamespace>
     <AssemblyName>PI_T1</AssemblyName>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <!-- # ===================================================================== -->
+  <!-- # RECURSOS EMBUTIDOS NO BINÁRIO (ÍCONES E ATIVOS)                       -->
+  <!-- # ===================================================================== -->
+  <ItemGroup>
+    <Resource Include="Resources\icon.png" />
+    <Resource Include="Resources\icon.ico" />
+  </ItemGroup>
 
   <!-- # ===================================================================== -->
   <!-- # ANINHAMENTO DE ARQUIVOS (DEPENDENTUPON NO SOLUTION EXPLORER)          -->

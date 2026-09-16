@@ -13,13 +13,13 @@ Neste capítulo, aborda-se a arquitetura e a geometria do `ControlTemplate` util
 
 No subsistema gráfico do WPF, o [`ControlTemplate`](https://learn.microsoft.com/pt-br/dotnet/desktop/wpf/controls/controltemplates-overview/) atua como uma matriz de definição estrutural, desacoplando completamente a representação visual de um controle de suas instâncias de apresentação:
 
-- Em vez de duplicar no código XAML dezenas de linhas de primitivas vetoriais para a Roda 1 (aro, pneu, 8 raios, contrapeso, cubo, manivela e pino excêntrico) e replicar o mesmo bloco para a Roda 2, define-se um único molde reutilizável denominado `RodaTemplate`.
+- Em vez de duplicar no código XAML dezenas de linhas de primitivas vetoriais para a Roda 1 (aro, pneu, 8 raios simétricos, cubo, manivela e pino excêntrico) e replicar o mesmo bloco para a Roda 2, define-se um único molde reutilizável denominado `RodaTemplate`.
 - Esse modelo fica encapsulado no dicionário de recursos compartilhado ([`Resources/LocomotivaResources.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Resources/LocomotivaResources.xaml)).
 - Na montagem do chassi em [`Controls/LocomotivaControl.xaml`](https://github.com/Gabriel-Freitas-S/PI_T1/blob/main/Controls/LocomotivaControl.xaml), a aplicação declara instâncias autônomas de `<Control Template="{StaticResource RodaTemplate}"/>`, aplicando transformações afins independentes de rotação (`RotateTransform`) e translação (`TranslateTransform`) em cada elemento.
 
 ```text
       [ Matriz Estrutural: RodaTemplate ]
-     (Aro + 8 Raios + Contrapeso + Manivela)
+       (Aro + 8 Raios + Cubo + Manivela)
                         |
             +-----------+-----------+
             |                       |
@@ -174,12 +174,6 @@ O template estrutura as primitivas vetoriais delimitadas no contêiner de $80 \t
             </Ellipse.RenderTransform>
         </Ellipse>
 
-        <!-- 3. Contrapeso em meia-lua (balanceamento dinâmico a 180° da manivela) -->
-        <Polygon Points="10,24 38,24 38,56 10,56" Fill="{StaticResource FerroEscuroBrush}">
-            <Polygon.RenderTransform>
-                <TranslateTransform X="0" Y="0"/>
-            </Polygon.RenderTransform>
-        </Polygon>
 
         <!-- 4. Distribuição dos 8 Raios em Cruz e Diagonais -->
         <Line X1="0" Y1="0" X2="0" Y2="64" Stroke="{StaticResource BrancoGeloBrush}" StrokeThickness="3">
@@ -248,14 +242,7 @@ Cada terminal articular das bielas utiliza o template de mancal:
 
 ```xml
 <ControlTemplate x:Key="MancalBielaTemplate" TargetType="{x:Type Control}">
-    <Canvas Width="0" Height="0">
-        <!-- 1. Copo de alimentação de óleo lubrificante -->
-        <Rectangle Width="4" Height="4" Fill="{StaticResource OleoCopoBrush}"
-                   Stroke="{StaticResource BordaOleoBrush}" StrokeThickness="0.8">
-            <Rectangle.RenderTransform>
-                <TranslateTransform X="-2" Y="-11"/>
-            </Rectangle.RenderTransform>
-        </Rectangle>
+    <Canvas Width="18" Height="18">
 
         <!-- 2. Bucha externa de bronze forjado (diâmetro 18px) -->
         <Ellipse Width="18" Height="18" Fill="{StaticResource OleoCopoBrush}"

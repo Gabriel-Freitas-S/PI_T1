@@ -60,24 +60,22 @@ Com raio interno do aro $R_{\text{aro}} = 36\text{ px}$:
 
 ---
 
-## 3. Contrapeso e Manivela Excêntrica
+## 3. Cubo Central e Manivela Excêntrica
 
-As rodas motrizes reais de locomotivas a vapor incorporam um **contrapeso de fundição em formato de setor circular**, posicionado em oposição angular ao pino da manivela ($180^\circ$ de defasagem), equilibrando a força centrífuga exercida pela massa das bielas.
+A roda modelada no `RodaTemplate` integra o aro externo em aço forjado, o rebaixo usinado do pneu, a malha de 8 raios ortogonais e diagonais perfeitamente simétricos e a manivela mecânica com pino excêntrico a um raio $r = 22\text{ px}$.
 
 <CodeInspector
   title="Template da Roda em Recursos vs Instanciação no Canvas"
   xamlSnippet={`<!-- LocomotivaResources.xaml: Definição Modular do Template -->
-<ControlTemplate x:Key="RodaLocomotivaTemplate" TargetType="Control">
+<ControlTemplate x:Key="RodaTemplate" TargetType="Control">
     <Canvas Width="80" Height="80" ClipToBounds="False">
         <!-- Aro Externo de Aço -->
-        <Ellipse Width="80" Height="80" Fill="#1a1a1a" Stroke="#404040" StrokeThickness="2" />
-        <!-- Aro Interno Usinado -->
-        <Ellipse Width="72" Height="72" Canvas.Left="4" Canvas.Top="4" Stroke="#606060" />
-        <!-- Contrapeso de Fundição (Setor Circular Oposto) -->
-        <Path Data="M 14,40 A 28,28 0 0,1 66,40 Z" Fill="#2a2a2a" Opacity="0.8" />
-        <!-- 8 Raios Radiais -->
-        <Line X1="4" Y1="40" X2="76" Y2="40" Stroke="#505050" StrokeThickness="2" />
-        <Line X1="40" Y1="4" X2="40" Y2="76" Stroke="#505050" StrokeThickness="2" />
+        <Ellipse Width="80" Height="80" Fill="#212F3D" Stroke="#17202A" StrokeThickness="5" />
+        <!-- Pneu Intermediário Usinado -->
+        <Ellipse Width="70" Height="70" Canvas.Left="5" Canvas.Top="5" Stroke="#7F8C8D" StrokeThickness="2" Fill="#2C3E50" />
+        <!-- 8 Raios Radiais em Cruz e Diagonais -->
+        <Line X1="40" Y1="8" X2="40" Y2="72" Stroke="#ECF0F1" StrokeThickness="3" />
+        <Line X1="8" Y1="40" X2="72" Y2="40" Stroke="#ECF0F1" StrokeThickness="3" />
         <Line X1="15" Y1="15" X2="65" Y2="65" Stroke="#505050" StrokeThickness="1.5" />
         <Line X1="15" Y1="65" X2="65" Y2="15" Stroke="#505050" StrokeThickness="1.5" />
         <!-- Cubo Central e Pino Excêntrico (r = 22 px) -->

@@ -33,7 +33,6 @@
     <!--* Centro analítico do eixo rigorosamente em (40,40), diâmetro 80px          -->
     <!--* 8 raios em cruz e diagonais convergindo exatamente ao centro (40,40)       -->
     <!--* Manivela sólida de aço ligando o centro (40,40) ao pino (62,40), r=22px    -->
-    <!--! Contrapeso em meia-lua posicionado a 180° para balanceamento dinâmico     -->
     <!--! Invariante gráfica: Primitivas em (0,0) com RenderTransform.Translate     -->
     <ControlTemplate x:Key="RodaTemplate" TargetType="{x:Type Control}">
         <Canvas Width="80" Height="80">
@@ -51,12 +50,6 @@
                 </Ellipse.RenderTransform>
             </Ellipse>
 
-            <!--* Contrapeso de balanceamento (lado esquerdo, oposto a manivela) -->
-            <Polygon Points="10,24 38,24 38,56 10,56" Fill="{StaticResource FerroEscuroBrush}">
-                <Polygon.RenderTransform>
-                    <TranslateTransform X="0" Y="0"/>
-                </Polygon.RenderTransform>
-            </Polygon>
 
             <!--* 8 Raios simetricos convergindo exatamente ao centro (40,40) -->
             <Line X1="0" Y1="0" X2="0" Y2="64" Stroke="{StaticResource BrancoGeloBrush}" StrokeThickness="3">
@@ -124,13 +117,7 @@
     <!--* Modelo reutilizável em (0,0) para mancais de bielas mecânicas             -->
     <!--* Contém bucha de bronze forjado, rolamento de aço, pino e copo de graxa    -->
     <ControlTemplate x:Key="MancalBielaTemplate" TargetType="{x:Type Control}">
-        <Canvas Width="18" Height="22">
-            <!--* Copo de lubrificação de latão no topo do mancal -->
-            <Rectangle Width="4" Height="4" Fill="{StaticResource OleoCopoBrush}" Stroke="{StaticResource BordaOleoBrush}" StrokeThickness="0.8">
-                <Rectangle.RenderTransform>
-                    <TranslateTransform X="-2" Y="-13"/>
-                </Rectangle.RenderTransform>
-            </Rectangle>
+        <Canvas Width="18" Height="18">
 
             <!--* Mancal/Olhal externo de bronze forjado -->
             <Ellipse Width="18" Height="18" Fill="{StaticResource LataoBronzeBrush}" Stroke="{StaticResource BordaBronzeBrush}" StrokeThickness="1.5">
